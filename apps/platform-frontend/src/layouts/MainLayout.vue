@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { useLocalState } from "@/composables/useLocalState";
 
-const sidebarCollapsed = ref(false);
+const sidebarCollapsed = useLocalState("fc:sidebar-collapsed", false);
 
 function toggleSidebar() {
 	sidebarCollapsed.value = !sidebarCollapsed.value;

@@ -107,16 +107,18 @@ export const PLATFORM_EVENT_DEFINITIONS: readonly PlatformEventDefinition[] = [
 	{ subdomain: "admin", aggregate: "event-type", event: "schema-deprecated", name: eventName("event-type", "schema-deprecated") },
 	{ subdomain: "admin", aggregate: "event-type", event: "synced", name: eventName("event-type", "synced") },
 
-	// ─── Control Plane ────────────────────────────────────────────────────
+	// Connection
+	{ subdomain: "admin", aggregate: "connection", event: "created", name: eventName("connection", "created") },
+	{ subdomain: "admin", aggregate: "connection", event: "updated", name: eventName("connection", "updated") },
+	{ subdomain: "admin", aggregate: "connection", event: "deleted", name: eventName("connection", "deleted") },
 	// Dispatch Pool
-	{ subdomain: "control-plane", aggregate: "dispatch-pool", event: "created", name: eventName("dispatch-pool", "created") },
-	{ subdomain: "control-plane", aggregate: "dispatch-pool", event: "updated", name: eventName("dispatch-pool", "updated") },
-	{ subdomain: "control-plane", aggregate: "dispatch-pool", event: "deleted", name: eventName("dispatch-pool", "deleted") },
-	{ subdomain: "control-plane", aggregate: "dispatch-pool", event: "synced", name: eventName("dispatch-pool", "synced") },
+	{ subdomain: "admin", aggregate: "dispatch-pool", event: "created", name: eventName("dispatch-pool", "created") },
+	{ subdomain: "admin", aggregate: "dispatch-pool", event: "updated", name: eventName("dispatch-pool", "updated") },
+	{ subdomain: "admin", aggregate: "dispatch-pool", event: "deleted", name: eventName("dispatch-pool", "deleted") },
+	{ subdomain: "admin", aggregate: "dispatch-pool", event: "synced", name: eventName("dispatch-pool", "synced") },
 	// Subscription
-	{ subdomain: "control-plane", aggregate: "subscription", event: "created", name: eventName("subscription", "created") },
-	{ subdomain: "control-plane", aggregate: "subscription", event: "updated", name: eventName("subscription", "updated") },
-	{ subdomain: "control-plane", aggregate: "subscription", event: "deleted", name: eventName("subscription", "deleted") },
-	// Subscription Sync (uses "messaging" subdomain override)
-	{ subdomain: "messaging", aggregate: "subscription", event: "synced", name: "Subscriptions Synced" },
+	{ subdomain: "admin", aggregate: "subscription", event: "created", name: eventName("subscription", "created") },
+	{ subdomain: "admin", aggregate: "subscription", event: "updated", name: eventName("subscription", "updated") },
+	{ subdomain: "admin", aggregate: "subscription", event: "deleted", name: eventName("subscription", "deleted") },
+	{ subdomain: "admin", aggregate: "subscription", event: "synced", name: eventName("subscription", "synced") },
 ];

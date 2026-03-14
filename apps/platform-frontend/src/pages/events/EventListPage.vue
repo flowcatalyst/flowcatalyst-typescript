@@ -5,6 +5,7 @@ import {
 	getApiAdminEventsById,
 	getApiAdminEventsFilterOptions,
 } from "@/api/generated";
+import { useListState } from "@/composables/useListState";
 
 interface EventRead {
 	id: string;
@@ -31,22 +32,31 @@ interface FilterOption {
 	label: string;
 }
 
+const { filters, page, pageSize, sortField, sortOrder, searchQuery, syncToUrl } = useListState({
+	filters: {
+		selectedClients: { type: "string[]", queryKey: "clients" },
+		selectedApplications: { type: "string[]", queryKey: "apps" },
+		selectedSubdomains: { type: "string[]", queryKey: "subdomains" },
+		selectedAggregates: { type: "string[]", queryKey: "aggregates" },
+		selectedTypes: { type: "string[]", queryKey: "types" },
+	},
+	pagination: { defaultPageSize: 100 },
+	sort: { defaultField: "time", defaultOrder: "desc" },
+	search: { queryKey: "q" },
+});
+
+// Alias filter refs for template compatibility
+const selectedClients = filters.selectedClients;
+const selectedApplications = filters.selectedApplications;
+const selectedSubdomains = filters.selectedSubdomains;
+const selectedAggregates = filters.selectedAggregates;
+const selectedTypes = filters.selectedTypes;
+const currentPage = page;
+
 // Table state
 const events = ref<EventRead[]>([]);
 const loading = ref(true);
 const totalRecords = ref(0);
-const currentPage = ref(0);
-const pageSize = ref(100);
-const sortField = ref("time");
-const sortOrder = ref<"asc" | "desc">("desc");
-
-// Filter state
-const selectedClients = ref<string[]>([]);
-const selectedApplications = ref<string[]>([]);
-const selectedSubdomains = ref<string[]>([]);
-const selectedAggregates = ref<string[]>([]);
-const selectedTypes = ref<string[]>([]);
-const searchQuery = ref("");
 
 // Filter options (from server)
 const clientOptions = ref<FilterOption[]>([]);
@@ -210,6 +220,7 @@ async function clearAllFilters() {
 	selectedAggregates.value = [];
 	selectedTypes.value = [];
 	searchQuery.value = "";
+	syncToUrl();
 	await loadFilterOptions();
 	await loadEvents();
 }

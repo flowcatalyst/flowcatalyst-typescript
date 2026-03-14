@@ -31,6 +31,10 @@ pnpm-debug.log*
 coverage/
 .nyc_output/
 
+# Secrets / keys
+.jwt-keys/
+*.pem
+
 # Misc
 *.local
 .cache/

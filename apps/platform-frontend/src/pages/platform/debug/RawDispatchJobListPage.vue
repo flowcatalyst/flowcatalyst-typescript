@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { apiFetch } from "@/api/client";
+import { useListState } from "@/composables/useListState";
 
 interface RawDispatchJob {
 	id: string;
@@ -36,11 +37,19 @@ interface RawDispatchJob {
 	attemptHistoryCount: number;
 }
 
+const { page, pageSize } = useListState({
+	filters: {},
+	pagination: { defaultPageSize: 20 },
+	sort: false,
+	search: false,
+});
+
+// Alias for template compatibility
+const currentPage = page;
+
 const dispatchJobs = ref<RawDispatchJob[]>([]);
 const loading = ref(true);
 const totalRecords = ref(0);
-const currentPage = ref(0);
-const pageSize = ref(20);
 
 // Detail dialog
 const selectedJob = ref<RawDispatchJob | null>(null);

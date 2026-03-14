@@ -6,14 +6,27 @@ import {
 	type Subscription,
 	type SubscriptionStatus,
 } from "@/api/subscriptions";
+import { useListState } from "@/composables/useListState";
 
 const router = useRouter();
+
+const { filters, searchQuery } = useListState({
+	filters: {
+		statusFilter: { type: "string", queryKey: "status" },
+		applicationFilter: { type: "string[]", queryKey: "apps" },
+	},
+	pagination: false,
+	sort: false,
+	search: { queryKey: "q" },
+});
+
+// Alias filter refs for template compatibility
+const statusFilter = filters.statusFilter;
+const applicationFilter = filters.applicationFilter;
+
 const subscriptions = ref<Subscription[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
-const searchQuery = ref("");
-const statusFilter = ref<SubscriptionStatus | null>(null);
-const applicationFilter = ref<string[]>([]);
 
 const statusOptions = [
 	{ label: "All Statuses", value: null },

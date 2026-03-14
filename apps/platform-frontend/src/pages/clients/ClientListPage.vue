@@ -2,15 +2,22 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { clientsApi, type Client } from "@/api/clients";
+import { useListState } from "@/composables/useListState";
 
 const PAGE_SIZE = 100;
 
 const router = useRouter();
+
+const { page, searchQuery } = useListState({
+	filters: {},
+	pagination: { defaultPageSize: PAGE_SIZE },
+	sort: false,
+	search: { queryKey: "q" },
+});
+
 const clients = ref<Client[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
-const searchQuery = ref("");
-const page = ref(0);
 const hasMore = ref(false);
 
 const filteredClients = computed(() => {

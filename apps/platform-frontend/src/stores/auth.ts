@@ -61,7 +61,15 @@ export const useAuthStore = defineStore("auth", () => {
 	function setUser(newUser: User, clients: string[] = []) {
 		user.value = newUser;
 		accessibleClients.value = clients;
-		selectedClientId.value = newUser.clientId;
+
+		// Restore persisted client selection if still valid, otherwise use default
+		const stored = localStorage.getItem("fc:selected-client");
+		if (stored && clients.includes(stored)) {
+			selectedClientId.value = stored;
+		} else {
+			selectedClientId.value = newUser.clientId;
+		}
+
 		isLoading.value = false;
 		error.value = null;
 	}
@@ -70,6 +78,7 @@ export const useAuthStore = defineStore("auth", () => {
 		user.value = null;
 		accessibleClients.value = [];
 		selectedClientId.value = null;
+		localStorage.removeItem("fc:selected-client");
 		isLoading.value = false;
 		error.value = null;
 	}
@@ -77,6 +86,7 @@ export const useAuthStore = defineStore("auth", () => {
 	function selectClient(clientId: string) {
 		if (accessibleClients.value.includes(clientId)) {
 			selectedClientId.value = clientId;
+			localStorage.setItem("fc:selected-client", clientId);
 		}
 	}
 

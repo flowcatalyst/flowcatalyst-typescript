@@ -7,18 +7,28 @@ import {
 	type ServiceAccount,
 } from "@/api/service-accounts";
 import { clientsApi, type Client } from "@/api/clients";
+import { useListState } from "@/composables/useListState";
 
 const router = useRouter();
 const toast = useToast();
 
+const { filters, searchQuery, hasActiveFilters, clearFilters: clearListFilters } = useListState({
+	filters: {
+		selectedClientId: { type: "string", queryKey: "clientId" },
+		selectedStatus: { type: "string", queryKey: "status" },
+	},
+	pagination: false,
+	sort: false,
+	search: { queryKey: "q" },
+});
+
+// Alias filter refs for template compatibility
+const selectedClientId = filters.selectedClientId;
+const selectedStatus = filters.selectedStatus;
+
 const serviceAccounts = ref<ServiceAccount[]>([]);
 const clients = ref<Client[]>([]);
 const loading = ref(true);
-
-// Filters
-const searchQuery = ref("");
-const selectedClientId = ref<string | null>(null);
-const selectedStatus = ref<string | null>(null);
 
 const statusOptions = [
 	{ label: "Active", value: "active" },
@@ -32,9 +42,6 @@ const clientOptions = computed(() => {
 	}));
 });
 
-const hasActiveFilters = computed(() => {
-	return searchQuery.value || selectedClientId.value || selectedStatus.value;
-});
 
 const filteredServiceAccounts = computed(() => {
 	let result = serviceAccounts.value;
@@ -97,9 +104,7 @@ async function loadClients() {
 }
 
 function clearFilters() {
-	searchQuery.value = "";
-	selectedClientId.value = null;
-	selectedStatus.value = null;
+	clearListFilters();
 }
 
 function addServiceAccount() {

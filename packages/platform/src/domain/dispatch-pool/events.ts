@@ -11,7 +11,7 @@ import {
 } from "@flowcatalyst/domain";
 
 const APP = "platform";
-const DOMAIN = "control-plane";
+const DOMAIN = "admin";
 const SOURCE = `${APP}:${DOMAIN}`;
 
 // -----------------------------------------------------------------------------

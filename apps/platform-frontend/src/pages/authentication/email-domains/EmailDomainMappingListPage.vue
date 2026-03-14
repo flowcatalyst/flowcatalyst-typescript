@@ -7,13 +7,21 @@ import {
 	type EmailDomainMapping,
 } from "@/api/email-domain-mappings";
 import { getErrorMessage } from "@/utils/errors";
+import { useListState } from "@/composables/useListState";
 
 const router = useRouter();
 const toast = useToast();
+
+const { searchQuery } = useListState({
+	filters: {},
+	pagination: false,
+	sort: false,
+	search: { queryKey: "q" },
+});
+
 const mappings = ref<EmailDomainMapping[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
-const searchQuery = ref("");
 
 // Delete dialog state
 const showDeleteDialog = ref(false);

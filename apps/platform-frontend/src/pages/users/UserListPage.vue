@@ -5,9 +5,26 @@ import { useToast } from "primevue/usetoast";
 import { usersApi, type User } from "@/api/users";
 import { clientsApi, type Client } from "@/api/clients";
 import { rolesApi, type Role } from "@/api/roles";
+import { useListState } from "@/composables/useListState";
 
 const router = useRouter();
 const toast = useToast();
+
+const { filters, page, pageSize, sortField, sortOrder, searchQuery, hasActiveFilters, clearFilters: clearListFilters } = useListState({
+	filters: {
+		selectedClientId: { type: "string", queryKey: "clientId" },
+		selectedStatus: { type: "string", queryKey: "status" },
+		selectedRoles: { type: "string[]", queryKey: "roles" },
+	},
+	pagination: { defaultPageSize: 100 },
+	sort: { defaultField: "createdAt", defaultOrder: "asc" },
+	search: { queryKey: "q", debounceMs: 300 },
+});
+
+// Alias filter refs for template compatibility
+const selectedClientId = filters.selectedClientId;
+const selectedStatus = filters.selectedStatus;
+const selectedRoles = filters.selectedRoles;
 
 const users = ref<User[]>([]);
 const clients = ref<Client[]>([]);
@@ -15,20 +32,6 @@ const availableRoles = ref<Role[]>([]);
 const loading = ref(false);
 const initialLoading = ref(true);
 const totalRecords = ref(0);
-
-// Filters
-const searchQuery = ref("");
-const selectedClientId = ref<string | null>(null);
-const selectedStatus = ref<string | null>(null);
-const selectedRoles = ref<string[]>([]);
-
-// Pagination
-const page = ref(0);
-const pageSize = ref(100);
-
-// Sort
-const sortField = ref("createdAt");
-const sortOrder = ref<"asc" | "desc">("asc");
 
 const statusOptions = [
 	{ label: "Active", value: "active" },
@@ -40,10 +43,6 @@ const clientOptions = computed(() => {
 		label: c.name,
 		value: c.id,
 	}));
-});
-
-const hasActiveFilters = computed(() => {
-	return searchQuery.value || selectedClientId.value || selectedStatus.value || selectedRoles.value.length > 0;
 });
 
 const roleOptions = computed(() =>
@@ -60,14 +59,10 @@ watch([selectedClientId, selectedStatus, selectedRoles], () => {
 	loadUsers();
 });
 
-// Debounced search
-let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+// Reload users when search changes (debounce handled by useListState)
 watch(searchQuery, () => {
-	if (searchTimeout) clearTimeout(searchTimeout);
-	searchTimeout = setTimeout(() => {
-		page.value = 0;
-		loadUsers();
-	}, 300);
+	page.value = 0;
+	loadUsers();
 });
 
 async function loadUsers() {
@@ -145,11 +140,7 @@ async function loadClients() {
 }
 
 function clearFilters() {
-	searchQuery.value = "";
-	selectedClientId.value = null;
-	selectedStatus.value = null;
-	selectedRoles.value = [];
-	page.value = 0;
+	clearListFilters();
 	loadUsers();
 }
 

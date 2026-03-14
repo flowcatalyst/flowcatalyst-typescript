@@ -12,7 +12,7 @@ import {
 import type { EventTypeBinding } from "./event-type-binding.js";
 
 const APP = "platform";
-const DOMAIN = "control-plane";
+const DOMAIN = "admin";
 const SOURCE = `${APP}:${DOMAIN}`;
 
 // -----------------------------------------------------------------------------
@@ -158,7 +158,7 @@ export interface SubscriptionsSyncedData {
 export class SubscriptionsSynced extends BaseDomainEvent<SubscriptionsSyncedData> {
 	static readonly EVENT_TYPE = DomainEvent.eventType(
 		APP,
-		"messaging",
+		DOMAIN,
 		"subscription",
 		"synced",
 	);
@@ -169,7 +169,7 @@ export class SubscriptionsSynced extends BaseDomainEvent<SubscriptionsSyncedData
 			{
 				eventType: SubscriptionsSynced.EVENT_TYPE,
 				specVersion: SubscriptionsSynced.SPEC_VERSION,
-				source: `${APP}:messaging`,
+				source: SOURCE,
 				subject: DomainEvent.subject(
 					APP,
 					"application",

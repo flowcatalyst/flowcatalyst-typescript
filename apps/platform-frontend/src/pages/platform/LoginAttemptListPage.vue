@@ -1,29 +1,35 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import {
   fetchLoginAttempts,
   type LoginAttempt,
 } from "@/api/login-attempts";
+import { useListState } from "@/composables/useListState";
+
+const { filters, page, pageSize, sortField, sortOrder, hasActiveFilters, clearFilters: clearListFilters } = useListState({
+	filters: {
+		selectedAttemptType: { type: "string", queryKey: "type" },
+		selectedOutcome: { type: "string", queryKey: "outcome" },
+		identifierInput: { type: "string", queryKey: "identifier" },
+		dateFrom: { type: "string", queryKey: "from" },
+		dateTo: { type: "string", queryKey: "to" },
+	},
+	pagination: { defaultPageSize: 100 },
+	sort: { defaultField: "attemptedAt", defaultOrder: "desc" },
+	search: false,
+});
+
+// Alias filter refs for template compatibility
+const selectedAttemptType = filters.selectedAttemptType;
+const selectedOutcome = filters.selectedOutcome;
+const identifierInput = filters.identifierInput;
+const dateFrom = filters.dateFrom;
+const dateTo = filters.dateTo;
 
 const attempts = ref<LoginAttempt[]>([]);
 const totalRecords = ref(0);
 const loading = ref(false);
 const initialLoading = ref(true);
-
-// Filters
-const selectedAttemptType = ref<string | null>(null);
-const selectedOutcome = ref<string | null>(null);
-const identifierInput = ref<string>("");
-const dateFrom = ref<string>("");
-const dateTo = ref<string>("");
-
-// Pagination
-const page = ref(0);
-const pageSize = ref(100);
-
-// Sort
-const sortField = ref("attemptedAt");
-const sortOrder = ref<"asc" | "desc">("desc");
 
 // Detail dialog
 const selectedAttempt = ref<LoginAttempt | null>(null);
@@ -32,23 +38,13 @@ const showDetailDialog = ref(false);
 const attemptTypeOptions = ["USER_LOGIN", "SERVICE_ACCOUNT_TOKEN"];
 const outcomeOptions = ["SUCCESS", "FAILURE"];
 
-const hasActiveFilters = computed(() => {
-  return (
-    selectedAttemptType.value !== null ||
-    selectedOutcome.value !== null ||
-    identifierInput.value.trim() !== "" ||
-    dateFrom.value !== "" ||
-    dateTo.value !== ""
-  );
-});
-
 async function loadAttempts() {
   loading.value = true;
   try {
     const response = await fetchLoginAttempts({
       attemptType: selectedAttemptType.value || undefined,
       outcome: selectedOutcome.value || undefined,
-      identifier: identifierInput.value.trim() || undefined,
+      identifier: identifierInput.value?.trim() || undefined,
       dateFrom: dateFrom.value || undefined,
       dateTo: dateTo.value || undefined,
       page: page.value,
@@ -85,12 +81,7 @@ function onSort(event: { sortField?: string | ((item: unknown) => string); sortO
 }
 
 function clearFilters() {
-  selectedAttemptType.value = null;
-  selectedOutcome.value = null;
-  identifierInput.value = "";
-  dateFrom.value = "";
-  dateTo.value = "";
-  page.value = 0;
+  clearListFilters();
   loadAttempts();
 }
 

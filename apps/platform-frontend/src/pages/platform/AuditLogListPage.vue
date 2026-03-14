@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import {
 	fetchAuditLogs,
 	fetchAuditLogById,
@@ -12,11 +12,30 @@ import {
 } from "@/api/audit-logs";
 import { applicationsApi } from "@/api/applications";
 import { clientsApi } from "@/api/clients";
+import { useListState } from "@/composables/useListState";
 
 interface Option {
 	label: string;
 	value: string;
 }
+
+const { filters, page, pageSize, sortField, sortOrder, hasActiveFilters, clearFilters: clearListFilters } = useListState({
+	filters: {
+		selectedEntityType: { type: "string", queryKey: "entityType" },
+		selectedOperation: { type: "string", queryKey: "operation" },
+		selectedApplicationIds: { type: "string[]", queryKey: "appIds" },
+		selectedClientIds: { type: "string[]", queryKey: "clientIds" },
+	},
+	pagination: { defaultPageSize: 100 },
+	sort: { defaultField: "performedAt", defaultOrder: "desc" },
+	search: false,
+});
+
+// Alias filter refs for template compatibility
+const selectedEntityType = filters.selectedEntityType;
+const selectedOperation = filters.selectedOperation;
+const selectedApplicationIds = filters.selectedApplicationIds;
+const selectedClientIds = filters.selectedClientIds;
 
 const auditLogs = ref<AuditLog[]>([]);
 const totalRecords = ref(0);
@@ -29,33 +48,10 @@ const operations = ref<string[]>([]);
 const applicationOptions = ref<Option[]>([]);
 const clientOptions = ref<Option[]>([]);
 
-// Selected filter values
-const selectedEntityType = ref<string | null>(null);
-const selectedOperation = ref<string | null>(null);
-const selectedApplicationIds = ref<string[]>([]);
-const selectedClientIds = ref<string[]>([]);
-
-// Pagination
-const page = ref(0);
-const pageSize = ref(100);
-
-// Sort
-const sortField = ref("performedAt");
-const sortOrder = ref<"asc" | "desc">("desc");
-
 // Detail dialog
 const selectedLog = ref<AuditLogDetail | null>(null);
 const showDetailDialog = ref(false);
 const loadingDetail = ref(false);
-
-const hasActiveFilters = computed(() => {
-	return (
-		selectedEntityType.value !== null ||
-		selectedOperation.value !== null ||
-		selectedApplicationIds.value.length > 0 ||
-		selectedClientIds.value.length > 0
-	);
-});
 
 async function loadFilters() {
 	try {
@@ -142,11 +138,7 @@ function onSort(event: { sortField?: string | ((item: unknown) => string); sortO
 }
 
 function clearFilters() {
-	selectedEntityType.value = null;
-	selectedOperation.value = null;
-	selectedApplicationIds.value = [];
-	selectedClientIds.value = [];
-	page.value = 0;
+	clearListFilters();
 	loadAuditLogs();
 }
 

@@ -8,9 +8,24 @@ import {
 	type RoleSource,
 	type ApplicationOption,
 } from "@/api/roles";
+import { useListState } from "@/composables/useListState";
 
 const router = useRouter();
 const toast = useToast();
+
+const { filters, searchQuery, hasActiveFilters, clearFilters: clearListFilters } = useListState({
+	filters: {
+		selectedApplication: { type: "string", queryKey: "app" },
+		selectedSource: { type: "string", queryKey: "source" },
+	},
+	pagination: false,
+	sort: false,
+	search: { queryKey: "q" },
+});
+
+// Alias filter refs for template compatibility
+const selectedApplication = filters.selectedApplication;
+const selectedSource = filters.selectedSource;
 
 // Data
 const roles = ref<Role[]>([]);
@@ -18,20 +33,11 @@ const applications = ref<ApplicationOption[]>([]);
 const loading = ref(true);
 const initialLoading = ref(true);
 
-// Filters
-const selectedApplication = ref<string | null>(null);
-const selectedSource = ref<RoleSource | null>(null);
-const searchQuery = ref("");
-
 const sourceOptions = [
 	{ label: "Code-defined", value: "CODE" },
 	{ label: "Admin-created", value: "DATABASE" },
 	{ label: "SDK-registered", value: "SDK" },
 ];
-
-const hasActiveFilters = computed(() => {
-	return selectedApplication.value || selectedSource.value || searchQuery.value;
-});
 
 // Filtered roles based on search
 const filteredRoles = computed(() => {
@@ -82,7 +88,7 @@ async function loadRoles() {
 		const filters: { application?: string; source?: RoleSource } = {};
 		if (selectedApplication.value)
 			filters.application = selectedApplication.value;
-		if (selectedSource.value) filters.source = selectedSource.value;
+		if (selectedSource.value) filters.source = selectedSource.value as RoleSource;
 
 		const response = await rolesApi.list(filters);
 		roles.value = response.items;
@@ -112,9 +118,7 @@ function onFilterChange() {
 }
 
 function clearFilters() {
-	selectedApplication.value = null;
-	selectedSource.value = null;
-	searchQuery.value = "";
+	clearListFilters();
 	loadRoles();
 }
 

@@ -115,7 +115,14 @@ import {
 	EventTypesSyncedDataSchema,
 } from "./event-type/schemas.js";
 
-// ─── Dispatch Pool (Control Plane) ──────────────────────────────────────────
+// ─── Connection (Admin) ─────────────────────────────────────────────────────
+import {
+	ConnectionCreatedDataSchema,
+	ConnectionUpdatedDataSchema,
+	ConnectionDeletedDataSchema,
+} from "./connection/schemas.js";
+
+// ─── Dispatch Pool (Admin) ──────────────────────────────────────────────────
 import {
 	DispatchPoolCreatedDataSchema,
 	DispatchPoolUpdatedDataSchema,
@@ -123,7 +130,7 @@ import {
 	DispatchPoolsSyncedDataSchema,
 } from "./dispatch-pool/schemas.js";
 
-// ─── Subscription (Control Plane / Messaging) ──────────────────────────────
+// ─── Subscription (Admin) ───────────────────────────────────────────────────
 import {
 	SubscriptionCreatedDataSchema,
 	SubscriptionUpdatedDataSchema,
@@ -225,17 +232,20 @@ export const PLATFORM_EVENT_SCHEMAS: ReadonlyMap<string, AnySchema> = new Map<st
 	["platform:admin:event-type:schema-deprecated", SchemaDeprecatedDataSchema],
 	["platform:admin:event-type:synced", EventTypesSyncedDataSchema],
 
-	// ─── Control Plane > Dispatch Pool ───────────────────────────────────
-	["platform:control-plane:dispatch-pool:created", DispatchPoolCreatedDataSchema],
-	["platform:control-plane:dispatch-pool:updated", DispatchPoolUpdatedDataSchema],
-	["platform:control-plane:dispatch-pool:deleted", DispatchPoolDeletedDataSchema],
-	["platform:control-plane:dispatch-pool:synced", DispatchPoolsSyncedDataSchema],
+	// ─── Admin > Connection ─────────────────────────────────────────────
+	["platform:admin:connection:created", ConnectionCreatedDataSchema],
+	["platform:admin:connection:updated", ConnectionUpdatedDataSchema],
+	["platform:admin:connection:deleted", ConnectionDeletedDataSchema],
 
-	// ─── Control Plane > Subscription ────────────────────────────────────
-	["platform:control-plane:subscription:created", SubscriptionCreatedDataSchema],
-	["platform:control-plane:subscription:updated", SubscriptionUpdatedDataSchema],
-	["platform:control-plane:subscription:deleted", SubscriptionDeletedDataSchema],
+	// ─── Admin > Dispatch Pool ───────────────────────────────────────────
+	["platform:admin:dispatch-pool:created", DispatchPoolCreatedDataSchema],
+	["platform:admin:dispatch-pool:updated", DispatchPoolUpdatedDataSchema],
+	["platform:admin:dispatch-pool:deleted", DispatchPoolDeletedDataSchema],
+	["platform:admin:dispatch-pool:synced", DispatchPoolsSyncedDataSchema],
 
-	// ─── Messaging > Subscription ────────────────────────────────────────
-	["platform:messaging:subscription:synced", SubscriptionsSyncedDataSchema],
+	// ─── Admin > Subscription ────────────────────────────────────────────
+	["platform:admin:subscription:created", SubscriptionCreatedDataSchema],
+	["platform:admin:subscription:updated", SubscriptionUpdatedDataSchema],
+	["platform:admin:subscription:deleted", SubscriptionDeletedDataSchema],
+	["platform:admin:subscription:synced", SubscriptionsSyncedDataSchema],
 ]);

@@ -4,13 +4,21 @@ import { useRouter } from "vue-router";
 import { useToast } from "primevue/usetoast";
 import { oauthClientsApi, type OAuthClient } from "@/api/oauth-clients";
 import { getErrorMessage } from "@/utils/errors";
+import { useListState } from "@/composables/useListState";
 
 const router = useRouter();
 const toast = useToast();
+
+const { searchQuery } = useListState({
+	filters: {},
+	pagination: false,
+	sort: false,
+	search: { queryKey: "q" },
+});
+
 const clients = ref<OAuthClient[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
-const searchQuery = ref("");
 
 // Delete dialog state
 const showDeleteDialog = ref(false);

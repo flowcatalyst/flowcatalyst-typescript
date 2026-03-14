@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useListState } from "@/composables/useListState";
 import {
 	getApiAdminDispatchJobs,
 	getApiAdminDispatchJobsFilterOptions,
@@ -29,22 +30,39 @@ interface FilterOption {
 	value: string;
 }
 
+const {
+	filters,
+	page,
+	pageSize,
+	sortField,
+	sortOrder,
+	searchQuery,
+	resetPage,
+	setSilent,
+} = useListState({
+	filters: {
+		clients: { type: "string[]", queryKey: "clt" },
+		applications: { type: "string[]", queryKey: "app" },
+		subdomains: { type: "string[]", queryKey: "sub" },
+		aggregates: { type: "string[]", queryKey: "agg" },
+		codes: { type: "string[]", queryKey: "code" },
+		statuses: { type: "string[]", queryKey: "st" },
+	},
+	pagination: { defaultPageSize: 100 },
+	sort: { defaultField: "createdAt", defaultOrder: "desc" },
+	search: { queryKey: "q" },
+});
+
+const selectedClients = filters.clients;
+const selectedApplications = filters.applications;
+const selectedSubdomains = filters.subdomains;
+const selectedAggregates = filters.aggregates;
+const selectedCodes = filters.codes;
+const selectedStatuses = filters.statuses;
+
 const dispatchJobs = ref<DispatchJob[]>([]);
 const loading = ref(true);
-const searchQuery = ref("");
 const totalRecords = ref(0);
-const currentPage = ref(0);
-const pageSize = ref(100);
-const sortField = ref("createdAt");
-const sortOrder = ref<"asc" | "desc">("desc");
-
-// Cascading filter selections
-const selectedClients = ref<string[]>([]);
-const selectedApplications = ref<string[]>([]);
-const selectedSubdomains = ref<string[]>([]);
-const selectedAggregates = ref<string[]>([]);
-const selectedCodes = ref<string[]>([]);
-const selectedStatuses = ref<string[]>([]);
 
 // Filter options
 const clientOptions = ref<FilterOption[]>([]);
@@ -110,7 +128,7 @@ async function loadDispatchJobs() {
 	try {
 		const response = await getApiAdminDispatchJobs({
 			query: {
-				page: String(currentPage.value),
+				page: String(page.value),
 				size: String(pageSize.value),
 				sortField: sortField.value,
 				sortOrder: sortOrder.value,
@@ -157,7 +175,7 @@ async function loadDispatchJobs() {
 }
 
 async function onPage(event: { page: number; rows: number }) {
-	currentPage.value = event.page;
+	page.value = event.page;
 	pageSize.value = event.rows;
 	await loadDispatchJobs();
 }
@@ -165,7 +183,7 @@ async function onPage(event: { page: number; rows: number }) {
 async function onSort(event: { sortField?: string | ((item: unknown) => string); sortOrder?: number | null }) {
 	sortField.value = typeof event.sortField === "string" ? event.sortField : "createdAt";
 	sortOrder.value = (event.sortOrder ?? -1) === 1 ? "asc" : "desc";
-	currentPage.value = 0;
+	resetPage();
 	await loadDispatchJobs();
 }
 
@@ -180,24 +198,23 @@ async function onFilterChange(
 	if (isUpdating.value) return;
 	isUpdating.value = true;
 	try {
-		// Clear downstream selections based on which filter changed
 		if (clearDownstream === "applications") {
-			selectedApplications.value = [];
-			selectedSubdomains.value = [];
-			selectedAggregates.value = [];
-			selectedCodes.value = [];
+			setSilent("applications", []);
+			setSilent("subdomains", []);
+			setSilent("aggregates", []);
+			setSilent("codes", []);
 		} else if (clearDownstream === "subdomains") {
-			selectedSubdomains.value = [];
-			selectedAggregates.value = [];
-			selectedCodes.value = [];
+			setSilent("subdomains", []);
+			setSilent("aggregates", []);
+			setSilent("codes", []);
 		} else if (clearDownstream === "aggregates") {
-			selectedAggregates.value = [];
-			selectedCodes.value = [];
+			setSilent("aggregates", []);
+			setSilent("codes", []);
 		} else if (clearDownstream === "codes") {
-			selectedCodes.value = [];
+			setSilent("codes", []);
 		}
 
-		currentPage.value = 0;
+		resetPage();
 		await loadFilterOptions();
 		await loadDispatchJobs();
 	} finally {
@@ -206,12 +223,12 @@ async function onFilterChange(
 }
 
 async function onStatusChange() {
-	currentPage.value = 0;
+	resetPage();
 	await loadDispatchJobs();
 }
 
 async function onSearchChange() {
-	currentPage.value = 0;
+	resetPage();
 	await loadDispatchJobs();
 }
 

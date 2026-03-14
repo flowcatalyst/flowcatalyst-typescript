@@ -2,17 +2,28 @@
 import { ref, computed, onMounted } from "vue";
 import { useToast } from "primevue/usetoast";
 import { permissionsApi, type Permission } from "@/api/permissions";
+import { useListState } from "@/composables/useListState";
 
 const toast = useToast();
 
+const { filters, searchQuery, hasActiveFilters, clearFilters: clearListFilters } = useListState({
+	filters: {
+		selectedApplication: { type: "string", queryKey: "app" },
+		selectedContext: { type: "string", queryKey: "ctx" },
+		selectedAction: { type: "string", queryKey: "action" },
+	},
+	pagination: false,
+	sort: false,
+	search: { queryKey: "q" },
+});
+
+// Alias filter refs for template compatibility
+const selectedApplication = filters.selectedApplication;
+const selectedContext = filters.selectedContext;
+const selectedAction = filters.selectedAction;
+
 const permissions = ref<Permission[]>([]);
 const loading = ref(true);
-
-// Filters
-const searchQuery = ref("");
-const selectedApplication = ref<string | null>(null);
-const selectedContext = ref<string | null>(null);
-const selectedAction = ref<string | null>(null);
 
 // Compute unique filter options
 const applicationOptions = computed(() => {
@@ -38,15 +49,6 @@ const actionOptions = computed(() => [
 	{ label: "delete", value: "delete" },
 	{ label: "retry", value: "retry" },
 ]);
-
-const hasActiveFilters = computed(() => {
-	return (
-		searchQuery.value ||
-		selectedApplication.value ||
-		selectedContext.value ||
-		selectedAction.value
-	);
-});
 
 const filteredPermissions = computed(() => {
 	let result = permissions.value;
@@ -97,10 +99,7 @@ async function loadPermissions() {
 }
 
 function clearFilters() {
-	searchQuery.value = "";
-	selectedApplication.value = null;
-	selectedContext.value = null;
-	selectedAction.value = null;
+	clearListFilters();
 }
 
 function getActionSeverity(action: string) {

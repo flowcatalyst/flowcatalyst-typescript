@@ -1,0 +1,1 @@
+ALTER TABLE "iam_client_access_grants" ALTER COLUMN "granted_at" SET DATA TYPE timestamp with time zone;

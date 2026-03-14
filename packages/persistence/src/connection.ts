@@ -5,7 +5,7 @@
  * Supports connection pooling and configuration options.
  */
 
-import { drizzle } from "drizzle-orm/postgres-js";
+import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
 /**
@@ -29,7 +29,7 @@ export interface DatabaseConfig {
  */
 export interface Database {
 	/** DrizzleORM database instance */
-	readonly db: ReturnType<typeof drizzle>;
+	readonly db: PostgresJsDatabase;
 	/** Underlying postgres.js client for raw queries */
 	readonly client: postgres.Sql;
 	/** Close all connections */
@@ -125,7 +125,7 @@ export function createRefreshableDatabase(
 	// Mutable holder — swapped on refresh
 	const holder: {
 		client: postgres.Sql;
-		db: ReturnType<typeof drizzle>;
+		db: PostgresJsDatabase;
 	} = (() => {
 		const client = postgres(config.url, poolOptions);
 		return { client, db: drizzle({ client }) };
@@ -146,7 +146,7 @@ export function createRefreshableDatabase(
 
 	// Proxy for the drizzle db instance
 	const dbProxy = new Proxy(
-		{} as ReturnType<typeof drizzle>,
+		{} as PostgresJsDatabase,
 		{
 			get(_target, prop) {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any

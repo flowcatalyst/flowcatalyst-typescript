@@ -4,16 +4,28 @@ import { useRouter } from "vue-router";
 import {
 	applicationsApi,
 	type Application,
-	type ApplicationType,
 } from "@/api/applications";
+import { useListState } from "@/composables/useListState";
 
 const router = useRouter();
+
+const { filters, searchQuery } = useListState({
+	filters: {
+		typeFilter: { type: "string", queryKey: "type", default: "ALL" },
+		activeFilter: { type: "string", queryKey: "active", default: "ALL" },
+	},
+	pagination: false,
+	sort: false,
+	search: { queryKey: "q" },
+});
+
+// Alias filter refs for template compatibility
+const typeFilter = filters.typeFilter;
+const activeFilter = filters.activeFilter;
+
 const applications = ref<Application[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
-const searchQuery = ref("");
-const typeFilter = ref<ApplicationType | "ALL">("ALL");
-const activeFilter = ref<"ALL" | "ACTIVE" | "INACTIVE">("ALL");
 
 const typeOptions = [
 	{ label: "All Types", value: "ALL" },

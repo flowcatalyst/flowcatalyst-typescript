@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { apiFetch } from "@/api/client";
+import { useListState } from "@/composables/useListState";
 
 interface RawEvent {
 	id: string;
@@ -18,11 +19,19 @@ interface RawEvent {
 	clientId?: string;
 }
 
+const { page, pageSize } = useListState({
+	filters: {},
+	pagination: { defaultPageSize: 20 },
+	sort: false,
+	search: false,
+});
+
+// Alias for template compatibility
+const currentPage = page;
+
 const events = ref<RawEvent[]>([]);
 const loading = ref(true);
 const totalRecords = ref(0);
-const currentPage = ref(0);
-const pageSize = ref(20);
 
 // Detail dialog
 const selectedEvent = ref<RawEvent | null>(null);

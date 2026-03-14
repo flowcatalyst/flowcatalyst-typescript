@@ -241,6 +241,17 @@ export async function startPlatform(
 		await fastify.register(fastifyStatic, {
 			root: config.frontendDir,
 			wildcard: false,
+			maxAge: 0,
+		});
+
+		// Set cache headers after all other hooks have run
+		fastify.addHook("onSend", async (request, reply) => {
+			const url = request.url;
+			if (url.startsWith("/assets/")) {
+				reply.header("Cache-Control", "public, max-age=31536000, immutable");
+			} else if (url.endsWith(".html") || url === "/") {
+				reply.header("Cache-Control", "no-cache");
+			}
 		});
 
 		// SPA catch-all: serve index.html for navigation paths not matched by API routes
