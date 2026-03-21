@@ -399,6 +399,10 @@ export class EmbeddedQueueConsumer implements QueueConsumer {
 	/**
 	 * Get queue metrics
 	 */
+	async refreshMetrics(): Promise<void> {
+		this.updateMetrics();
+	}
+
 	getQueueMetrics(): QueueMetrics {
 		return { ...this.metrics };
 	}

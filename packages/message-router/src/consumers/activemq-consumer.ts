@@ -425,6 +425,10 @@ export class ActiveMqConsumer implements QueueConsumer {
 		);
 	}
 
+	async refreshMetrics(): Promise<void> {
+		this.updateMetrics();
+	}
+
 	getQueueMetrics(): QueueMetrics {
 		return { ...this.metrics };
 	}

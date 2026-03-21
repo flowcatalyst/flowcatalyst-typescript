@@ -867,7 +867,12 @@
             this.showHealthModal();
           });
 
-          document.getElementById('refreshBtn').addEventListener('click', () => {
+          document.getElementById('refreshBtn').addEventListener('click', async () => {
+            // Force brokers to refresh their metrics before loading data
+            try {
+              const headers = authManager.getAuthHeaders();
+              await fetch('/monitoring/queue-stats/refresh', { method: 'POST', headers });
+            } catch { /* fall through to loadData */ }
             this.loadData();
           });
 

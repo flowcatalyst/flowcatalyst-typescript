@@ -50,6 +50,22 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 		},
 	);
 
+	// POST /monitoring/queue-stats/refresh
+	fastify.post(
+		"/queue-stats/refresh",
+		{
+			schema: {
+				tags: ["Monitoring"],
+				summary: "Force-refresh queue metrics from brokers, then return stats",
+				response: { 200: Type.Record(Type.String(), QueueStatsSchema) },
+			},
+		},
+		async (request) => {
+			await request.services.queueManager.refreshQueueMetrics();
+			return request.services.queueManager.getQueueStats();
+		},
+	);
+
 	// GET /monitoring/pool-stats
 	fastify.get(
 		"/pool-stats",

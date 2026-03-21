@@ -961,7 +961,7 @@ export class QueueManagerService {
 			maxMessages: 10,
 			visibilityTimeout: 30,
 			connections,
-			metricsPollIntervalMs: 300_000, // 5 minutes
+			metricsPollIntervalMs: Math.min(env.SYNC_INTERVAL_MS, 60_000),
 		};
 
 		return new SqsConsumer(
@@ -1463,6 +1463,21 @@ export class QueueManagerService {
 				rateLimitPerMinute: null,
 			})),
 		};
+	}
+
+	/**
+	 * Force all consumers to refresh their metrics from the broker.
+	 * Called when the dashboard user clicks Refresh.
+	 */
+	async refreshQueueMetrics(): Promise<void> {
+		const refreshPromises: Promise<void>[] = [];
+		for (const consumer of this.consumers.values()) {
+			refreshPromises.push(consumer.refreshMetrics());
+		}
+		if (this.embeddedQueue) {
+			refreshPromises.push(this.embeddedQueue.refreshConsumerMetrics());
+		}
+		await Promise.allSettled(refreshPromises);
 	}
 
 	/**

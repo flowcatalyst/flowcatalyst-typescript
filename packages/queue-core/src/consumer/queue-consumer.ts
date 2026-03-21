@@ -42,6 +42,9 @@ export interface QueueConsumer {
 	/** Get queue metrics (pending messages, in-flight count) */
 	getQueueMetrics(): QueueMetrics;
 
+	/** Force an immediate metrics refresh (e.g. when the dashboard user clicks Refresh) */
+	refreshMetrics(): Promise<void>;
+
 	/** Create a new consumer with the same configuration but a different handler */
 	recreate(handler: StandardBatchHandler): QueueConsumer;
 }

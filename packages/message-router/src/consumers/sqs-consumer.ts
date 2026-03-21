@@ -63,10 +63,12 @@ export class SqsConsumer implements QueueConsumer {
 	// Health check timeout (60 seconds)
 	private static readonly POLL_TIMEOUT_MS = 60_000;
 
-	// Adaptive delays (matching Java SqsQueueConsumer)
-	// Empty batch: 0ms — the 20s long poll already waited
-	private static readonly EMPTY_BATCH_DELAY_MS = 0;
-	private static readonly PARTIAL_BATCH_DELAY_MS = 100;
+	// Adaptive delays
+	// Empty batch: 1s — long poll already waited up to 20s, brief pause before re-poll
+	// Partial batch (< maxMessages): 500ms — queue is draining
+	// Full batch: 0ms — more messages likely waiting, re-poll immediately
+	private static readonly EMPTY_BATCH_DELAY_MS = 1000;
+	private static readonly PARTIAL_BATCH_DELAY_MS = 500;
 
 	constructor(
 		config: SqsConsumerConfig,
@@ -181,6 +183,34 @@ export class SqsConsumer implements QueueConsumer {
 			pendingMessages: this.pendingMessages,
 			messagesNotVisible: this.messagesNotVisible,
 		};
+	}
+
+	/**
+	 * Force an immediate metrics refresh from SQS
+	 */
+	async refreshMetrics(): Promise<void> {
+		if (!this.running) return;
+		try {
+			const command = new GetQueueAttributesCommand({
+				QueueUrl: this.config.queueUrl,
+				AttributeNames: [
+					"ApproximateNumberOfMessages",
+					"ApproximateNumberOfMessagesNotVisible",
+				],
+			});
+			const response = await this.client.send(command);
+			const attrs = response.Attributes || {};
+			this.pendingMessages = Number.parseInt(
+				attrs["ApproximateNumberOfMessages"] || "0",
+				10,
+			);
+			this.messagesNotVisible = Number.parseInt(
+				attrs["ApproximateNumberOfMessagesNotVisible"] || "0",
+				10,
+			);
+		} catch (error) {
+			this.logger.error({ err: error }, "Error refreshing queue metrics");
+		}
 	}
 
 	/**

@@ -445,6 +445,10 @@ export class NatsConsumer implements QueueConsumer {
 		return new NatsConsumer(this.config, handler, this.logger, this.instanceId);
 	}
 
+	async refreshMetrics(): Promise<void> {
+		await this.updateMetrics();
+	}
+
 	getQueueMetrics(): QueueMetrics {
 		return { ...this.metrics };
 	}

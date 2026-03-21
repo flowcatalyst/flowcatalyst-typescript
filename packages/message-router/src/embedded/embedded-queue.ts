@@ -175,6 +175,13 @@ export class EmbeddedQueue {
 	}
 
 	/**
+	 * Force an immediate consumer metrics refresh
+	 */
+	async refreshConsumerMetrics(): Promise<void> {
+		await this.consumer?.refreshMetrics();
+	}
+
+	/**
 	 * Get consumer health
 	 */
 	getConsumerHealth() {
