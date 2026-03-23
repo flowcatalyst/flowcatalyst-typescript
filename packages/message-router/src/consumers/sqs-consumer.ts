@@ -53,8 +53,12 @@ export class SqsConsumer implements QueueConsumer {
 	private metricsTask: Promise<void> | null = null;
 	private abortController = new AbortController();
 
-	// Track pending deletes for expired receipt handles
-	private readonly pendingDeleteSqsMessageIds = new Map<string, string>();
+	// Track pending deletes for expired receipt handles.
+	// Each entry has a timestamp so we can expire after 1 minute (avoid blocking deliberate resends).
+	private readonly pendingDeleteSqsMessageIds = new Map<
+		string,
+		{ messageId: string; addedAt: number }
+	>();
 
 	// Queue metrics
 	private pendingMessages = 0;
@@ -322,14 +326,20 @@ export class SqsConsumer implements QueueConsumer {
 			}
 
 			// Check for pending deletes (messages that were processed but delete failed)
-			if (this.pendingDeleteSqsMessageIds.has(sqsMsg.MessageId)) {
-				this.logger.info(
-					{ sqsMessageId: sqsMsg.MessageId },
-					"Found pending delete - deleting message",
-				);
-				await this.deleteMessage(sqsMsg.ReceiptHandle);
+			const pendingEntry = this.pendingDeleteSqsMessageIds.get(sqsMsg.MessageId);
+			if (pendingEntry) {
+				if (Date.now() - pendingEntry.addedAt < 60_000) {
+					// Within 1 minute — this is an SQS redelivery, delete it
+					this.logger.info(
+						{ sqsMessageId: sqsMsg.MessageId },
+						"Found pending delete - deleting message",
+					);
+					await this.deleteMessage(sqsMsg.ReceiptHandle);
+					this.pendingDeleteSqsMessageIds.delete(sqsMsg.MessageId);
+					continue;
+				}
+				// Older than 1 minute — could be a deliberate resend, let it through
 				this.pendingDeleteSqsMessageIds.delete(sqsMsg.MessageId);
-				continue;
 			}
 
 			// Parse message body
@@ -461,7 +471,10 @@ export class SqsConsumer implements QueueConsumer {
 					{ messageId: pointer.messageId, sqsMessageId },
 					"Receipt handle expired - adding to pending deletes",
 				);
-				this.pendingDeleteSqsMessageIds.set(sqsMessageId, pointer.messageId);
+				this.pendingDeleteSqsMessageIds.set(sqsMessageId, {
+					messageId: pointer.messageId,
+					addedAt: Date.now(),
+				});
 			} else {
 				this.logger.error(
 					{ err: error, messageId: pointer.messageId },

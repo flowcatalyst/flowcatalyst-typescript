@@ -1019,15 +1019,14 @@ export class QueueManagerService {
 					const newHandle = callback.getReceiptHandle();
 					if (newHandle) {
 						storedCallback.updateReceiptHandle(newHandle);
-						this.logger.info(
+						this.logger.debug(
 							{ brokerMessageId: message.brokerMessageId },
-							"Physical redelivery detected - swapped receipt handle on in-flight message",
+							"Physical redelivery detected - swapped receipt handle, no SQS action needed",
 						);
 					}
 				}
-				if (callback) {
-					await callback.nack();
-				}
+				// No nack/defer — message stays in SQS with natural visibility timeout.
+				// The receipt handle swap ensures the eventual ACK uses the valid handle.
 				continue;
 			}
 
