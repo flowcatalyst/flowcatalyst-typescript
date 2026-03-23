@@ -85,7 +85,7 @@ export function createFindAccount(
 		id: string,
 		_token?: unknown,
 	): Promise<Account | undefined> {
-		// Load principal from repository
+		// Load principal from repository to verify existence and active status
 		const principal = await principalRepository.findById(id);
 
 		if (!principal) {
@@ -97,7 +97,12 @@ export function createFindAccount(
 			return undefined;
 		}
 
-		// Return an Account object
+		// Return an Account object.
+		// IMPORTANT: claims() must reload the principal from the DB each time
+		// it is called, NOT use the captured `principal` from findAccount().
+		// oidc-provider may cache the Account object across token issuances
+		// (e.g., refresh token rotation, session reuse), so stale data in the
+		// closure would produce tokens with outdated roles/clients/applications.
 		return {
 			accountId: principal.id,
 
@@ -115,7 +120,13 @@ export function createFindAccount(
 				_claims: { [key: string]: ClaimsParameterMember | null },
 				rejected: string[],
 			): Promise<AccountClaims> {
-				const allClaims = await principalToClaims(principal, clientRepository);
+				// Always load fresh principal data to avoid stale claims
+				const freshPrincipal = await principalRepository.findById(id);
+				if (!freshPrincipal) {
+					return { sub: id };
+				}
+
+				const allClaims = await principalToClaims(freshPrincipal, clientRepository);
 
 				// Filter claims based on requested scopes
 				const requestedScopes = scope.split(" ");
