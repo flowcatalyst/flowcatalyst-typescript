@@ -300,6 +300,19 @@ export async function registerOidcFederationRoutes(
 				return errorRedirect(reply, deps, "No email claim in ID token");
 			}
 
+			// Reject Entra external/guest users whose UPN contains #EXT#
+			// (e.g. "user_domain.co.za#EXT#@tenant.onmicrosoft.com").
+			// Guest accounts are managed by a different organization and bypass
+			// our email domain trust boundary. Users should sign in via their
+			// home organization's IDP instead.
+			if (email.includes("#ext#")) {
+				return errorRedirect(
+					reply,
+					deps,
+					"External guest accounts are not supported. Please sign in with your home organization.",
+				);
+			}
+
 			const name = claims["name"] as string | undefined;
 			const subject = claims.sub;
 			const tenantId = claims["tid"] as string | undefined;
