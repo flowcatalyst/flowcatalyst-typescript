@@ -22,6 +22,7 @@ import type {
 } from "@flowcatalyst/queue-core";
 import type { MessageBatch, QueueMessage } from "@flowcatalyst/contracts";
 import { randomUUID } from "node:crypto";
+import { sleep } from "@flowcatalyst/queue-core";
 import { parseMessagePointer } from "./parse-pointer.js";
 
 /**
@@ -83,6 +84,8 @@ export class NatsConsumer implements QueueConsumer {
 	private jetStream: JetStreamClient | null = null;
 	private jetStreamManager: JetStreamManager | null = null;
 	private consumer: Consumer | null = null;
+	private consumeLoopPromise: Promise<void> | null = null;
+	private metricsTimer: ReturnType<typeof setTimeout> | null = null;
 
 	private metrics = {
 		pendingMessages: 0,
@@ -90,6 +93,7 @@ export class NatsConsumer implements QueueConsumer {
 	};
 
 	// Track sequences that failed to ack (for deduplication)
+	private static readonly MAX_PENDING_ACK_SEQUENCES = 10_000;
 	private readonly pendingAckSequences = new Set<number>();
 
 	constructor(
@@ -165,7 +169,7 @@ export class NatsConsumer implements QueueConsumer {
 			this.running = true;
 
 			// Start consumption loop
-			this.consumeLoop();
+			this.consumeLoopPromise = this.consumeLoop();
 
 			// Start metrics polling
 			this.startMetricsPolling();
@@ -183,6 +187,18 @@ export class NatsConsumer implements QueueConsumer {
 	async stop(): Promise<void> {
 		this.logger.info("Stopping NATS JetStream consumer");
 		this.running = false;
+
+		// Cancel metrics polling
+		if (this.metricsTimer) {
+			clearTimeout(this.metricsTimer);
+			this.metricsTimer = null;
+		}
+
+		// Wait for consume loop to finish current iteration
+		if (this.consumeLoopPromise) {
+			await this.consumeLoopPromise;
+			this.consumeLoopPromise = null;
+		}
 
 		// Close connection
 		if (this.connection) {
@@ -274,6 +290,20 @@ export class NatsConsumer implements QueueConsumer {
 
 		while (this.running && this.consumer) {
 			try {
+				// Trim pendingAckSequences to prevent unbounded growth
+				if (this.pendingAckSequences.size > NatsConsumer.MAX_PENDING_ACK_SEQUENCES) {
+					const sorted = [...this.pendingAckSequences].sort((a, b) => a - b);
+					const trimTo = Math.floor(NatsConsumer.MAX_PENDING_ACK_SEQUENCES * 0.8);
+					const toRemove = sorted.slice(0, sorted.length - trimTo);
+					for (const seq of toRemove) {
+						this.pendingAckSequences.delete(seq);
+					}
+					this.logger.warn(
+						{ removed: toRemove.length, remaining: this.pendingAckSequences.size },
+						"Trimmed pendingAckSequences to prevent unbounded growth",
+					);
+				}
+
 				this.lastPollTimeMs = Date.now();
 
 				// Fetch batch of messages
@@ -389,10 +419,10 @@ export class NatsConsumer implements QueueConsumer {
 			if (!this.running) return;
 
 			await this.updateMetrics();
-			setTimeout(poll, this.config.metricsPollIntervalMs);
+			this.metricsTimer = setTimeout(poll, this.config.metricsPollIntervalMs);
 		};
 
-		setTimeout(poll, this.config.metricsPollIntervalMs);
+		this.metricsTimer = setTimeout(poll, this.config.metricsPollIntervalMs);
 	}
 
 	/**
@@ -482,6 +512,3 @@ export class NatsConsumer implements QueueConsumer {
 	}
 }
 
-function sleep(ms: number): Promise<void> {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}

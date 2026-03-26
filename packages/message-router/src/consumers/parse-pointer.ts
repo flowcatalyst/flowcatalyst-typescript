@@ -1,4 +1,4 @@
-import type { MessagePointer } from "@flowcatalyst/contracts";
+import type { MessagePointer, DispatchMode } from "@flowcatalyst/contracts";
 
 /**
  * Parse a raw message body (string or object) into a standardized MessagePointer.
@@ -37,5 +37,6 @@ export function parseMessagePointer(
 		authToken: parsed["authToken"] as string | undefined,
 		payload: parsed["payload"] ?? parsed,
 		highPriority: parsed["highPriority"] === true,
+		dispatchMode: (parsed["dispatchMode"] as DispatchMode) || undefined,
 	};
 }

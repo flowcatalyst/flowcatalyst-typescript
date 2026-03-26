@@ -9,6 +9,7 @@ import type {
 } from "@flowcatalyst/queue-core";
 import type { MessageBatch, QueueMessage } from "@flowcatalyst/contracts";
 import { randomUUID } from "node:crypto";
+import { sleep } from "@flowcatalyst/queue-core";
 import { parseMessagePointer } from "../consumers/parse-pointer.js";
 
 /**
@@ -52,6 +53,8 @@ export class EmbeddedQueueConsumer implements QueueConsumer {
 
 	private running = false;
 	private lastPollTimeMs = 0;
+	private consumeLoopPromise: Promise<void> | null = null;
+	private metricsTimer: ReturnType<typeof setTimeout> | null = null;
 	private metrics = {
 		pendingMessages: 0,
 		messagesNotVisible: 0,
@@ -93,7 +96,7 @@ export class EmbeddedQueueConsumer implements QueueConsumer {
 		this.startMetricsPolling();
 
 		// Start consumption loop
-		this.consumeLoop();
+		this.consumeLoopPromise = this.consumeLoop();
 	}
 
 	/**
@@ -102,6 +105,18 @@ export class EmbeddedQueueConsumer implements QueueConsumer {
 	async stop(): Promise<void> {
 		this.logger.info("Stopping embedded queue consumer");
 		this.running = false;
+
+		// Cancel metrics polling
+		if (this.metricsTimer) {
+			clearTimeout(this.metricsTimer);
+			this.metricsTimer = null;
+		}
+
+		// Wait for consume loop to finish current iteration
+		if (this.consumeLoopPromise) {
+			await this.consumeLoopPromise;
+			this.consumeLoopPromise = null;
+		}
 	}
 
 	/**
@@ -176,122 +191,95 @@ export class EmbeddedQueueConsumer implements QueueConsumer {
 	}
 
 	/**
-	 * Dequeue a batch of messages with FIFO ordering per message group
+	 * Dequeue a batch of messages with FIFO ordering per message group.
+	 * Uses a single query with ROW_NUMBER() to select at most one message per group,
+	 * then a single UPDATE to claim all selected messages.
 	 */
 	private dequeueBatch(): DequeuedMessage[] {
 		const now = Date.now();
 		const visibleAt = now + this.config.visibilityTimeoutSeconds * 1000;
-		const messages: DequeuedMessage[] = [];
 
-		// Process up to maxMessages, respecting message group ordering
-		const processedGroups = new Set<string>();
-
-		for (let i = 0; i < this.config.maxMessages; i++) {
-			const message = this.dequeueOne(now, visibleAt, processedGroups);
-			if (!message) break;
-
-			messages.push(message);
-			processedGroups.add(message.messageGroupId);
-		}
-
-		return messages;
-	}
-
-	/**
-	 * Dequeue a single message using FIFO ordering
-	 * Uses CTE to find the oldest message from the oldest available group
-	 */
-	private dequeueOne(
-		now: number,
-		visibleAt: number,
-		excludeGroups: Set<string>,
-	): DequeuedMessage | null {
-		const newReceiptHandle = randomUUID();
-
-		// Build exclusion clause for already-processed groups in this batch
-		const excludeClause =
-			excludeGroups.size > 0
-				? `AND message_group_id NOT IN (${Array.from(excludeGroups)
-						.map(() => "?")
-						.join(",")})`
-				: "";
-		const excludeParams = Array.from(excludeGroups);
-
-		// Find and update the next available message using FIFO ordering
-		// This query finds the oldest message from the oldest available message group
+		// Select the oldest visible message from each group, limited to maxMessages
 		const selectSql = `
-			WITH next_group AS (
-				SELECT message_group_id
+			WITH ranked AS (
+				SELECT id, message_id, message_group_id, message_json, receipt_handle, receive_count,
+					ROW_NUMBER() OVER (PARTITION BY message_group_id ORDER BY id) AS rn
 				FROM queue_messages
 				WHERE visible_at <= ?
-				${excludeClause}
-				ORDER BY id
-				LIMIT 1
 			)
 			SELECT id, message_id, message_group_id, message_json, receipt_handle, receive_count
-			FROM queue_messages
-			WHERE message_group_id IN (SELECT message_group_id FROM next_group)
-				AND visible_at <= ?
+			FROM ranked
+			WHERE rn = 1
 			ORDER BY id
-			LIMIT 1
+			LIMIT ?
 		`;
 
 		try {
-			// First, find the message to update
-			const selectResult = this.db.exec(selectSql, [
-				now,
-				...excludeParams,
-				now,
-			]);
+			const selectResult = this.db.exec(selectSql, [now, this.config.maxMessages]);
 
 			if (
 				selectResult.length === 0 ||
 				!selectResult[0] ||
 				selectResult[0].values.length === 0
 			) {
-				return null;
+				return [];
 			}
 
-			const row = selectResult[0].values[0];
-			if (!row) {
-				return null;
+			const rows = selectResult[0].values;
+			const messages: DequeuedMessage[] = [];
+			const receiptHandles = new Map<number, string>();
+
+			for (const row of rows) {
+				if (!row) continue;
+				const id = Number(row[0]);
+				const newReceiptHandle = randomUUID();
+				receiptHandles.set(id, newReceiptHandle);
+
+				const messageJson = String(row[3]);
+				let payload: unknown;
+				try {
+					payload = JSON.parse(messageJson);
+				} catch {
+					payload = messageJson;
+				}
+
+				messages.push({
+					id,
+					messageId: String(row[1]),
+					messageGroupId: String(row[2]),
+					receiptHandle: newReceiptHandle,
+					receiveCount: Number(row[5]) + 1,
+					payload,
+				});
 			}
-			const id = Number(row[0]);
-			const messageId = String(row[1]);
-			const messageGroupId = String(row[2]);
-			const messageJson = String(row[3]);
-			const receiveCount = Number(row[5]);
 
-			// Update the message with new visibility and receipt handle
-			this.db.run(
-				`UPDATE queue_messages
-				SET visible_at = ?,
-					receipt_handle = ?,
-					receive_count = receive_count + 1,
-					first_received_at = COALESCE(first_received_at, ?)
-				WHERE id = ?`,
-				[visibleAt, newReceiptHandle, now, id],
-			);
+			if (messages.length > 0) {
+				// Build a single UPDATE with CASE for per-row receipt handles
+				const ids = messages.map((m) => m.id);
+				const caseClauses = ids
+					.map(() => "WHEN ? THEN ?")
+					.join(" ");
+				const caseParams: (number | string)[] = [];
+				for (const msg of messages) {
+					caseParams.push(msg.id, receiptHandles.get(msg.id)!);
+				}
+				const placeholders = ids.map(() => "?").join(",");
 
-			// Parse payload
-			let payload: unknown;
-			try {
-				payload = JSON.parse(messageJson);
-			} catch {
-				payload = messageJson;
+				this.db.run(
+					`UPDATE queue_messages
+					SET visible_at = ?,
+						receipt_handle = CASE id ${caseClauses} END,
+						receive_count = receive_count + 1,
+						first_received_at = COALESCE(first_received_at, ?)
+					WHERE id IN (${placeholders})`,
+					[visibleAt, ...caseParams, now, ...ids],
+				);
 			}
 
-			return {
-				id,
-				messageId,
-				messageGroupId,
-				receiptHandle: newReceiptHandle,
-				receiveCount: receiveCount + 1,
-				payload,
-			};
+			return messages;
 		} catch (error) {
-			this.logger.error({ err: error }, "Error dequeuing message");
-			return null;
+			this.logger.error({ err: error }, "Error dequeuing batch");
+			return [];
 		}
 	}
 
@@ -342,10 +330,10 @@ export class EmbeddedQueueConsumer implements QueueConsumer {
 			if (!this.running) return;
 
 			this.updateMetrics();
-			setTimeout(poll, this.config.metricsPollIntervalMs);
+			this.metricsTimer = setTimeout(poll, this.config.metricsPollIntervalMs);
 		};
 
-		setTimeout(poll, this.config.metricsPollIntervalMs);
+		this.metricsTimer = setTimeout(poll, this.config.metricsPollIntervalMs);
 	}
 
 	/**
@@ -445,6 +433,3 @@ export class EmbeddedQueueConsumer implements QueueConsumer {
 	}
 }
 
-function sleep(ms: number): Promise<void> {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}

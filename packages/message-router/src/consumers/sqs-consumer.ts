@@ -2,6 +2,7 @@ import {
 	SQSClient,
 	ReceiveMessageCommand,
 	DeleteMessageCommand,
+	DeleteMessageBatchCommand,
 	ChangeMessageVisibilityCommand,
 	GetQueueAttributesCommand,
 	type Message,
@@ -20,6 +21,7 @@ import type {
 	QueueMessage,
 } from "@flowcatalyst/contracts";
 import { randomUUID } from "node:crypto";
+import { sleep } from "@flowcatalyst/queue-core";
 import { env } from "../env.js";
 
 /**
@@ -317,6 +319,9 @@ export class SqsConsumer implements QueueConsumer {
 		const callbacks = new Map<string, MessageCallbackFns>();
 		const seenMessageIds = new Set<string>();
 
+		// Collect skip-path receipt handles for batch delete
+		const skipDeletes: Array<{ id: string; receiptHandle: string }> = [];
+
 		for (const sqsMsg of sqsMessages) {
 			if (!sqsMsg.Body || !sqsMsg.ReceiptHandle || !sqsMsg.MessageId) {
 				this.logger.warn(
@@ -334,7 +339,7 @@ export class SqsConsumer implements QueueConsumer {
 						{ sqsMessageId: sqsMsg.MessageId },
 						"Found pending delete - deleting message",
 					);
-					await this.deleteMessage(sqsMsg.ReceiptHandle);
+					skipDeletes.push({ id: sqsMsg.MessageId, receiptHandle: sqsMsg.ReceiptHandle });
 					this.pendingDeleteSqsMessageIds.delete(sqsMsg.MessageId);
 					continue;
 				}
@@ -358,13 +363,14 @@ export class SqsConsumer implements QueueConsumer {
 					callbackUrl: parsed.mediationTarget || parsed.callbackUrl,
 					createdAt: parsed.createdAt,
 					highPriority: parsed.highPriority === true,
+					dispatchMode: parsed.dispatchMode || undefined,
 				};
 			} catch (error) {
 				this.logger.warn(
 					{ err: error, sqsMessageId: sqsMsg.MessageId },
 					"Failed to parse message body - ACKing to prevent infinite retry",
 				);
-				await this.deleteMessage(sqsMsg.ReceiptHandle);
+				skipDeletes.push({ id: sqsMsg.MessageId, receiptHandle: sqsMsg.ReceiptHandle });
 				continue;
 			}
 
@@ -374,7 +380,7 @@ export class SqsConsumer implements QueueConsumer {
 					{ messageId: pointer.messageId },
 					"Duplicate message in batch - ACKing",
 				);
-				await this.deleteMessage(sqsMsg.ReceiptHandle);
+				skipDeletes.push({ id: sqsMsg.MessageId, receiptHandle: sqsMsg.ReceiptHandle });
 				continue;
 			}
 			seenMessageIds.add(pointer.messageId);
@@ -419,6 +425,11 @@ export class SqsConsumer implements QueueConsumer {
 
 			messages.push(queueMessage);
 			callbacks.set(sqsMsg.MessageId, callback);
+		}
+
+		// Flush skip-path deletes as a batch
+		if (skipDeletes.length > 0) {
+			await this.batchDeleteMessages(skipDeletes);
 		}
 
 		if (messages.length === 0) {
@@ -493,6 +504,35 @@ export class SqsConsumer implements QueueConsumer {
 			ReceiptHandle: receiptHandle,
 		});
 		await this.client.send(command);
+	}
+
+	/**
+	 * Batch delete messages from the queue (up to 10 per API call)
+	 */
+	private async batchDeleteMessages(
+		entries: Array<{ id: string; receiptHandle: string }>,
+	): Promise<void> {
+		for (let i = 0; i < entries.length; i += 10) {
+			const batch = entries.slice(i, i + 10);
+			const command = new DeleteMessageBatchCommand({
+				QueueUrl: this.config.queueUrl,
+				Entries: batch.map((entry) => ({
+					Id: entry.id,
+					ReceiptHandle: entry.receiptHandle,
+				})),
+			});
+			try {
+				const result = await this.client.send(command);
+				if (result.Failed && result.Failed.length > 0) {
+					this.logger.warn(
+						{ failed: result.Failed.map((f) => f.Id) },
+						"Some messages failed to delete in batch",
+					);
+				}
+			} catch (error) {
+				this.logger.error({ err: error }, "Error in batch delete");
+			}
+		}
 	}
 
 	/**
@@ -581,16 +621,3 @@ export class SqsConsumer implements QueueConsumer {
 	}
 }
 
-function sleep(ms: number, signal?: AbortSignal): Promise<void> {
-	return new Promise((resolve) => {
-		if (signal?.aborted) {
-			resolve();
-			return;
-		}
-		const timer = setTimeout(resolve, ms);
-		signal?.addEventListener("abort", () => {
-			clearTimeout(timer);
-			resolve();
-		}, { once: true });
-	});
-}

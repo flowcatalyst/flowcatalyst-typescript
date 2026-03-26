@@ -23,7 +23,7 @@ export interface MessageCallback {
  * Uses per-message-group handlers for FIFO ordering within groups
  */
 export class ProcessPool {
-	private readonly config: PoolConfig;
+	private config: PoolConfig;
 	private readonly logger: Logger;
 	private readonly mediator: HttpMediator;
 
@@ -380,6 +380,16 @@ export class ProcessPool {
 				"Concurrency updated in-place",
 			);
 		}
+
+		// Keep stored config in sync with applied changes
+		this.config = { ...this.config, ...newConfig };
+	}
+
+	/**
+	 * Get the current pool configuration
+	 */
+	getConfig(): Readonly<PoolConfig> {
+		return this.config;
 	}
 
 	/**

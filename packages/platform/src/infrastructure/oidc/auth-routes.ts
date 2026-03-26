@@ -351,6 +351,13 @@ export async function registerAuthRoutes(
 		// Validate session token
 		const principalId = await validateSessionToken(sessionToken);
 		if (!principalId) {
+			// Clear the stale cookie so the browser stops sending it
+			reply.clearCookie(cookieConfig.name, {
+				path: "/",
+				httpOnly: true,
+				sameSite: cookieConfig.sameSite ?? "lax",
+				secure: cookieConfig.secure ?? true,
+			});
 			return reply.status(401).send({ error: "Invalid session" });
 		}
 

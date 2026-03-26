@@ -39,6 +39,7 @@ import {
 	NatsConsumer,
 	type NatsConsumerConfig,
 } from "../consumers/nats-consumer.js";
+import { sleep } from "@flowcatalyst/queue-core";
 import { EmbeddedQueue } from "../embedded/index.js";
 import type { TrafficManager } from "../traffic/index.js";
 import { env } from "../env.js";
@@ -88,8 +89,8 @@ export class QueueManagerService {
 	private readonly maxPools = env.MAX_POOLS;
 	private readonly poolWarningThreshold = Math.floor(env.MAX_POOLS * 0.5); // 50% threshold
 
-	// Sync lock to prevent concurrent config syncs
-	private syncLock: Promise<void> | null = null;
+	// Chained promise to serialize concurrent config syncs
+	private syncChain: Promise<void> = Promise.resolve();
 
 	// Cleanup interval
 	private cleanupInterval: ReturnType<typeof setInterval> | null = null;
@@ -539,31 +540,27 @@ export class QueueManagerService {
 		}
 
 		// Step 2: Stop all consumers with 25s timeout (matches Java)
-		for (const [queueId, consumer] of this.consumers) {
-			consumer.stop().catch((err) => {
-				this.logger.error({ err, queueId }, "Error stopping consumer");
-			});
-			this.drainingConsumers.set(queueId, consumer);
-		}
+		const consumerStopPromises = [...this.consumers.entries()].map(
+			([queueId, consumer]) => {
+				this.drainingConsumers.set(queueId, consumer);
+				return consumer.stop().catch((err) => {
+					this.logger.error({ err, queueId }, "Error stopping consumer");
+				});
+			},
+		);
 		this.consumers.clear();
 
-		const consumerStart = Date.now();
-		while (Date.now() - consumerStart < 25_000) {
-			let allStopped = true;
-			for (const consumer of this.drainingConsumers.values()) {
+		await Promise.race([
+			Promise.allSettled(consumerStopPromises),
+			sleep(25_000),
+		]);
+
+		if (this.drainingConsumers.size > 0) {
+			for (const [queueId, consumer] of this.drainingConsumers) {
 				if (!consumer.isFullyStopped()) {
-					allStopped = false;
-					break;
+					this.logger.warn({ queueId }, "Consumer did not stop within timeout");
 				}
 			}
-			if (allStopped) break;
-			await sleep(500);
-		}
-		if (this.drainingConsumers.size > 0) {
-			this.logger.warn(
-				{ remaining: this.drainingConsumers.size },
-				"Consumer stop timeout reached — force-clearing draining consumers",
-			);
 		}
 		this.drainingConsumers.clear();
 
@@ -571,18 +568,13 @@ export class QueueManagerService {
 		for (const pool of this.processPools.values()) {
 			pool.drain();
 		}
-		const drainStart = Date.now();
-		while (Date.now() - drainStart < 30_000) {
-			let allDrained = true;
-			for (const pool of this.processPools.values()) {
-				if (!pool.isDrained()) {
-					allDrained = false;
-					break;
-				}
+		const poolDrainCheck = async () => {
+			while (![...this.processPools.values()].every((p) => p.isDrained())) {
+				await sleep(500);
 			}
-			if (allDrained) break;
-			await sleep(500);
-		}
+		};
+		await Promise.race([poolDrainCheck(), sleep(30_000)]);
+
 		// Force shutdown remaining pools (parallel — independent)
 		await Promise.all(
 			[...this.processPools.values()].map((pool) => pool.shutdown()),
@@ -671,11 +663,25 @@ export class QueueManagerService {
 	private pauseAllConsumers(): void {
 		this.logger.info("Pausing all consumers for standby mode");
 
-		for (const consumer of this.consumers.values()) {
-			consumer.stop().catch((err) => {
-				this.logger.error({ err }, "Error stopping consumer");
-			});
-		}
+		const failedQueueIds: string[] = [];
+		const pausePromises = [...this.consumers.entries()].map(
+			async ([queueId, consumer]) => {
+				try {
+					await consumer.stop();
+				} catch (err) {
+					this.logger.warn({ err, queueId }, "Failed to pause consumer");
+					failedQueueIds.push(queueId);
+				}
+			},
+		);
+		Promise.allSettled(pausePromises).then(() => {
+			if (failedQueueIds.length > 0) {
+				this.logger.warn(
+					{ failedCount: failedQueueIds.length, queueIds: failedQueueIds },
+					"Some consumers failed to pause for standby",
+				);
+			}
+		});
 	}
 
 	/**
@@ -692,29 +698,16 @@ export class QueueManagerService {
 	}
 
 	/**
-	 * Apply new configuration (with sync lock to prevent concurrent syncs)
+	 * Apply new configuration (serialized via promise chain to prevent concurrent syncs)
 	 * Matches Java QueueManager.syncConfiguration() behavior
 	 */
 	private async applyConfiguration(config: MessageRouterConfig): Promise<void> {
-		// Acquire sync lock (wait for any in-progress sync to complete)
-		if (this.syncLock) {
-			this.logger.debug("Waiting for existing sync to complete");
-			await this.syncLock;
-		}
-
-		// Create lock promise that resolves when we're done
-		let releaseLock: () => void;
-		this.syncLock = new Promise((resolve) => {
-			releaseLock = resolve;
-		});
-
-		try {
-			await this.doApplyConfiguration(config);
-		} finally {
-			// Release lock
-			releaseLock!();
-			this.syncLock = null;
-		}
+		this.syncChain = this.syncChain.then(() =>
+			this.doApplyConfiguration(config).catch((err) => {
+				this.logger.error({ err }, "Configuration sync failed");
+			}),
+		);
+		await this.syncChain;
 	}
 
 	/**
@@ -821,8 +814,7 @@ export class QueueManagerService {
 				const concurrencyChanged =
 					newConfig.concurrency !== stats.maxConcurrency;
 				const rateLimitChanged =
-					newConfig.rateLimitPerMinute !==
-					(stats.totalRateLimited > 0 ? stats.totalRateLimited : undefined);
+					newConfig.rateLimitPerMinute !== existingPool.getConfig().rateLimitPerMinute;
 
 				if (concurrencyChanged || rateLimitChanged) {
 					this.logger.info(
@@ -1135,16 +1127,22 @@ export class QueueManagerService {
 			}
 		}
 
-		// NACK all capacity-rejected messages
-		for (const tracked of toNackPoolFull) {
-			const callback = this.messageCallbacks.get(tracked.pipelineKey);
-			if (callback) {
-				await callback.nack(10);
-			}
-			this.cleanupMessage(tracked.pipelineKey, tracked.message.messageId);
+		// NACK all capacity-rejected messages (parallel — independent broker calls)
+		if (toNackPoolFull.length > 0) {
+			await Promise.allSettled(
+				toNackPoolFull.map(async (tracked) => {
+					const callback = this.messageCallbacks.get(tracked.pipelineKey);
+					if (callback) {
+						await callback.nack(10);
+					}
+					this.cleanupMessage(tracked.pipelineKey, tracked.message.messageId);
+				}),
+			);
 		}
 
-		// ── Phase 3: Per-group FIFO routing with nackRemaining ──────────
+		// ── Phase 3: Per-group routing ──────────────────────────────────
+		// IMMEDIATE groups: submit all messages concurrently (no ordering dependency)
+		// Ordered groups (BLOCK_ON_ERROR, NEXT_ON_ERROR, default): FIFO with nackRemaining
 		for (const [_poolCode, poolMessages] of acceptedByPool) {
 			const pool = poolMessages[0]!.resolvedPool;
 
@@ -1159,66 +1157,156 @@ export class QueueManagerService {
 			}
 
 			for (const [_groupId, groupMessages] of messagesByGroup) {
-				let nackRemaining = false;
+				// Determine dispatch mode from the first message in the group
+				const groupDispatchMode = groupMessages[0]!.message.pointer.dispatchMode;
+				const isImmediate = groupDispatchMode === "IMMEDIATE";
 
-				for (const tracked of groupMessages) {
-					const { message, pipelineKey } = tracked;
-					const callback = this.messageCallbacks.get(pipelineKey);
-
-					if (nackRemaining) {
-						if (callback) {
-							await callback.nack(10);
-						}
-						this.cleanupMessage(pipelineKey, message.messageId);
-						continue;
-					}
-
-					// Create callback wrapper that cleans up tracking on completion
-					const poolCallback: MessageCallback = {
-						ack: async () => {
-							if (callback) {
-								await callback.ack();
-							}
-							this.cleanupMessage(pipelineKey, message.messageId);
-							if (queueStat) {
-								queueStat.totalConsumed++;
-								queueStat.totalConsumed5min++;
-								queueStat.totalConsumed30min++;
-								this.recalculateSuccessRates(queueStat);
-							}
-						},
-						nack: async (visibilityTimeoutSeconds?: number) => {
-							if (callback) {
-								await callback.nack(visibilityTimeoutSeconds);
-							}
-							this.cleanupMessage(pipelineKey, message.messageId);
-							if (queueStat) {
-								queueStat.totalFailed++;
-								queueStat.totalFailed5min++;
-								queueStat.totalFailed30min++;
-								this.recalculateSuccessRates(queueStat);
-							}
-						},
-					};
-
-					// Submit to pool
-					const accepted = await pool.submit(message, poolCallback);
-					if (!accepted) {
-						this.logger.warn(
-							{
-								poolCode: tracked.resolvedPoolCode,
-								messageId: message.messageId,
-							},
-							"Pool rejected message (at capacity) - NACKing remaining in group",
-						);
-						if (callback) {
-							await callback.nack(10);
-						}
-						this.cleanupMessage(pipelineKey, message.messageId);
-						nackRemaining = true; // FIFO: nack all subsequent in this group
-					}
+				if (isImmediate) {
+					// IMMEDIATE mode: submit all messages concurrently — no FIFO dependency
+					await this.submitGroupConcurrent(groupMessages, pool, queueStat);
+				} else {
+					// Ordered mode: strict FIFO with nackRemaining on rejection
+					await this.submitGroupFifo(groupMessages, pool, queueStat);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Submit all messages in a group concurrently (IMMEDIATE dispatch mode).
+	 * Each message is independently submitted to the pool — no ordering dependency.
+	 */
+	private async submitGroupConcurrent(
+		groupMessages: Array<{ message: QueueMessage; pipelineKey: string; resolvedPoolCode: string; resolvedPool: ProcessPool }>,
+		pool: ProcessPool,
+		queueStat: QueueStats | undefined,
+	): Promise<void> {
+		for (const tracked of groupMessages) {
+			const { message, pipelineKey } = tracked;
+			const callback = this.messageCallbacks.get(pipelineKey);
+
+			const poolCallback: MessageCallback = {
+				ack: async () => {
+					if (callback) {
+						await callback.ack();
+					}
+					this.cleanupMessage(pipelineKey, message.messageId);
+					if (queueStat) {
+						queueStat.totalConsumed++;
+						queueStat.totalConsumed5min++;
+						queueStat.totalConsumed30min++;
+						this.recalculateSuccessRates(queueStat);
+					}
+				},
+				nack: async (visibilityTimeoutSeconds?: number) => {
+					if (callback) {
+						await callback.nack(visibilityTimeoutSeconds);
+					}
+					this.cleanupMessage(pipelineKey, message.messageId);
+					if (queueStat) {
+						queueStat.totalFailed++;
+						queueStat.totalFailed5min++;
+						queueStat.totalFailed30min++;
+						this.recalculateSuccessRates(queueStat);
+					}
+				},
+			};
+
+			// Submit to pool — if rejected, NACK only this message (no nackRemaining)
+			const accepted = await pool.submit(message, poolCallback);
+			if (!accepted) {
+				this.logger.warn(
+					{
+						poolCode: tracked.resolvedPoolCode,
+						messageId: message.messageId,
+					},
+					"Pool rejected IMMEDIATE message (at capacity) - NACKing",
+				);
+				if (callback) {
+					await callback.nack(10);
+				}
+				this.cleanupMessage(pipelineKey, message.messageId);
+			}
+		}
+	}
+
+	/**
+	 * Submit messages in strict FIFO order (BLOCK_ON_ERROR / NEXT_ON_ERROR / default).
+	 * If any message is rejected by the pool, all subsequent messages in the group are NACKed.
+	 */
+	private async submitGroupFifo(
+		groupMessages: Array<{ message: QueueMessage; pipelineKey: string; resolvedPoolCode: string; resolvedPool: ProcessPool }>,
+		pool: ProcessPool,
+		queueStat: QueueStats | undefined,
+	): Promise<void> {
+		let nackRemaining = false;
+		const toNackFifo: Array<{ pipelineKey: string; messageId: string; callback: MessageCallbackFns }> = [];
+
+		for (const tracked of groupMessages) {
+			const { message, pipelineKey } = tracked;
+			const callback = this.messageCallbacks.get(pipelineKey);
+
+			if (nackRemaining) {
+				if (callback) {
+					toNackFifo.push({ pipelineKey, messageId: message.messageId, callback });
+				} else {
+					this.cleanupMessage(pipelineKey, message.messageId);
+				}
+				continue;
+			}
+
+			const poolCallback: MessageCallback = {
+				ack: async () => {
+					if (callback) {
+						await callback.ack();
+					}
+					this.cleanupMessage(pipelineKey, message.messageId);
+					if (queueStat) {
+						queueStat.totalConsumed++;
+						queueStat.totalConsumed5min++;
+						queueStat.totalConsumed30min++;
+						this.recalculateSuccessRates(queueStat);
+					}
+				},
+				nack: async (visibilityTimeoutSeconds?: number) => {
+					if (callback) {
+						await callback.nack(visibilityTimeoutSeconds);
+					}
+					this.cleanupMessage(pipelineKey, message.messageId);
+					if (queueStat) {
+						queueStat.totalFailed++;
+						queueStat.totalFailed5min++;
+						queueStat.totalFailed30min++;
+						this.recalculateSuccessRates(queueStat);
+					}
+				},
+			};
+
+			const accepted = await pool.submit(message, poolCallback);
+			if (!accepted) {
+				this.logger.warn(
+					{
+						poolCode: tracked.resolvedPoolCode,
+						messageId: message.messageId,
+					},
+					"Pool rejected message (at capacity) - NACKing remaining in group",
+				);
+				if (callback) {
+					await callback.nack(10);
+				}
+				this.cleanupMessage(pipelineKey, message.messageId);
+				nackRemaining = true;
+			}
+		}
+
+		// Flush FIFO NACKs in parallel (independent broker calls)
+		if (toNackFifo.length > 0) {
+			await Promise.allSettled(
+				toNackFifo.map(async ({ pipelineKey, messageId, callback }) => {
+					await callback.nack(10);
+					this.cleanupMessage(pipelineKey, messageId);
+				}),
+			);
 		}
 	}
 
@@ -1687,6 +1775,3 @@ export class QueueManagerService {
 	}
 }
 
-function sleep(ms: number): Promise<void> {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}

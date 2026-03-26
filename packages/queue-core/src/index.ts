@@ -17,3 +17,6 @@ export * from "./metrics.js";
 // Mediation
 export * from "./mediation/http-mediator.js";
 export * from "./mediation/circuit-breaker.js";
+
+// Utilities
+export * from "./utils/sleep.js";

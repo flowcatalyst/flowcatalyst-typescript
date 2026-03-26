@@ -2,6 +2,13 @@
  * Message pointer - the envelope containing routing info
  * Matches the Java MessagePointer class structure
  */
+/**
+ * Dispatch mode — controls how messages within a group are processed.
+ * IMMEDIATE: no ordering dependency, messages can be processed concurrently.
+ * BLOCK_ON_ERROR / NEXT_ON_ERROR: strict FIFO within the group.
+ */
+export type DispatchMode = "IMMEDIATE" | "NEXT_ON_ERROR" | "BLOCK_ON_ERROR";
+
 export type MessagePointer = {
 	/** Unique message ID from the application */
 	messageId: string;
@@ -19,6 +26,8 @@ export type MessagePointer = {
 	createdAt?: string | undefined;
 	/** Whether this is a high priority message (processed before regular messages in same group) */
 	highPriority?: boolean | undefined;
+	/** Dispatch mode — IMMEDIATE allows concurrent processing within a group */
+	dispatchMode?: DispatchMode | undefined;
 };
 
 /**

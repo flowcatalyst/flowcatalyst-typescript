@@ -29,12 +29,21 @@ declare module "stompit" {
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type StompitSubscription = any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/** STOMP subscription handle */
+interface StompitSubscription {
+	unsubscribe(): void;
+}
+
+/** STOMP subscribe options — header key/value pairs */
 type StompitSubscribeOptions = Record<string, string>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type StompitMessage = any;
+
+/**
+ * STOMP message — stompit's Message extends Readable but @types/stompit is
+ * incomplete, so we alias the runtime type and access headers via a cast.
+ */
+type StompitMessage = stompit.Client.Message & {
+	headers?: Record<string, string> | undefined;
+};
 
 /**
  * ActiveMQ consumer configuration
@@ -77,6 +86,7 @@ export class ActiveMqConsumer implements QueueConsumer {
 	private connectionManager: stompit.ConnectFailover | null = null;
 	private channelPool: stompit.ChannelPool | null = null;
 	private subscriptions: StompitSubscription[] = [];
+	private metricsTimer: ReturnType<typeof setTimeout> | null = null;
 
 	private metrics = {
 		pendingMessages: 0,
@@ -164,6 +174,12 @@ export class ActiveMqConsumer implements QueueConsumer {
 	async stop(): Promise<void> {
 		this.logger.info("Stopping ActiveMQ consumer");
 		this.running = false;
+
+		// Cancel metrics polling
+		if (this.metricsTimer) {
+			clearTimeout(this.metricsTimer);
+			this.metricsTimer = null;
+		}
 
 		// Unsubscribe all subscriptions
 		for (const subscription of this.subscriptions) {
@@ -371,10 +387,10 @@ export class ActiveMqConsumer implements QueueConsumer {
 			if (!this.running) return;
 
 			this.updateMetrics();
-			setTimeout(poll, this.config.metricsPollIntervalMs);
+			this.metricsTimer = setTimeout(poll, this.config.metricsPollIntervalMs);
 		};
 
-		setTimeout(poll, this.config.metricsPollIntervalMs);
+		this.metricsTimer = setTimeout(poll, this.config.metricsPollIntervalMs);
 	}
 
 	/**

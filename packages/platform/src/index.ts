@@ -256,7 +256,10 @@ export async function startPlatform(
 
 		// SPA catch-all: serve index.html for navigation paths not matched by API routes
 		fastify.setNotFoundHandler(async (request, reply) => {
-			if (request.method === "GET" && request.url.indexOf(".") === -1) {
+			if (
+				(request.method === "GET" || request.method === "HEAD") &&
+				request.url.indexOf(".") === -1
+			) {
 				return reply.sendFile("index.html");
 			}
 			reply.code(404).send({ error: "Not Found" });

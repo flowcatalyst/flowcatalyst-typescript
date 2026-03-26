@@ -36,6 +36,7 @@ export function createJobDispatcher(
 					messageGroupId: job.messageGroup ?? "default",
 					mediationType: "HTTP",
 					mediationTarget: config.processingEndpoint,
+					dispatchMode: job.mode ?? "IMMEDIATE",
 				};
 
 				const messageBody = JSON.stringify(pointer);
