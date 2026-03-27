@@ -14,8 +14,9 @@ export interface UpdateSubscriptionCommand extends Command {
 	readonly subscriptionId: string;
 	readonly name?: string | undefined;
 	readonly description?: string | null | undefined;
+	readonly endpoint?: string | undefined;
 	readonly eventTypes?: EventTypeBinding[] | undefined;
-	readonly connectionId?: string | undefined;
+	readonly connectionId?: string | null | undefined;
 	readonly queue?: string | null | undefined;
 	readonly customConfig?: ConfigEntry[] | undefined;
 	readonly status?: SubscriptionStatus | undefined;

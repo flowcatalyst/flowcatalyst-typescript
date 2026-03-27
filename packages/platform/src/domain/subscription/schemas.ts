@@ -12,8 +12,9 @@ export const SubscriptionCreatedDataSchema = Type.Object({
 	name: Type.String(),
 	clientId: Type.Union([Type.String(), Type.Null()]),
 	clientScoped: Type.Boolean(),
+	endpoint: Type.String(),
 	eventTypes: Type.Array(EventTypeBindingSchema),
-	connectionId: Type.String(),
+	connectionId: Type.Union([Type.String(), Type.Null()]),
 });
 
 export const SubscriptionUpdatedDataSchema = Type.Object({
@@ -22,8 +23,9 @@ export const SubscriptionUpdatedDataSchema = Type.Object({
 	applicationCode: Type.Union([Type.String(), Type.Null()]),
 	name: Type.String(),
 	clientId: Type.Union([Type.String(), Type.Null()]),
+	endpoint: Type.String(),
 	eventTypes: Type.Array(EventTypeBindingSchema),
-	connectionId: Type.String(),
+	connectionId: Type.Union([Type.String(), Type.Null()]),
 });
 
 export const SubscriptionDeletedDataSchema = Type.Object({

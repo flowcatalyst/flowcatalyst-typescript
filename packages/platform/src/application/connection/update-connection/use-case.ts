@@ -49,9 +49,6 @@ export function createUpdateConnectionUseCase(
 				...(command.description !== undefined
 					? { description: command.description }
 					: {}),
-				...(command.endpoint !== undefined
-					? { endpoint: command.endpoint }
-					: {}),
 				...(command.externalId !== undefined
 					? { externalId: command.externalId }
 					: {}),
@@ -65,7 +62,6 @@ export function createUpdateConnectionUseCase(
 				connectionId: updated.id,
 				code: updated.code,
 				name: updated.name,
-				endpoint: updated.endpoint,
 				externalId: updated.externalId,
 				status: updated.status,
 			});

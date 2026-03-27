@@ -57,12 +57,12 @@ export function createCreateSubscriptionUseCase(
 			);
 			if (Result.isFailure(nameResult)) return nameResult;
 
-			const connectionIdResult = validateRequired(
-				command.connectionId,
-				"connectionId",
-				"CONNECTION_ID_REQUIRED",
+			const endpointResult = validateRequired(
+				command.endpoint,
+				"endpoint",
+				"ENDPOINT_REQUIRED",
 			);
-			if (Result.isFailure(connectionIdResult)) return connectionIdResult;
+			if (Result.isFailure(endpointResult)) return endpointResult;
 
 			// Validate code format
 			if (!CODE_PATTERN.test(command.code)) {
@@ -113,18 +113,21 @@ export function createCreateSubscriptionUseCase(
 				}
 			}
 
-			// Validate connection exists
-			const connectionExists = await connectionRepository.exists(
-				command.connectionId,
-			);
-			if (!connectionExists) {
-				return Result.failure(
-					UseCaseError.notFound(
-						"CONNECTION_NOT_FOUND",
-						"Connection not found",
-						{ connectionId: command.connectionId },
-					),
+			// Validate connection exists if provided
+			const connectionId = command.connectionId ?? null;
+			if (connectionId) {
+				const connectionExists = await connectionRepository.exists(
+					connectionId,
 				);
+				if (!connectionExists) {
+					return Result.failure(
+						UseCaseError.notFound(
+							"CONNECTION_NOT_FOUND",
+							"Connection not found",
+							{ connectionId },
+						),
+					);
+				}
 			}
 
 			// Check code uniqueness within client scope
@@ -152,8 +155,9 @@ export function createCreateSubscriptionUseCase(
 				description: command.description ?? null,
 				clientId,
 				clientScoped,
+				endpoint: command.endpoint,
 				eventTypes: command.eventTypes,
-				connectionId: command.connectionId,
+				connectionId,
 				queue: command.queue ?? null,
 				customConfig: command.customConfig ?? [],
 				source: (command.source as SubscriptionSource) ?? "UI",
@@ -187,6 +191,7 @@ export function createCreateSubscriptionUseCase(
 				name: subscription.name,
 				clientId: subscription.clientId,
 				clientScoped: subscription.clientScoped,
+				endpoint: subscription.endpoint,
 				eventTypes: subscription.eventTypes,
 				connectionId: subscription.connectionId,
 			});

@@ -17,7 +17,6 @@ export interface ConnectionDto {
 	code: string;
 	name: string;
 	description: string | null;
-	endpoint: string;
 	externalId: string | null;
 	status: string;
 	serviceAccountId: string;
@@ -36,7 +35,6 @@ export interface CreateConnectionRequest {
 	code: string;
 	name: string;
 	description?: string | null;
-	endpoint: string;
 	externalId?: string | null;
 	serviceAccountId: string;
 	clientId?: string | null;
@@ -45,7 +43,6 @@ export interface CreateConnectionRequest {
 export interface UpdateConnectionRequest {
 	name?: string;
 	description?: string | null;
-	endpoint?: string;
 	externalId?: string | null;
 	status?: "ACTIVE" | "PAUSED";
 }

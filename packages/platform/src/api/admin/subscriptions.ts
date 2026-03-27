@@ -69,8 +69,9 @@ const CreateSubscriptionSchema = Type.Object({
 	description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
 	clientId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
 	clientScoped: Type.Optional(Type.Boolean()),
+	endpoint: Type.String({ minLength: 1, maxLength: 2048 }),
 	eventTypes: Type.Array(EventTypeBindingSchema, { minItems: 1 }),
-	connectionId: Type.String({ minLength: 1 }),
+	connectionId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
 	queue: Type.Optional(Type.Union([Type.String(), Type.Null()])),
 	customConfig: Type.Optional(Type.Array(ConfigEntrySchema)),
 	maxAgeSeconds: Type.Optional(Type.Integer({ minimum: 1 })),
@@ -89,10 +90,11 @@ const CreateSubscriptionSchema = Type.Object({
 const UpdateSubscriptionSchema = Type.Object({
 	name: Type.Optional(Type.String({ minLength: 1, maxLength: 255 })),
 	description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+	endpoint: Type.Optional(Type.String({ minLength: 1, maxLength: 2048 })),
 	eventTypes: Type.Optional(
 		Type.Array(EventTypeBindingSchema, { minItems: 1 }),
 	),
-	connectionId: Type.Optional(Type.String({ minLength: 1 })),
+	connectionId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
 	queue: Type.Optional(Type.Union([Type.String(), Type.Null()])),
 	customConfig: Type.Optional(Type.Array(ConfigEntrySchema)),
 	status: Type.Optional(
@@ -119,8 +121,9 @@ const SyncSubscriptionsSchema = Type.Object({
 			name: Type.String({ minLength: 1 }),
 			description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
 			clientScoped: Type.Optional(Type.Boolean()),
+			endpoint: Type.String({ minLength: 1, maxLength: 2048 }),
 			eventTypes: Type.Array(EventTypeBindingSchema, { minItems: 1 }),
-			connectionId: Type.String({ minLength: 1 }),
+			connectionId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
 			queue: Type.Optional(Type.Union([Type.String(), Type.Null()])),
 			customConfig: Type.Optional(Type.Array(ConfigEntrySchema)),
 			maxAgeSeconds: Type.Optional(Type.Integer({ minimum: 1 })),
@@ -178,8 +181,9 @@ const SubscriptionResponseSchema = Type.Object({
 	clientId: Type.Union([Type.String(), Type.Null()]),
 	clientIdentifier: Type.Union([Type.String(), Type.Null()]),
 	clientScoped: Type.Boolean(),
+	endpoint: Type.String(),
 	eventTypes: Type.Array(EventTypeBindingResponseSchema),
-	connectionId: Type.String(),
+	connectionId: Type.Union([Type.String(), Type.Null()]),
 	queue: Type.Union([Type.String(), Type.Null()]),
 	customConfig: Type.Array(ConfigEntryResponseSchema),
 	source: Type.String(),
@@ -329,12 +333,13 @@ export async function registerSubscriptionsRoutes(
 				description: body.description ?? null,
 				clientId: body.clientId ?? null,
 				clientScoped: body.clientScoped ?? false,
+				endpoint: body.endpoint,
 				eventTypes: body.eventTypes.map((et) => ({
 					eventTypeId: et.eventTypeId ?? null,
 					eventTypeCode: et.eventTypeCode,
 					specVersion: et.specVersion ?? null,
 				})),
-				connectionId: body.connectionId,
+				connectionId: body.connectionId ?? null,
 				queue: body.queue ?? null,
 				customConfig: body.customConfig ?? [],
 				maxAgeSeconds: body.maxAgeSeconds,
@@ -388,6 +393,9 @@ export async function registerSubscriptionsRoutes(
 				...(body.name !== undefined ? { name: body.name } : {}),
 				...(body.description !== undefined
 					? { description: body.description }
+					: {}),
+				...(body.endpoint !== undefined
+					? { endpoint: body.endpoint }
 					: {}),
 				...(body.eventTypes !== undefined
 					? {
@@ -564,12 +572,13 @@ export async function registerSubscriptionsRoutes(
 					name: s.name,
 					description: s.description ?? null,
 					clientScoped: s.clientScoped,
+					endpoint: s.endpoint,
 					eventTypes: s.eventTypes.map((et) => ({
 						eventTypeId: et.eventTypeId ?? null,
 						eventTypeCode: et.eventTypeCode,
 						specVersion: et.specVersion ?? null,
 					})),
-					connectionId: s.connectionId,
+					connectionId: s.connectionId ?? null,
 					queue: s.queue ?? null,
 					customConfig: s.customConfig ?? [],
 					maxAgeSeconds: s.maxAgeSeconds,
@@ -614,6 +623,7 @@ function toSubscriptionResponse(sub: Subscription): SubscriptionResponse {
 		clientId: sub.clientId,
 		clientIdentifier: sub.clientIdentifier,
 		clientScoped: sub.clientScoped,
+		endpoint: sub.endpoint,
 		eventTypes: sub.eventTypes.map((et) => ({
 			eventTypeId: et.eventTypeId,
 			eventTypeCode: et.eventTypeCode,

@@ -61,13 +61,6 @@ export function createCreateConnectionUseCase(
 			);
 			if (Result.isFailure(nameResult)) return nameResult;
 
-			const endpointResult = validateRequired(
-				command.endpoint,
-				"endpoint",
-				"ENDPOINT_REQUIRED",
-			);
-			if (Result.isFailure(endpointResult)) return endpointResult;
-
 			const saResult = validateRequired(
 				command.serviceAccountId,
 				"serviceAccountId",
@@ -133,7 +126,6 @@ export function createCreateConnectionUseCase(
 				code: command.code,
 				name: command.name,
 				description: command.description ?? null,
-				endpoint: command.endpoint,
 				externalId: command.externalId ?? null,
 				serviceAccountId: command.serviceAccountId,
 				clientId,
@@ -143,7 +135,6 @@ export function createCreateConnectionUseCase(
 				connectionId: connection.id,
 				code: connection.code,
 				name: connection.name,
-				endpoint: connection.endpoint,
 				externalId: connection.externalId,
 				serviceAccountId: connection.serviceAccountId,
 				clientId: connection.clientId,

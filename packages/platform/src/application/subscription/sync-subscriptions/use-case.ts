@@ -71,11 +71,11 @@ export function createSyncSubscriptionsUseCase(
 						),
 					);
 				}
-				if (!item.connectionId || !item.connectionId.trim()) {
+				if (!item.endpoint || !item.endpoint.trim()) {
 					return Result.failure(
 						UseCaseError.validation(
-							"CONNECTION_ID_REQUIRED",
-							"Subscription connectionId is required",
+							"ENDPOINT_REQUIRED",
+							"Subscription endpoint is required",
 							{
 								code: item.code,
 							},
@@ -107,24 +107,30 @@ export function createSyncSubscriptionsUseCase(
 				seenCodes.add(item.code);
 			}
 
-			// Validate all referenced connections exist
+			// Validate all referenced connections exist (only non-null ones)
 			const uniqueConnectionIds = [
-				...new Set(command.subscriptions.map((s) => s.connectionId)),
+				...new Set(
+					command.subscriptions
+						.map((s) => s.connectionId)
+						.filter((id): id is string => id != null),
+				),
 			];
-			const existingConnections =
-				await connectionRepository.findByIds(uniqueConnectionIds);
-			const existingConnectionIds = new Set(
-				existingConnections.map((c) => c.id),
-			);
-			for (const connId of uniqueConnectionIds) {
-				if (!existingConnectionIds.has(connId)) {
-					return Result.failure(
-						UseCaseError.notFound(
-							"CONNECTION_NOT_FOUND",
-							`Connection not found: ${connId}`,
-							{ connectionId: connId },
-						),
-					);
+			if (uniqueConnectionIds.length > 0) {
+				const existingConnections =
+					await connectionRepository.findByIds(uniqueConnectionIds);
+				const existingConnectionIds = new Set(
+					existingConnections.map((c) => c.id),
+				);
+				for (const connId of uniqueConnectionIds) {
+					if (!existingConnectionIds.has(connId)) {
+						return Result.failure(
+							UseCaseError.notFound(
+								"CONNECTION_NOT_FOUND",
+								`Connection not found: ${connId}`,
+								{ connectionId: connId },
+							),
+						);
+					}
 				}
 			}
 
@@ -178,8 +184,9 @@ export function createSyncSubscriptionsUseCase(
 						const updatedSub = updateSubscription(existing, {
 							name: item.name,
 							description: item.description ?? null,
+							endpoint: item.endpoint,
 							eventTypes: item.eventTypes,
-							connectionId: item.connectionId,
+							connectionId: item.connectionId ?? null,
 							queue: item.queue ?? null,
 							customConfig: item.customConfig ?? [],
 							maxAgeSeconds: item.maxAgeSeconds ?? 86400,
@@ -204,8 +211,9 @@ export function createSyncSubscriptionsUseCase(
 							name: item.name,
 							description: item.description ?? null,
 							clientScoped: item.clientScoped ?? false,
+							endpoint: item.endpoint,
 							eventTypes: item.eventTypes,
-							connectionId: item.connectionId,
+							connectionId: item.connectionId ?? null,
 							queue: item.queue ?? null,
 							customConfig: item.customConfig ?? [],
 							source: "API",

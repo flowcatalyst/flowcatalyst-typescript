@@ -77,17 +77,25 @@ export function createEventDispatchService(
 
 			// Resolve connections from in-memory cache (DB fallback only on miss)
 			const connectionIds = [
-				...new Set(matchingSubs.map((s) => s.connectionId)),
+				...new Set(
+					matchingSubs
+						.map((s) => s.connectionId)
+						.filter((id): id is string => id != null),
+				),
 			];
 			const connectionMap =
-				await connectionCache.resolveMany(connectionIds);
+				connectionIds.length > 0
+					? await connectionCache.resolveMany(connectionIds)
+					: new Map();
 
 			const now = new Date();
 			const notifications: DispatchJobNotification[] = [];
 
 			for (const sub of matchingSubs) {
-				const connection = connectionMap.get(sub.connectionId);
-				if (!connection) continue;
+				// Connection is optional; resolve if present
+				const connection = sub.connectionId
+					? connectionMap.get(sub.connectionId)
+					: undefined;
 
 				const jobId = generateRaw();
 				const idempotencyKey = `${event.eventId}:${sub.id}`;
@@ -95,7 +103,7 @@ export function createEventDispatchService(
 
 				// If connection is PAUSED, create as PENDING (held); otherwise QUEUED
 				const status =
-					connection.status === "PAUSED"
+					connection?.status === "PAUSED"
 						? ("PENDING" as const)
 						: ("QUEUED" as const);
 
@@ -107,10 +115,10 @@ export function createEventDispatchService(
 					subject: event.subject,
 					eventId: event.eventId,
 					correlationId: event.correlationId,
-					targetUrl: connection.endpoint,
+					targetUrl: sub.endpoint,
 					protocol: "HTTP_WEBHOOK" as const,
 					dataOnly: sub.dataOnly,
-					serviceAccountId: connection.serviceAccountId,
+					serviceAccountId: connection?.serviceAccountId ?? null,
 					clientId: clientId,
 					subscriptionId: sub.id,
 					connectionId: sub.connectionId,

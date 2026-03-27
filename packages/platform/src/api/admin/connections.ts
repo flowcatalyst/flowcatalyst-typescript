@@ -53,7 +53,6 @@ const CreateConnectionSchema = Type.Object({
 	description: Type.Optional(
 		Type.Union([Type.String({ maxLength: 500 }), Type.Null()]),
 	),
-	endpoint: Type.String({ minLength: 1, maxLength: 500 }),
 	externalId: Type.Optional(
 		Type.Union([Type.String({ maxLength: 100 }), Type.Null()]),
 	),
@@ -66,7 +65,6 @@ const UpdateConnectionSchema = Type.Object({
 	description: Type.Optional(
 		Type.Union([Type.String({ maxLength: 500 }), Type.Null()]),
 	),
-	endpoint: Type.Optional(Type.String({ minLength: 1, maxLength: 500 })),
 	externalId: Type.Optional(
 		Type.Union([Type.String({ maxLength: 100 }), Type.Null()]),
 	),
@@ -97,7 +95,6 @@ const ConnectionResponseSchema = Type.Object({
 	code: Type.String(),
 	name: Type.String(),
 	description: Type.Union([Type.String(), Type.Null()]),
-	endpoint: Type.String(),
 	externalId: Type.Union([Type.String(), Type.Null()]),
 	status: Type.String(),
 	serviceAccountId: Type.String(),
@@ -231,7 +228,6 @@ export async function registerConnectionsRoutes(
 				code: body.code,
 				name: body.name,
 				description: body.description ?? null,
-				endpoint: body.endpoint,
 				externalId: body.externalId ?? null,
 				serviceAccountId: body.serviceAccountId,
 				clientId: body.clientId ?? null,
@@ -278,9 +274,6 @@ export async function registerConnectionsRoutes(
 				...(body.name !== undefined ? { name: body.name } : {}),
 				...(body.description !== undefined
 					? { description: body.description }
-					: {}),
-				...(body.endpoint !== undefined
-					? { endpoint: body.endpoint }
 					: {}),
 				...(body.externalId !== undefined
 					? { externalId: body.externalId }
@@ -413,7 +406,6 @@ function toConnectionResponse(conn: Connection): ConnectionResponse {
 		code: conn.code,
 		name: conn.name,
 		description: conn.description,
-		endpoint: conn.endpoint,
 		externalId: conn.externalId,
 		status: conn.status,
 		serviceAccountId: conn.serviceAccountId,

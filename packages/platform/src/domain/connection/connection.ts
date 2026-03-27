@@ -1,7 +1,7 @@
 /**
  * Connection Domain Aggregate
  *
- * A named endpoint + credentials grouping that sits between
+ * A named auth/pause grouping that sits between
  * ServiceAccount (WHO) and Subscription (WHAT).
  * Provides pause/unpause semantics for delivery control.
  */
@@ -14,7 +14,6 @@ export interface Connection {
 	readonly code: string;
 	readonly name: string;
 	readonly description: string | null;
-	readonly endpoint: string;
 	readonly externalId: string | null;
 	readonly status: ConnectionStatus;
 	readonly serviceAccountId: string;
@@ -36,7 +35,6 @@ export function createConnection(params: {
 	code: string;
 	name: string;
 	description?: string | null;
-	endpoint: string;
 	externalId?: string | null;
 	serviceAccountId: string;
 	clientId?: string | null;
@@ -47,7 +45,6 @@ export function createConnection(params: {
 		code: params.code,
 		name: params.name,
 		description: params.description ?? null,
-		endpoint: params.endpoint,
 		externalId: params.externalId ?? null,
 		status: "ACTIVE",
 		serviceAccountId: params.serviceAccountId,
@@ -65,7 +62,6 @@ export function updateConnection(
 	updates: {
 		name?: string | undefined;
 		description?: string | null | undefined;
-		endpoint?: string | undefined;
 		externalId?: string | null | undefined;
 		status?: ConnectionStatus | undefined;
 		serviceAccountId?: string | undefined;
@@ -77,7 +73,6 @@ export function updateConnection(
 		...(updates.description !== undefined
 			? { description: updates.description }
 			: {}),
-		...(updates.endpoint !== undefined ? { endpoint: updates.endpoint } : {}),
 		...(updates.externalId !== undefined
 			? { externalId: updates.externalId }
 			: {}),

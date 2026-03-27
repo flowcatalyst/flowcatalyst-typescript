@@ -509,6 +509,7 @@ export function createSubscriptionRepository(
 				clientId: entity.clientId,
 				clientIdentifier: entity.clientIdentifier,
 				clientScoped: entity.clientScoped,
+				endpoint: entity.endpoint,
 				connectionId: entity.connectionId,
 				queue: entity.queue,
 				source: entity.source,
@@ -546,6 +547,7 @@ export function createSubscriptionRepository(
 				.set({
 					name: entity.name,
 					description: entity.description,
+					endpoint: entity.endpoint,
 					connectionId: entity.connectionId,
 					queue: entity.queue,
 					status: entity.status,
@@ -616,7 +618,8 @@ interface SubscriptionRelationalResult {
 	clientId: string | null;
 	clientIdentifier: string | null;
 	clientScoped: boolean;
-	connectionId: string;
+	endpoint: string;
+	connectionId: string | null;
 	queue: string | null;
 	source: string;
 	status: string;
@@ -660,6 +663,7 @@ function resultToSubscription(
 		clientId: result.clientId,
 		clientIdentifier: result.clientIdentifier,
 		clientScoped: result.clientScoped,
+		endpoint: result.endpoint,
 		eventTypes: result.eventTypes.map((et) => ({
 			eventTypeId: et.eventTypeId,
 			eventTypeCode: et.eventTypeCode,
@@ -705,6 +709,7 @@ function recordToSubscription(
 		clientId: record.clientId,
 		clientIdentifier: record.clientIdentifier,
 		clientScoped: record.clientScoped,
+		endpoint: record.endpoint,
 		eventTypes,
 		connectionId: record.connectionId,
 		queue: record.queue,

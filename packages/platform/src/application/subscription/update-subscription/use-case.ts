@@ -81,8 +81,8 @@ export function createUpdateSubscriptionUseCase(
 				}
 			}
 
-			// Validate connection if changing
-			if (command.connectionId !== undefined) {
+			// Validate connection if changing (and not being set to null)
+			if (command.connectionId !== undefined && command.connectionId !== null) {
 				const connectionExists = await connectionRepository.exists(
 					command.connectionId,
 				);
@@ -101,6 +101,9 @@ export function createUpdateSubscriptionUseCase(
 				...(command.name !== undefined ? { name: command.name } : {}),
 				...(command.description !== undefined
 					? { description: command.description }
+					: {}),
+				...(command.endpoint !== undefined
+					? { endpoint: command.endpoint }
 					: {}),
 				...(command.eventTypes !== undefined
 					? { eventTypes: command.eventTypes }
@@ -146,6 +149,7 @@ export function createUpdateSubscriptionUseCase(
 				applicationCode: updated.applicationCode,
 				name: updated.name,
 				clientId: updated.clientId,
+				endpoint: updated.endpoint,
 				eventTypes: updated.eventTypes,
 				connectionId: updated.connectionId,
 			});

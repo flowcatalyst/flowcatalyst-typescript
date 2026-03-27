@@ -78,7 +78,6 @@ export function createConnectionRepository(
 			code: record.code,
 			name: record.name,
 			description: record.description,
-			endpoint: record.endpoint,
 			externalId: record.externalId,
 			status: record.status as ConnectionStatus,
 			serviceAccountId: record.serviceAccountId,
@@ -276,7 +275,6 @@ export function createConnectionRepository(
 				code: entity.code,
 				name: entity.name,
 				description: entity.description,
-				endpoint: entity.endpoint,
 				externalId: entity.externalId,
 				status: entity.status,
 				serviceAccountId: entity.serviceAccountId,
@@ -301,7 +299,6 @@ export function createConnectionRepository(
 				.set({
 					name: entity.name,
 					description: entity.description,
-					endpoint: entity.endpoint,
 					externalId: entity.externalId,
 					status: entity.status,
 					serviceAccountId: entity.serviceAccountId,

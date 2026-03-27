@@ -21,7 +21,8 @@ export interface Subscription {
 	readonly clientIdentifier: string | null;
 	readonly clientScoped: boolean;
 	readonly eventTypes: readonly EventTypeBinding[];
-	readonly connectionId: string;
+	readonly endpoint: string;
+	readonly connectionId: string | null;
 	readonly queue: string | null;
 	readonly customConfig: readonly ConfigEntry[];
 	readonly source: SubscriptionSource;
@@ -55,8 +56,9 @@ export function createSubscription(params: {
 	clientId?: string | null;
 	clientIdentifier?: string | null;
 	clientScoped?: boolean;
+	endpoint: string;
 	eventTypes: EventTypeBinding[];
-	connectionId: string;
+	connectionId?: string | null;
 	queue?: string | null;
 	customConfig?: ConfigEntry[];
 	source?: SubscriptionSource;
@@ -79,8 +81,9 @@ export function createSubscription(params: {
 		clientId: params.clientId ?? null,
 		clientIdentifier: params.clientIdentifier ?? null,
 		clientScoped: params.clientScoped ?? false,
+		endpoint: params.endpoint,
 		eventTypes: params.eventTypes,
-		connectionId: params.connectionId,
+		connectionId: params.connectionId ?? null,
 		queue: params.queue ?? null,
 		customConfig: params.customConfig ?? [],
 		source: params.source ?? "UI",
@@ -106,8 +109,9 @@ export function updateSubscription(
 	updates: {
 		name?: string | undefined;
 		description?: string | null | undefined;
+		endpoint?: string | undefined;
 		eventTypes?: EventTypeBinding[] | undefined;
-		connectionId?: string | undefined;
+		connectionId?: string | null | undefined;
 		queue?: string | null | undefined;
 		customConfig?: ConfigEntry[] | undefined;
 		status?: SubscriptionStatus | undefined;
@@ -128,6 +132,7 @@ export function updateSubscription(
 		...(updates.description !== undefined
 			? { description: updates.description }
 			: {}),
+		...(updates.endpoint !== undefined ? { endpoint: updates.endpoint } : {}),
 		...(updates.eventTypes !== undefined
 			? { eventTypes: updates.eventTypes }
 			: {}),

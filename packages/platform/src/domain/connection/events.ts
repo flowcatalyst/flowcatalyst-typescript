@@ -22,7 +22,6 @@ export interface ConnectionCreatedData {
 	readonly connectionId: string;
 	readonly code: string;
 	readonly name: string;
-	readonly endpoint: string;
 	readonly externalId: string | null;
 	readonly serviceAccountId: string;
 	readonly clientId: string | null;
@@ -65,7 +64,6 @@ export interface ConnectionUpdatedData {
 	readonly connectionId: string;
 	readonly code: string;
 	readonly name: string;
-	readonly endpoint: string;
 	readonly externalId: string | null;
 	readonly status: string;
 	readonly [key: string]: unknown;

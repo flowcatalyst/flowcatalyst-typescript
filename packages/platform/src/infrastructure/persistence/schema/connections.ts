@@ -2,7 +2,7 @@
  * Connection Schema
  *
  * Table definitions for connection management.
- * Connections group endpoint + credentials between ServiceAccount and Subscription.
+ * Connections group auth/pause credentials between ServiceAccount and Subscription.
  */
 
 import {
@@ -14,7 +14,7 @@ import {
 import { baseEntityColumns, tsidColumn } from "@flowcatalyst/persistence";
 
 /**
- * Connections - named endpoint + credential groupings.
+ * Connections - named auth/pause credential groupings.
  */
 export const connections = pgTable(
 	"msg_connections",
@@ -23,7 +23,6 @@ export const connections = pgTable(
 		code: varchar("code", { length: 100 }).notNull(),
 		name: varchar("name", { length: 255 }).notNull(),
 		description: varchar("description", { length: 500 }),
-		endpoint: varchar("endpoint", { length: 500 }).notNull(),
 		externalId: varchar("external_id", { length: 100 }),
 		status: varchar("status", { length: 20 }).notNull().default("ACTIVE"),
 		serviceAccountId: tsidColumn("service_account_id").notNull(),

@@ -125,14 +125,13 @@ export async function registerDispatchJobsBatchRoutes(
 			];
 			const connectionMap = new Map<
 				string,
-				{ endpoint: string; serviceAccountId: string; status: string }
+				{ serviceAccountId: string; status: string }
 			>();
 			if (connectionIds.length > 0 && connectionRepository) {
 				const conns =
 					await connectionRepository.findByIds(connectionIds);
 				for (const c of conns) {
 					connectionMap.set(c.id, {
-						endpoint: c.endpoint,
 						serviceAccountId: c.serviceAccountId,
 						status: c.status,
 					});
@@ -160,7 +159,6 @@ export async function registerDispatchJobsBatchRoutes(
 				if (itemConnectionId) {
 					const conn = connectionMap.get(itemConnectionId);
 					if (conn) {
-						resolvedTargetUrl = conn.endpoint;
 						resolvedServiceAccountId = conn.serviceAccountId;
 						if (conn.status === "PAUSED") {
 							resolvedStatus = "PENDING";
@@ -171,7 +169,7 @@ export async function registerDispatchJobsBatchRoutes(
 				if (!resolvedTargetUrl) {
 					return badRequest(
 						reply,
-						"Either targetUrl or a valid connectionId is required",
+						"targetUrl is required",
 					);
 				}
 
