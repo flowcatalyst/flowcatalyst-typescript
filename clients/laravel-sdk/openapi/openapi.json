@@ -668,7 +668,7 @@
                   "password": {
                     "anyOf": [
                       {
-                        "minLength": 12,
+                        "minLength": 8,
                         "type": "string"
                       },
                       {
@@ -689,6 +689,17 @@
                         "type": "null"
                       }
                     ]
+                  },
+                  "enforcePasswordComplexity": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true."
                   }
                 }
               }
@@ -998,8 +1009,19 @@
                 ],
                 "properties": {
                   "newPassword": {
-                    "minLength": 12,
+                    "minLength": 8,
                     "type": "string"
+                  },
+                  "enforcePasswordComplexity": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true."
                   }
                 }
               }

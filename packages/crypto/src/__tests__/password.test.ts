@@ -48,9 +48,9 @@ describe("PasswordService", () => {
 		});
 
 		it("should reject password that is too short", () => {
-			const result = service.validateComplexity("Short1!");
+			const result = service.validateComplexity("Sh1!");
 			expect(result.isErr()).toBe(true);
-			expect(result._unsafeUnwrapErr().message).toContain("at least 12");
+			expect(result._unsafeUnwrapErr().message).toContain("at least 8");
 		});
 
 		it("should reject password without uppercase", () => {

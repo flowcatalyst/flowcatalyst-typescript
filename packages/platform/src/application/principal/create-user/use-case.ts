@@ -2,6 +2,10 @@
  * Create User Use Case
  *
  * Creates a new user principal in the system.
+ *
+ * For PARTNER-scoped email domains, if a user with this email already exists,
+ * the use case merges the requested `clientId` into the user's client-access
+ * grants instead of rejecting. Existing associations are preserved.
  */
 
 import type { UseCase } from "@flowcatalyst/application";
@@ -20,12 +24,15 @@ import type {
 	AnchorDomainRepository,
 	EmailDomainMappingRepository,
 	IdentityProviderRepository,
+	ClientAccessGrantRepository,
 } from "../../../infrastructure/persistence/index.js";
 import {
 	createUserPrincipal,
 	createUserIdentity,
+	createClientAccessGrant,
 	extractEmailDomain,
 	UserCreated,
+	ClientAccessGranted,
 	IdpType,
 	PrincipalScope,
 	resolveScopeForEmail,
@@ -41,6 +48,7 @@ export interface CreateUserUseCaseDeps {
 	readonly anchorDomainRepository: AnchorDomainRepository;
 	readonly emailDomainMappingRepository: EmailDomainMappingRepository;
 	readonly identityProviderRepository: IdentityProviderRepository;
+	readonly clientAccessGrantRepository: ClientAccessGrantRepository;
 	readonly passwordService: PasswordService;
 	readonly unitOfWork: UnitOfWork;
 }
@@ -50,12 +58,13 @@ export interface CreateUserUseCaseDeps {
  */
 export function createCreateUserUseCase(
 	deps: CreateUserUseCaseDeps,
-): UseCase<CreateUserCommand, UserCreated> {
+): UseCase<CreateUserCommand, UserCreated | ClientAccessGranted> {
 	const {
 		principalRepository,
 		anchorDomainRepository,
 		emailDomainMappingRepository,
 		identityProviderRepository,
+		clientAccessGrantRepository,
 		passwordService,
 		unitOfWork,
 	} = deps;
@@ -64,7 +73,7 @@ export function createCreateUserUseCase(
 		async execute(
 			command: CreateUserCommand,
 			context: ExecutionContext,
-		): Promise<Result<UserCreated>> {
+		): Promise<Result<UserCreated | ClientAccessGranted>> {
 			// Validate email
 			const emailResult = validateRequired(
 				command.email,
@@ -90,22 +99,8 @@ export function createCreateUserUseCase(
 				return nameResult;
 			}
 
-			// Check if email already exists
-			const emailExists = await principalRepository.existsByEmail(
-				command.email,
-			);
-			if (emailExists) {
-				return Result.failure(
-					UseCaseError.businessRule("EMAIL_EXISTS", "Email already exists", {
-						email: command.email,
-					}),
-				);
-			}
-
-			// Extract domain from email
+			// Extract domain and resolve scope
 			const emailDomain = extractEmailDomain(command.email);
-
-			// Determine scope and IDP type from email domain mapping
 			const mapping =
 				await emailDomainMappingRepository.findByEmailDomain(emailDomain);
 			const isAnchorDomain =
@@ -116,7 +111,85 @@ export function createCreateUserUseCase(
 				isAnchorDomain,
 			});
 			const scope = resolved.scope;
+			const isAnchorUser = scope === PrincipalScope.ANCHOR;
 
+			// Anchor scope ignores any requested clientId.
+			const effectiveClientId =
+				scope === PrincipalScope.ANCHOR ? null : command.clientId;
+
+			// PARTNER scope: validate clientId against mapping, merge onto existing
+			// user instead of rejecting on duplicate email.
+			if (scope === PrincipalScope.PARTNER && mapping) {
+				if (!effectiveClientId) {
+					return Result.failure(
+						UseCaseError.validation(
+							"CLIENT_ID_REQUIRED",
+							"clientId is required for partner users",
+						),
+					);
+				}
+
+				const allowedClientIds = new Set<string>([
+					...mapping.grantedClientIds,
+					...(mapping.primaryClientId ? [mapping.primaryClientId] : []),
+				]);
+				if (!allowedClientIds.has(effectiveClientId)) {
+					return Result.failure(
+						UseCaseError.validation(
+							"CLIENT_ID_NOT_ALLOWED",
+							`clientId ${effectiveClientId} is not allowed for partner domain ${emailDomain}`,
+						),
+					);
+				}
+
+				const existing =
+					await principalRepository.findByEmail(command.email);
+				if (existing) {
+					const alreadyLinked =
+						existing.clientId === effectiveClientId ||
+						(await clientAccessGrantRepository.existsByPrincipalAndClient(
+							existing.id,
+							effectiveClientId,
+						));
+					if (alreadyLinked) {
+						return Result.failure(
+							UseCaseError.businessRule(
+								"EMAIL_EXISTS",
+								"Email already exists and is linked to this client",
+								{
+									email: command.email,
+									clientId: effectiveClientId,
+								},
+							),
+						);
+					}
+
+					const grant = createClientAccessGrant({
+						principalId: existing.id,
+						clientId: effectiveClientId,
+						grantedBy: context.principalId,
+					});
+					const grantEvent = new ClientAccessGranted(context, {
+						userId: existing.id,
+						email: existing.userIdentity?.email ?? command.email,
+						clientId: effectiveClientId,
+					});
+					return unitOfWork.commit(grant, grantEvent, command);
+				}
+			}
+
+			// Non-merge path: dup email → 409-style business rule.
+			const emailExists =
+				await principalRepository.existsByEmail(command.email);
+			if (emailExists) {
+				return Result.failure(
+					UseCaseError.businessRule("EMAIL_EXISTS", "Email already exists", {
+						email: command.email,
+					}),
+				);
+			}
+
+			// Determine IdpType for new users.
 			let idpType: IdpType = IdpType.INTERNAL;
 			if (mapping) {
 				const idp = await identityProviderRepository.findById(
@@ -127,12 +200,9 @@ export function createCreateUserUseCase(
 				}
 			}
 
-			const isAnchorUser = scope === PrincipalScope.ANCHOR;
-
 			// Validate and hash password for INTERNAL auth, or reject for OIDC
 			let passwordHash: string | null = null;
 			if (idpType === IdpType.OIDC) {
-				// OIDC users should not have a password
 				if (command.password) {
 					return Result.failure(
 						UseCaseError.validation(
@@ -142,7 +212,6 @@ export function createCreateUserUseCase(
 					);
 				}
 			} else {
-				// INTERNAL auth - require and validate password
 				if (!command.password) {
 					return Result.failure(
 						UseCaseError.validation(
@@ -152,9 +221,12 @@ export function createCreateUserUseCase(
 					);
 				}
 
-				// Validate password strength
+				const enforceComplexity =
+					command.enforcePasswordComplexity ?? true;
+
 				const passwordValidation = passwordService.validateComplexity(
 					command.password,
+					{ enforceComplexity },
 				);
 				if (passwordValidation.isErr()) {
 					const err = passwordValidation.error;
@@ -163,7 +235,6 @@ export function createCreateUserUseCase(
 					);
 				}
 
-				// Hash the password
 				const hashResult = await passwordService.hash(command.password);
 				if (hashResult.isErr()) {
 					return Result.failure(
@@ -184,7 +255,7 @@ export function createCreateUserUseCase(
 			const principal = createUserPrincipal({
 				name: command.name,
 				scope,
-				clientId: command.clientId,
+				clientId: effectiveClientId,
 				userIdentity,
 			});
 

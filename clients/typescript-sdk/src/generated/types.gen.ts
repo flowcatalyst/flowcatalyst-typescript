@@ -231,6 +231,10 @@ export type PostApiAdminPrincipalsUsersData = {
         password?: string | null;
         name: string;
         clientId?: string | null;
+        /**
+         * When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true.
+         */
+        enforcePasswordComplexity?: boolean | null;
     };
     path?: never;
     query?: never;
@@ -394,6 +398,10 @@ export type PostApiAdminPrincipalsByIdDeactivateResponse = PostApiAdminPrincipal
 export type PostApiAdminPrincipalsByIdResetPasswordData = {
     body: {
         newPassword: string;
+        /**
+         * When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true.
+         */
+        enforcePasswordComplexity?: boolean | null;
     };
     path: {
         id: string;

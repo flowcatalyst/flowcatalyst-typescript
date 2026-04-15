@@ -17,6 +17,12 @@ class ApiAdminPrincipalsIdResetPasswordPostBody extends \ArrayObject
      */
     protected $newPassword;
     /**
+     * When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true.
+     *
+     * @var mixed|null
+     */
+    protected $enforcePasswordComplexity;
+    /**
      * @return string|null
      */
     public function getNewPassword(): ?string
@@ -32,6 +38,28 @@ class ApiAdminPrincipalsIdResetPasswordPostBody extends \ArrayObject
     {
         $this->initialized['newPassword'] = true;
         $this->newPassword = $newPassword;
+        return $this;
+    }
+    /**
+     * When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true.
+     *
+     * @return mixed
+     */
+    public function getEnforcePasswordComplexity()
+    {
+        return $this->enforcePasswordComplexity;
+    }
+    /**
+     * When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true.
+     *
+     * @param mixed $enforcePasswordComplexity
+     *
+     * @return self
+     */
+    public function setEnforcePasswordComplexity($enforcePasswordComplexity): self
+    {
+        $this->initialized['enforcePasswordComplexity'] = true;
+        $this->enforcePasswordComplexity = $enforcePasswordComplexity;
         return $this;
     }
 }

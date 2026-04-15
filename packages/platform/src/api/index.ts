@@ -129,6 +129,10 @@ import {
 	registerPublicConfigRoutes,
 	type PublicConfigRoutesDeps,
 } from "./public/config.js";
+import {
+	registerDispatchProcessRoutes,
+	type DispatchProcessDeps,
+} from "./dispatch/process.js";
 
 /**
  * Dependencies for admin routes.
@@ -349,6 +353,22 @@ export async function registerPlatformConfigApiRoutes(
 	);
 }
 
+/**
+ * Register dispatch processing routes (message router callback).
+ */
+export async function registerDispatchApiRoutes(
+	fastify: FastifyInstance,
+	deps: DispatchProcessDeps,
+): Promise<void> {
+	await fastify.register(
+		async (dispatchRouter) => {
+			await registerDispatchProcessRoutes(dispatchRouter, deps);
+		},
+		{ prefix: "/api/dispatch" },
+	);
+}
+
+export { type DispatchProcessDeps } from "./dispatch/process.js";
 export { type MeRoutesDeps } from "./me.js";
 export { type PublicConfigRoutesDeps } from "./public/config.js";
 export { type PrincipalsRoutesDeps } from "./admin/principals.js";

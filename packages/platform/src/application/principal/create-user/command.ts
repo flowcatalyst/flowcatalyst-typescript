@@ -21,4 +21,12 @@ export interface CreateUserCommand extends Command {
 
 	/** Home client ID (nullable, will be auto-detected from email domain if not provided) */
 	readonly clientId: string | null;
+
+	/**
+	 * When false, the platform skips its password complexity rules
+	 * (uppercase/lowercase/digit/special) and only enforces a 2-character
+	 * minimum. Intended for SDK callers that apply their own policy.
+	 * Defaults to true.
+	 */
+	readonly enforcePasswordComplexity?: boolean | null;
 }

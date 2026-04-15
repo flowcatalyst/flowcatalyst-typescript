@@ -38,6 +38,7 @@ export function createIamUseCases(deps: CreateUseCasesDeps) {
 		anchorDomainRepository: repos.anchorDomainRepository,
 		emailDomainMappingRepository: repos.emailDomainMappingRepository,
 		identityProviderRepository: repos.identityProviderRepository,
+		clientAccessGrantRepository: repos.clientAccessGrantRepository,
 		passwordService,
 		unitOfWork,
 	});

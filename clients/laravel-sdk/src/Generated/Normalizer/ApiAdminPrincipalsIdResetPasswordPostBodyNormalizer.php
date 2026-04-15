@@ -44,6 +44,13 @@ class ApiAdminPrincipalsIdResetPasswordPostBodyNormalizer implements Denormalize
         elseif (\array_key_exists('newPassword', $data) && $data['newPassword'] === null) {
             $object->setNewPassword(null);
         }
+        if (\array_key_exists('enforcePasswordComplexity', $data) && $data['enforcePasswordComplexity'] !== null) {
+            $object->setEnforcePasswordComplexity($data['enforcePasswordComplexity']);
+            unset($data['enforcePasswordComplexity']);
+        }
+        elseif (\array_key_exists('enforcePasswordComplexity', $data) && $data['enforcePasswordComplexity'] === null) {
+            $object->setEnforcePasswordComplexity(null);
+        }
         foreach ($data as $key => $value) {
             if (preg_match('/.*/', (string) $key)) {
                 $object[$key] = $value;
@@ -55,6 +62,9 @@ class ApiAdminPrincipalsIdResetPasswordPostBodyNormalizer implements Denormalize
     {
         $dataArray = [];
         $dataArray['newPassword'] = $data->getNewPassword();
+        if ($data->isInitialized('enforcePasswordComplexity') && null !== $data->getEnforcePasswordComplexity()) {
+            $dataArray['enforcePasswordComplexity'] = $data->getEnforcePasswordComplexity();
+        }
         foreach ($data as $key => $value) {
             if (preg_match('/.*/', (string) $key)) {
                 $dataArray[$key] = $value;

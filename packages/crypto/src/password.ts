@@ -27,9 +27,19 @@ const ARGON2_OPTIONS: argon2.Options = {
 };
 
 // Password complexity requirements
-const MIN_LENGTH = 12;
+const MIN_LENGTH = 8;
+const RELAXED_MIN_LENGTH = 2;
 const MAX_LENGTH = 128;
 const SPECIAL_CHARS = "!@#$%^&*()_+-=[]{}|;':\",./<>?`~";
+
+export interface PasswordComplexityOptions {
+	/**
+	 * When false, the platform skips uppercase/lowercase/digit/special
+	 * requirements and only enforces a 2-character minimum. Intended for SDK
+	 * callers that apply their own password policy. Defaults to true.
+	 */
+	enforceComplexity?: boolean;
+}
 
 export type PasswordError =
 	| { type: "validation"; field: string; message: string }
@@ -89,22 +99,32 @@ export class PasswordService {
 	/**
 	 * Validate password complexity requirements.
 	 *
-	 * Requirements:
-	 * - Length: 12-128 characters
+	 * When `enforceComplexity` is true (default):
+	 * - Length: 8-128 characters
 	 * - At least 1 uppercase letter
 	 * - At least 1 lowercase letter
 	 * - At least 1 digit
 	 * - At least 1 special character
 	 *
+	 * When `enforceComplexity` is false, only a 2-character minimum is enforced.
+	 * Intended for SDK callers that apply their own password policy.
+	 *
 	 * @param password - The password to validate
+	 * @param options - Optional flags; set `enforceComplexity: false` to skip rules
 	 * @returns Result with void on success, or validation error
 	 */
-	validateComplexity(password: string): Result<void, PasswordError> {
-		if (password.length < MIN_LENGTH) {
+	validateComplexity(
+		password: string,
+		options?: PasswordComplexityOptions,
+	): Result<void, PasswordError> {
+		const enforce = options?.enforceComplexity ?? true;
+		const minLength = enforce ? MIN_LENGTH : RELAXED_MIN_LENGTH;
+
+		if (password.length < minLength) {
 			return err({
 				type: "validation",
 				field: "password",
-				message: `Password must be at least ${MIN_LENGTH} characters`,
+				message: `Password must be at least ${minLength} characters`,
 			});
 		}
 
@@ -114,6 +134,10 @@ export class PasswordService {
 				field: "password",
 				message: `Password must be at most ${MAX_LENGTH} characters`,
 			});
+		}
+
+		if (!enforce) {
+			return ok(undefined);
 		}
 
 		if (!/[A-Z]/.test(password)) {
@@ -156,10 +180,14 @@ export class PasswordService {
 	 * Validate complexity and hash the password if valid.
 	 *
 	 * @param password - The plaintext password
+	 * @param options - Optional flags; set `enforceComplexity: false` to skip complexity rules
 	 * @returns Result with hash on success, or error
 	 */
-	validateAndHash(password: string): ResultAsync<string, PasswordError> {
-		const validationResult = this.validateComplexity(password);
+	validateAndHash(
+		password: string,
+		options?: PasswordComplexityOptions,
+	): ResultAsync<string, PasswordError> {
+		const validationResult = this.validateComplexity(password, options);
 		if (validationResult.isErr()) {
 			return ResultAsync.fromPromise(
 				Promise.reject(validationResult.error),

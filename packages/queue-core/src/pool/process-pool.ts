@@ -260,6 +260,22 @@ export class ProcessPool {
 						this.decrementBatchGroupCount(batchGroupKey);
 						break;
 
+					case "RATE_LIMITED":
+						// Destination throttled us (HTTP 429). NACK with the
+						// Retry-After delay so the queue redelivers later.
+						// Deliberately NOT counted as a delivery attempt or
+						// failure, and we do NOT mark the batch+group as
+						// failed: a 429 means "try again later", not "this
+						// group is broken". Subsequent messages in the group
+						// will retry naturally and either succeed or hit the
+						// same 429 (and wait again).
+						this.totalRateLimited++;
+						this.stats5min.rateLimited++;
+						this.stats30min.rateLimited++;
+						await callback.nack(result.delaySeconds ?? 30);
+						this.decrementBatchGroupCount(batchGroupKey);
+						break;
+
 					case "ERROR_CONNECTION":
 					default:
 						// Connection/network errors — counted as failure (matches Java)

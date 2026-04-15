@@ -26,6 +26,7 @@ import {
 	registerDebugBffRoutes,
 	registerApplicationSyncApiRoutes,
 	type ApplicationSyncRoutesDeps,
+	registerDispatchApiRoutes,
 } from "../api/index.js";
 import type { PlatformConfigService } from "../domain/index.js";
 import type { Repositories } from "./repositories.js";
@@ -219,6 +220,9 @@ export async function registerPlatformRoutes(
 
 	await registerPublicApiRoutes(fastify, publicDeps);
 	await registerPlatformConfigApiRoutes(fastify, publicDeps);
+
+	// Dispatch processing route (message router callback)
+	await registerDispatchApiRoutes(fastify, { db });
 
 	// Debug BFF routes (raw event/dispatch job access)
 	const debugBffDeps = {

@@ -138,12 +138,14 @@ export class HttpMediator {
 
 				const result = await this.executeRequest(message, callbackUrl);
 
-				// Don't retry on success, client errors, rate limits, or deferred
+				// Don't retry on success, client errors, rate limits, or deferred.
+				// For RATE_LIMITED we want the queue to apply the Retry-After
+				// delay rather than blocking this worker on in-process backoff.
 				if (
 					result.outcome === "SUCCESS" ||
 					result.outcome === "ERROR_CONFIG" ||
 					result.outcome === "DEFERRED" ||
-					(result.outcome === "ERROR_PROCESS" && result.statusCode === 429)
+					result.outcome === "RATE_LIMITED"
 				) {
 					return result;
 				}
@@ -221,7 +223,7 @@ export class HttpMediator {
 					"Rate limited by downstream",
 				);
 				return {
-					outcome: "ERROR_PROCESS",
+					outcome: "RATE_LIMITED",
 					statusCode,
 					error: "Rate limited by downstream",
 					durationMs,

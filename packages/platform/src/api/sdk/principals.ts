@@ -33,11 +33,11 @@ import type {
 	UserActivated,
 	UserDeactivated,
 	RolesAssigned,
-	ClientAccessGranted,
 	ClientAccessRevoked,
 	Principal,
 	PrincipalType,
 } from "../../domain/index.js";
+import { ClientAccessGranted } from "../../domain/index.js";
 import type {
 	PrincipalRepository,
 	ClientAccessGrantRepository,
@@ -136,7 +136,10 @@ type SdkPrincipalResponse = Static<typeof SdkPrincipalResponseSchema>;
 export interface SdkPrincipalsDeps {
 	readonly principalRepository: PrincipalRepository;
 	readonly clientAccessGrantRepository: ClientAccessGrantRepository;
-	readonly createUserUseCase: UseCase<CreateUserCommand, UserCreated>;
+	readonly createUserUseCase: UseCase<
+		CreateUserCommand,
+		UserCreated | ClientAccessGranted
+	>;
 	readonly updateUserUseCase: UseCase<UpdateUserCommand, UserUpdated>;
 	readonly activateUserUseCase: UseCase<ActivateUserCommand, UserActivated>;
 	readonly deactivateUserUseCase: UseCase<
@@ -297,6 +300,33 @@ export async function registerSdkPrincipalsRoutes(
 
 			if (Result.isSuccess(result)) {
 				const event = result.value;
+
+				// Partner-merge path: existing user got a new client grant.
+				if (event instanceof ClientAccessGranted) {
+					const userId = event.getData().userId;
+					const principal = await principalRepository.findById(userId);
+					if (!principal) {
+						return notFound(reply, `User not found: ${userId}`);
+					}
+					const grants =
+						await clientAccessGrantRepository.findByPrincipal(userId);
+					const response: SdkPrincipalResponse = {
+						id: principal.id,
+						type: principal.type,
+						scope: principal.scope,
+						clientId: principal.clientId,
+						name: principal.name,
+						active: principal.active,
+						email: principal.userIdentity?.email ?? null,
+						idpType: principal.userIdentity?.idpType ?? null,
+						roles: [],
+						grantedClientIds: grants.map((g) => g.clientId),
+						createdAt: principal.createdAt.toISOString(),
+						updatedAt: principal.updatedAt.toISOString(),
+					};
+					return jsonCreated(reply, response);
+				}
+
 				const data = event.getData();
 				const response: SdkPrincipalResponse = {
 					id: data.userId,

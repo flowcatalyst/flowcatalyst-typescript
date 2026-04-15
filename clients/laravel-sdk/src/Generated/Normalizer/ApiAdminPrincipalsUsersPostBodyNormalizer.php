@@ -65,6 +65,13 @@ class ApiAdminPrincipalsUsersPostBodyNormalizer implements DenormalizerInterface
         elseif (\array_key_exists('clientId', $data) && $data['clientId'] === null) {
             $object->setClientId(null);
         }
+        if (\array_key_exists('enforcePasswordComplexity', $data) && $data['enforcePasswordComplexity'] !== null) {
+            $object->setEnforcePasswordComplexity($data['enforcePasswordComplexity']);
+            unset($data['enforcePasswordComplexity']);
+        }
+        elseif (\array_key_exists('enforcePasswordComplexity', $data) && $data['enforcePasswordComplexity'] === null) {
+            $object->setEnforcePasswordComplexity(null);
+        }
         foreach ($data as $key => $value) {
             if (preg_match('/.*/', (string) $key)) {
                 $object[$key] = $value;
@@ -82,6 +89,9 @@ class ApiAdminPrincipalsUsersPostBodyNormalizer implements DenormalizerInterface
         $dataArray['name'] = $data->getName();
         if ($data->isInitialized('clientId') && null !== $data->getClientId()) {
             $dataArray['clientId'] = $data->getClientId();
+        }
+        if ($data->isInitialized('enforcePasswordComplexity') && null !== $data->getEnforcePasswordComplexity()) {
+            $dataArray['enforcePasswordComplexity'] = $data->getEnforcePasswordComplexity();
         }
         foreach ($data as $key => $value) {
             if (preg_match('/.*/', (string) $key)) {

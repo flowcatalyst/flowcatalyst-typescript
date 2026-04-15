@@ -39,10 +39,10 @@ import type {
 	UserDeleted,
 	RolesAssigned,
 	ApplicationAccessAssigned,
-	ClientAccessGranted,
 	ClientAccessRevoked,
 	Principal,
 } from "../../domain/index.js";
+import { ClientAccessGranted } from "../../domain/index.js";
 import type { ApplicationRepository } from "../../infrastructure/persistence/repositories/application-repository.js";
 import type { PrincipalRepository } from "../../infrastructure/persistence/repositories/principal-repository.js";
 import type { ClientAccessGrantRepository } from "../../infrastructure/persistence/repositories/client-access-grant-repository.js";
@@ -63,10 +63,13 @@ import {
 const CreateUserSchema = Type.Object({
 	email: Type.String({ format: "email" }),
 	password: Type.Optional(
-		Type.Union([Type.String({ minLength: 12 }), Type.Null()]),
+		Type.Union([Type.String({ minLength: 8 }), Type.Null()]),
 	),
 	name: Type.String({ minLength: 1 }),
 	clientId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+	enforcePasswordComplexity: Type.Optional(
+		Type.Union([Type.Boolean(), Type.Null()]),
+	),
 });
 
 const UpdatePrincipalSchema = Type.Object({
@@ -88,7 +91,10 @@ const GrantClientAccessSchema = Type.Object({
 });
 
 const ResetPasswordSchema = Type.Object({
-	newPassword: Type.String({ minLength: 12 }),
+	newPassword: Type.String({ minLength: 8 }),
+	enforcePasswordComplexity: Type.Optional(
+		Type.Union([Type.Boolean(), Type.Null()]),
+	),
 });
 
 const AssignApplicationAccessSchema = Type.Object({
@@ -261,7 +267,10 @@ export interface PrincipalsRoutesDeps {
 	readonly emailDomainMappingRepository: EmailDomainMappingRepository;
 	readonly identityProviderRepository: IdentityProviderRepository;
 	readonly passwordService: PasswordService;
-	readonly createUserUseCase: UseCase<CreateUserCommand, UserCreated>;
+	readonly createUserUseCase: UseCase<
+		CreateUserCommand,
+		UserCreated | ClientAccessGranted
+	>;
 	readonly updateUserUseCase: UseCase<UpdateUserCommand, UserUpdated>;
 	readonly activateUserUseCase: UseCase<ActivateUserCommand, UserActivated>;
 	readonly deactivateUserUseCase: UseCase<
@@ -430,12 +439,43 @@ export async function registerPrincipalsRoutes(
 				password: body.password ?? null,
 				name: body.name,
 				clientId: body.clientId ?? null,
+				enforcePasswordComplexity: body.enforcePasswordComplexity ?? null,
 			};
 
 			const result = await createUserUseCase.execute(command, ctx);
 
 			if (Result.isSuccess(result)) {
 				const event = result.value;
+
+				// Partner-merge path: existing user got a new client grant.
+				// Hydrate response from the stored principal.
+				if (event instanceof ClientAccessGranted) {
+					const userId = event.getData().userId;
+					const principal = await principalRepository.findById(userId);
+					if (!principal) {
+						return notFound(reply, `User not found: ${userId}`);
+					}
+					const grants =
+						await clientAccessGrantRepository.findByPrincipal(userId);
+					const response: PrincipalResponse = {
+						id: principal.id,
+						type: principal.type,
+						scope: principal.scope,
+						clientId: principal.clientId,
+						name: principal.name,
+						active: principal.active,
+						email: principal.userIdentity?.email ?? null,
+						idpType: principal.userIdentity?.idpType ?? null,
+						roles: [],
+						isAnchorUser: principal.scope === "ANCHOR",
+						grantedClientIds: grants.map((g) => g.clientId),
+						createdAt: principal.createdAt.toISOString(),
+						updatedAt: principal.updatedAt.toISOString(),
+					};
+					return jsonCreated(reply, response);
+				}
+
+				// UserCreated path
 				const response: PrincipalResponse = {
 					id: event.getData().userId,
 					type: "USER",
@@ -623,8 +663,10 @@ export async function registerPrincipalsRoutes(
 				);
 			}
 
+			const enforceComplexity = body.enforcePasswordComplexity ?? true;
 			const hashResult = await passwordService.validateAndHash(
 				body.newPassword,
+				{ enforceComplexity },
 			);
 			let hash: string;
 			if (hashResult.isOk()) {

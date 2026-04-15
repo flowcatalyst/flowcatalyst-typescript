@@ -21,6 +21,7 @@ export {
 	PasswordService,
 	getPasswordService,
 	type PasswordError,
+	type PasswordComplexityOptions,
 } from "./password.js";
 
 // Webhook signing

@@ -82,6 +82,13 @@ export const ProcessingOutcome = {
 	DEFERRED: "DEFERRED",
 	/** Batch+group already failed - NACK without processing */
 	BATCH_FAILED: "BATCH_FAILED",
+	/**
+	 * Destination throttled the request (HTTP 429). NACK with `Retry-After`
+	 * delay, but do NOT count toward circuit-breaker failures or attempt
+	 * budget, and do NOT mark the batch+group as failed — the destination is
+	 * healthy, just throttling us.
+	 */
+	RATE_LIMITED: "RATE_LIMITED",
 } as const;
 
 export type ProcessingOutcome =
