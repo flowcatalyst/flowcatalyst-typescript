@@ -21,7 +21,7 @@ class PutApiAdminServiceAccountsByIdAuthToken extends \FlowCatalyst\Generated\Ru
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/service-accounts/{id}/auth-token');
+        return str_replace(['{id}'], [$this->id], '/api/service-accounts/{id}/auth-token');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -11,7 +11,7 @@ class GetApiAdminAuditLogsEntityType extends \FlowCatalyst\Generated\Runtime\Cli
     }
     public function getUri(): string
     {
-        return '/api/admin/audit-logs/entity-types';
+        return '/api/audit-logs/entity-types';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

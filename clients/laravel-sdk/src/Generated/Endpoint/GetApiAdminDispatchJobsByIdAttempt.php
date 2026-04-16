@@ -19,7 +19,7 @@ class GetApiAdminDispatchJobsByIdAttempt extends \FlowCatalyst\Generated\Runtime
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/dispatch-jobs/{id}/attempts');
+        return str_replace(['{id}'], [$this->id], '/api/dispatch-jobs/{id}/attempts');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

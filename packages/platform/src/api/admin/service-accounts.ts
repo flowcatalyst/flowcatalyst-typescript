@@ -225,7 +225,7 @@ export async function registerServiceAccountsRoutes(
 		return result.isOk() ? result.value : "";
 	}
 
-	// POST /api/admin/service-accounts - Create service account
+	// POST /api/service-accounts - Create service account
 	fastify.post(
 		"/service-accounts",
 		{
@@ -286,7 +286,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// GET /api/admin/service-accounts - List service accounts
+	// GET /api/service-accounts - List service accounts
 	fastify.get(
 		"/service-accounts",
 		{
@@ -324,7 +324,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// GET /api/admin/service-accounts/:id - Get service account by ID
+	// GET /api/service-accounts/:id - Get service account by ID
 	fastify.get(
 		"/service-accounts/:id",
 		{
@@ -353,7 +353,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// GET /api/admin/service-accounts/code/:code - Get service account by code
+	// GET /api/service-accounts/code/:code - Get service account by code
 	fastify.get(
 		"/service-accounts/code/:code",
 		{
@@ -379,7 +379,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// PUT /api/admin/service-accounts/:id - Update service account
+	// PUT /api/service-accounts/:id - Update service account
 	fastify.put(
 		"/service-accounts/:id",
 		{
@@ -419,7 +419,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/service-accounts/:id - Delete service account
+	// DELETE /api/service-accounts/:id - Delete service account
 	fastify.delete(
 		"/service-accounts/:id",
 		{
@@ -450,7 +450,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// PUT /api/admin/service-accounts/:id/auth-token - Update auth token with custom value
+	// PUT /api/service-accounts/:id/auth-token - Update auth token with custom value
 	fastify.put(
 		"/service-accounts/:id/auth-token",
 		{
@@ -510,7 +510,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// POST /api/admin/service-accounts/:id/regenerate-token
+	// POST /api/service-accounts/:id/regenerate-token
 	fastify.post(
 		"/service-accounts/:id/regenerate-token",
 		{
@@ -542,7 +542,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// POST /api/admin/service-accounts/:id/regenerate-auth-token (legacy URL)
+	// POST /api/service-accounts/:id/regenerate-auth-token (legacy URL)
 	fastify.post(
 		"/service-accounts/:id/regenerate-auth-token",
 		{
@@ -574,7 +574,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// POST /api/admin/service-accounts/:id/regenerate-secret
+	// POST /api/service-accounts/:id/regenerate-secret
 	fastify.post(
 		"/service-accounts/:id/regenerate-secret",
 		{
@@ -608,7 +608,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// POST /api/admin/service-accounts/:id/regenerate-signing-secret (legacy URL)
+	// POST /api/service-accounts/:id/regenerate-signing-secret (legacy URL)
 	fastify.post(
 		"/service-accounts/:id/regenerate-signing-secret",
 		{
@@ -642,7 +642,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// GET /api/admin/service-accounts/:id/roles - Get assigned roles
+	// GET /api/service-accounts/:id/roles - Get assigned roles
 	fastify.get(
 		"/service-accounts/:id/roles",
 		{
@@ -677,7 +677,7 @@ export async function registerServiceAccountsRoutes(
 		},
 	);
 
-	// PUT /api/admin/service-accounts/:id/roles - Assign roles
+	// PUT /api/service-accounts/:id/roles - Assign roles
 	fastify.put(
 		"/service-accounts/:id/roles",
 		{

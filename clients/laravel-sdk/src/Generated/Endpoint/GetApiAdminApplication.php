@@ -23,7 +23,7 @@ class GetApiAdminApplication extends \FlowCatalyst\Generated\Runtime\Client\Base
     }
     public function getUri(): string
     {
-        return '/api/admin/applications';
+        return '/api/applications';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

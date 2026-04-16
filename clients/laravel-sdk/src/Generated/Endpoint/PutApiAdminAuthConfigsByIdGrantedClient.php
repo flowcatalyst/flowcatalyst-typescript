@@ -21,7 +21,7 @@ class PutApiAdminAuthConfigsByIdGrantedClient extends \FlowCatalyst\Generated\Ru
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/auth-configs/{id}/granted-clients');
+        return str_replace(['{id}'], [$this->id], '/api/auth-configs/{id}/granted-clients');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

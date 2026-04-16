@@ -19,7 +19,7 @@ class GetApiAdminApplicationById extends \FlowCatalyst\Generated\Runtime\Client\
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/applications/{id}');
+        return str_replace(['{id}'], [$this->id], '/api/applications/{id}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

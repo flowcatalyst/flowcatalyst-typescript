@@ -21,7 +21,7 @@ class PostApiSdkClientsByIdSuspend extends \FlowCatalyst\Generated\Runtime\Clien
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/sdk/clients/{id}/suspend');
+        return str_replace(['{id}'], [$this->id], '/api/clients/{id}/suspend');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

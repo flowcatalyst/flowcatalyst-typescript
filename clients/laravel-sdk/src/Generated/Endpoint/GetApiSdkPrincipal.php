@@ -23,7 +23,7 @@ class GetApiSdkPrincipal extends \FlowCatalyst\Generated\Runtime\Client\BaseEndp
     }
     public function getUri(): string
     {
-        return '/api/sdk/principals';
+        return '/api/principals';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -20,7 +20,7 @@ class GetApiAdminEventTypesFiltersSubdomain extends \FlowCatalyst\Generated\Runt
     }
     public function getUri(): string
     {
-        return '/api/admin/event-types/filters/subdomains';
+        return '/api/event-types/filters/subdomains';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

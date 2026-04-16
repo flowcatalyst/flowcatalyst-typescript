@@ -244,7 +244,7 @@ export async function registerSubscriptionsRoutes(
 		syncSubscriptionsUseCase,
 	} = deps;
 
-	// GET /api/admin/subscriptions - List with filters
+	// GET /api/subscriptions - List with filters
 	fastify.get(
 		"/subscriptions",
 		{
@@ -283,7 +283,7 @@ export async function registerSubscriptionsRoutes(
 		},
 	);
 
-	// GET /api/admin/subscriptions/:id - Get by ID
+	// GET /api/subscriptions/:id - Get by ID
 	fastify.get(
 		"/subscriptions/:id",
 		{
@@ -308,7 +308,7 @@ export async function registerSubscriptionsRoutes(
 		},
 	);
 
-	// POST /api/admin/subscriptions - Create
+	// POST /api/subscriptions - Create
 	fastify.post(
 		"/subscriptions",
 		{
@@ -368,7 +368,7 @@ export async function registerSubscriptionsRoutes(
 		},
 	);
 
-	// PUT /api/admin/subscriptions/:id - Update
+	// PUT /api/subscriptions/:id - Update
 	fastify.put(
 		"/subscriptions/:id",
 		{
@@ -452,7 +452,7 @@ export async function registerSubscriptionsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/subscriptions/:id - Delete
+	// DELETE /api/subscriptions/:id - Delete
 	fastify.delete(
 		"/subscriptions/:id",
 		{
@@ -480,7 +480,7 @@ export async function registerSubscriptionsRoutes(
 		},
 	);
 
-	// POST /api/admin/subscriptions/:id/pause - Pause
+	// POST /api/subscriptions/:id/pause - Pause
 	fastify.post(
 		"/subscriptions/:id/pause",
 		{
@@ -514,7 +514,7 @@ export async function registerSubscriptionsRoutes(
 		},
 	);
 
-	// POST /api/admin/subscriptions/:id/resume - Resume
+	// POST /api/subscriptions/:id/resume - Resume
 	fastify.post(
 		"/subscriptions/:id/resume",
 		{
@@ -548,7 +548,7 @@ export async function registerSubscriptionsRoutes(
 		},
 	);
 
-	// POST /api/admin/subscriptions/sync - Sync from SDK
+	// POST /api/subscriptions/sync - Sync from SDK
 	fastify.post(
 		"/subscriptions/sync",
 		{

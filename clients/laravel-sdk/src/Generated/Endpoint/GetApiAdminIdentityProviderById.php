@@ -19,7 +19,7 @@ class GetApiAdminIdentityProviderById extends \FlowCatalyst\Generated\Runtime\Cl
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/identity-providers/{id}');
+        return str_replace(['{id}'], [$this->id], '/api/identity-providers/{id}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

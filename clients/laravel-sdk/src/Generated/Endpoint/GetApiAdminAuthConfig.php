@@ -21,7 +21,7 @@ class GetApiAdminAuthConfig extends \FlowCatalyst\Generated\Runtime\Client\BaseE
     }
     public function getUri(): string
     {
-        return '/api/admin/auth-configs';
+        return '/api/auth-configs';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

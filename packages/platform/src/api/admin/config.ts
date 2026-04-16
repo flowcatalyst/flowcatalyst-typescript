@@ -118,7 +118,7 @@ export async function registerConfigRoutes(
 		return { scope, clientId };
 	}
 
-	// GET /api/admin/config/:appCode - List configs for application
+	// GET /api/config/:appCode - List configs for application
 	fastify.get(
 		"/config/:appCode",
 		{
@@ -158,7 +158,7 @@ export async function registerConfigRoutes(
 		},
 	);
 
-	// GET /api/admin/config/:appCode/:section - List section as property map
+	// GET /api/config/:appCode/:section - List section as property map
 	fastify.get(
 		"/config/:appCode/:section",
 		{
@@ -205,7 +205,7 @@ export async function registerConfigRoutes(
 		},
 	);
 
-	// GET /api/admin/config/:appCode/:section/:property - Get single value
+	// GET /api/config/:appCode/:section/:property - Get single value
 	fastify.get(
 		"/config/:appCode/:section/:property",
 		{
@@ -261,7 +261,7 @@ export async function registerConfigRoutes(
 		},
 	);
 
-	// PUT /api/admin/config/:appCode/:section/:property - Set config value
+	// PUT /api/config/:appCode/:section/:property - Set config value
 	fastify.put(
 		"/config/:appCode/:section/:property",
 		{
@@ -336,7 +336,7 @@ export async function registerConfigRoutes(
 		},
 	);
 
-	// DELETE /api/admin/config/:appCode/:section/:property - Delete config
+	// DELETE /api/config/:appCode/:section/:property - Delete config
 	fastify.delete(
 		"/config/:appCode/:section/:property",
 		{

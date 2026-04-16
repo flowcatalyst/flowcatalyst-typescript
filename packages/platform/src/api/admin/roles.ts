@@ -157,7 +157,7 @@ export async function registerRolesRoutes(
 		deleteRoleUseCase,
 	} = deps;
 
-	// POST /api/admin/roles - Create role
+	// POST /api/roles - Create role
 	fastify.post(
 		"/roles",
 		{
@@ -205,7 +205,7 @@ export async function registerRolesRoutes(
 		},
 	);
 
-	// GET /api/admin/roles - List roles
+	// GET /api/roles - List roles
 	fastify.get(
 		"/roles",
 		{
@@ -238,7 +238,7 @@ export async function registerRolesRoutes(
 		},
 	);
 
-	// GET /api/admin/roles/:name - Get role by name (Java parity: /roles/{roleName})
+	// GET /api/roles/:name - Get role by name (Java parity: /roles/{roleName})
 	fastify.get(
 		"/roles/:name",
 		{
@@ -263,7 +263,7 @@ export async function registerRolesRoutes(
 		},
 	);
 
-	// GET /api/admin/roles/by-source/:source - Get roles by source
+	// GET /api/roles/by-source/:source - Get roles by source
 	fastify.get(
 		"/roles/by-source/:source",
 		{
@@ -297,7 +297,7 @@ export async function registerRolesRoutes(
 		},
 	);
 
-	// GET /api/admin/roles/by-application/:applicationId - Get roles by application
+	// GET /api/roles/by-application/:applicationId - Get roles by application
 	fastify.get(
 		"/roles/by-application/:applicationId",
 		{
@@ -321,7 +321,7 @@ export async function registerRolesRoutes(
 		},
 	);
 
-	// PUT /api/admin/roles/:name - Update role by name (Java parity: /roles/{roleName})
+	// PUT /api/roles/:name - Update role by name (Java parity: /roles/{roleName})
 	fastify.put(
 		"/roles/:name",
 		{
@@ -372,7 +372,7 @@ export async function registerRolesRoutes(
 		},
 	);
 
-	// DELETE /api/admin/roles/:name - Delete role by name (Java parity: /roles/{roleName})
+	// DELETE /api/roles/:name - Delete role by name (Java parity: /roles/{roleName})
 	fastify.delete(
 		"/roles/:name",
 		{
@@ -408,7 +408,7 @@ export async function registerRolesRoutes(
 		},
 	);
 
-	// GET /api/admin/roles/permissions - List all permissions (Java parity: nested under /roles)
+	// GET /api/roles/permissions - List all permissions (Java parity: nested under /roles)
 	fastify.get(
 		"/roles/permissions",
 		{
@@ -428,7 +428,7 @@ export async function registerRolesRoutes(
 		},
 	);
 
-	// GET /api/admin/roles/permissions/:permission - Get permission by code (Java parity)
+	// GET /api/roles/permissions/:permission - Get permission by code (Java parity)
 	fastify.get(
 		"/roles/permissions/:permission",
 		{

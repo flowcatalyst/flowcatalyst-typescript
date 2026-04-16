@@ -3,7 +3,7 @@
  *
  * Admin/debug endpoint for querying raw events from the transactional
  * events table. The raw table has minimal indexes optimized for writes.
- * Regular UI queries should use /api/admin/events which queries the
+ * Regular UI queries should use /api/events which queries the
  * read-optimized projection.
  */
 

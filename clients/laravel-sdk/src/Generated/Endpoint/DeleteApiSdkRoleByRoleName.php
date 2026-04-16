@@ -19,7 +19,7 @@ class DeleteApiSdkRoleByRoleName extends \FlowCatalyst\Generated\Runtime\Client\
     }
     public function getUri(): string
     {
-        return str_replace(['{roleName}'], [$this->roleName], '/api/sdk/roles/{roleName}');
+        return str_replace(['{roleName}'], [$this->roleName], '/api/roles/{roleName}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

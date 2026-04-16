@@ -21,7 +21,7 @@ class PutApiAdminRoleByName extends \FlowCatalyst\Generated\Runtime\Client\BaseE
     }
     public function getUri(): string
     {
-        return str_replace(['{name}'], [$this->name], '/api/admin/roles/{name}');
+        return str_replace(['{name}'], [$this->name], '/api/roles/{name}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

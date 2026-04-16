@@ -11,7 +11,7 @@ class GetApiAdminPlatformCor extends \FlowCatalyst\Generated\Runtime\Client\Base
     }
     public function getUri(): string
     {
-        return '/api/admin/platform/cors';
+        return '/api/platform/cors';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

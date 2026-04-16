@@ -21,7 +21,7 @@ class PostApiSdkClientsByIdActivate extends \FlowCatalyst\Generated\Runtime\Clie
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/sdk/clients/{id}/activate');
+        return str_replace(['{id}'], [$this->id], '/api/clients/{id}/activate');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

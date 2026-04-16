@@ -21,7 +21,7 @@ class PutApiAdminEmailDomainMappingById extends \FlowCatalyst\Generated\Runtime\
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/email-domain-mappings/{id}');
+        return str_replace(['{id}'], [$this->id], '/api/email-domain-mappings/{id}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -19,7 +19,7 @@ class GetApiAdminPlatformCorById extends \FlowCatalyst\Generated\Runtime\Client\
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/platform/cors/{id}');
+        return str_replace(['{id}'], [$this->id], '/api/platform/cors/{id}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

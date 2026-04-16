@@ -250,7 +250,7 @@ export async function registerApplicationsRoutes(
 		createServiceAccountUseCase,
 	} = deps;
 
-	// POST /api/admin/applications - Create application
+	// POST /api/applications - Create application
 	fastify.post(
 		"/applications",
 		{
@@ -318,7 +318,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// GET /api/admin/applications - List applications
+	// GET /api/applications - List applications
 	fastify.get(
 		"/applications",
 		{
@@ -355,7 +355,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// GET /api/admin/applications/:id - Get application by ID
+	// GET /api/applications/:id - Get application by ID
 	fastify.get(
 		"/applications/:id",
 		{
@@ -380,7 +380,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// GET /api/admin/applications/by-code/:code - Get application by code
+	// GET /api/applications/by-code/:code - Get application by code
 	fastify.get(
 		"/applications/by-code/:code",
 		{
@@ -405,7 +405,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// PUT /api/admin/applications/:id - Update application
+	// PUT /api/applications/:id - Update application
 	fastify.put(
 		"/applications/:id",
 		{
@@ -450,7 +450,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// POST /api/admin/applications/:id/activate - Activate application
+	// POST /api/applications/:id/activate - Activate application
 	fastify.post(
 		"/applications/:id/activate",
 		{
@@ -485,7 +485,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// POST /api/admin/applications/:id/deactivate - Deactivate application
+	// POST /api/applications/:id/deactivate - Deactivate application
 	fastify.post(
 		"/applications/:id/deactivate",
 		{
@@ -520,7 +520,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/applications/:id - Delete application
+	// DELETE /api/applications/:id - Delete application
 	fastify.delete(
 		"/applications/:id",
 		{
@@ -551,7 +551,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// GET /api/admin/applications/:id/clients - Get client configs for application
+	// GET /api/applications/:id/clients - Get client configs for application
 	fastify.get(
 		"/applications/:id/clients",
 		{
@@ -582,7 +582,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// POST /api/admin/applications/:id/clients - Enable application for client
+	// POST /api/applications/:id/clients - Enable application for client
 	fastify.post(
 		"/applications/:id/clients",
 		{
@@ -628,7 +628,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/applications/:id/clients/:clientId - Disable application for client
+	// DELETE /api/applications/:id/clients/:clientId - Disable application for client
 	fastify.delete(
 		"/applications/:id/clients/:clientId",
 		{
@@ -663,7 +663,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// GET /api/admin/applications/:id/roles - Get roles for application (Java parity)
+	// GET /api/applications/:id/roles - Get roles for application (Java parity)
 	fastify.get(
 		"/applications/:id/roles",
 		{
@@ -699,7 +699,7 @@ export async function registerApplicationsRoutes(
 		},
 	);
 
-	// POST /api/admin/applications/:id/provision-service-account - Provision service account (Java parity)
+	// POST /api/applications/:id/provision-service-account - Provision service account (Java parity)
 	fastify.post(
 		"/applications/:id/provision-service-account",
 		{

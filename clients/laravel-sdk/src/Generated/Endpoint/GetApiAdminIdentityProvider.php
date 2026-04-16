@@ -11,7 +11,7 @@ class GetApiAdminIdentityProvider extends \FlowCatalyst\Generated\Runtime\Client
     }
     public function getUri(): string
     {
-        return '/api/admin/identity-providers';
+        return '/api/identity-providers';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

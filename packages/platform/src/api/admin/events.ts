@@ -138,7 +138,7 @@ export async function registerEventsRoutes(
 ): Promise<void> {
 	const { eventReadRepository } = deps;
 
-	// GET /api/admin/events - List events with filters
+	// GET /api/events - List events with filters
 	fastify.get(
 		"/events",
 		{
@@ -202,7 +202,7 @@ export async function registerEventsRoutes(
 		},
 	);
 
-	// GET /api/admin/events/filter-options - Get cascading filter options
+	// GET /api/events/filter-options - Get cascading filter options
 	fastify.get(
 		"/events/filter-options",
 		{
@@ -244,7 +244,7 @@ export async function registerEventsRoutes(
 		},
 	);
 
-	// GET /api/admin/events/:id - Get single event
+	// GET /api/events/:id - Get single event
 	fastify.get(
 		"/events/:id",
 		{
@@ -269,7 +269,7 @@ export async function registerEventsRoutes(
 		},
 	);
 
-	// GET /api/admin/events/raw - Raw events directly from msg_events (no stream processor needed)
+	// GET /api/events/raw - Raw events directly from msg_events (no stream processor needed)
 	fastify.get(
 		"/events/raw",
 		{

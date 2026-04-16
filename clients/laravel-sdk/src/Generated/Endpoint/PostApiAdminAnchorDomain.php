@@ -18,7 +18,7 @@ class PostApiAdminAnchorDomain extends \FlowCatalyst\Generated\Runtime\Client\Ba
     }
     public function getUri(): string
     {
-        return '/api/admin/anchor-domains';
+        return '/api/anchor-domains';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

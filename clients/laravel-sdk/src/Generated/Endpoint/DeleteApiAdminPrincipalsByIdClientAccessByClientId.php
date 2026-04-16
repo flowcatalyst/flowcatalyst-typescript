@@ -22,7 +22,7 @@ class DeleteApiAdminPrincipalsByIdClientAccessByClientId extends \FlowCatalyst\G
     }
     public function getUri(): string
     {
-        return str_replace(['{id}', '{clientId}'], [$this->id, $this->clientId], '/api/admin/principals/{id}/client-access/{clientId}');
+        return str_replace(['{id}', '{clientId}'], [$this->id, $this->clientId], '/api/principals/{id}/client-access/{clientId}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

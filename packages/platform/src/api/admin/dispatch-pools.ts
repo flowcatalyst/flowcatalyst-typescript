@@ -161,7 +161,7 @@ export async function registerDispatchPoolsRoutes(
 		syncDispatchPoolsUseCase,
 	} = deps;
 
-	// GET /api/admin/dispatch-pools - List with filters
+	// GET /api/dispatch-pools - List with filters
 	fastify.get(
 		"/dispatch-pools",
 		{
@@ -196,7 +196,7 @@ export async function registerDispatchPoolsRoutes(
 		},
 	);
 
-	// GET /api/admin/dispatch-pools/:id - Get by ID
+	// GET /api/dispatch-pools/:id - Get by ID
 	fastify.get(
 		"/dispatch-pools/:id",
 		{
@@ -221,7 +221,7 @@ export async function registerDispatchPoolsRoutes(
 		},
 	);
 
-	// POST /api/admin/dispatch-pools - Create
+	// POST /api/dispatch-pools - Create
 	fastify.post(
 		"/dispatch-pools",
 		{
@@ -263,7 +263,7 @@ export async function registerDispatchPoolsRoutes(
 		},
 	);
 
-	// PUT /api/admin/dispatch-pools/:id - Update
+	// PUT /api/dispatch-pools/:id - Update
 	fastify.put(
 		"/dispatch-pools/:id",
 		{
@@ -311,7 +311,7 @@ export async function registerDispatchPoolsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/dispatch-pools/:id - Delete (archive)
+	// DELETE /api/dispatch-pools/:id - Delete (archive)
 	fastify.delete(
 		"/dispatch-pools/:id",
 		{
@@ -339,7 +339,7 @@ export async function registerDispatchPoolsRoutes(
 		},
 	);
 
-	// POST /api/admin/dispatch-pools/:id/suspend - Suspend
+	// POST /api/dispatch-pools/:id/suspend - Suspend
 	fastify.post(
 		"/dispatch-pools/:id/suspend",
 		{
@@ -373,7 +373,7 @@ export async function registerDispatchPoolsRoutes(
 		},
 	);
 
-	// POST /api/admin/dispatch-pools/:id/activate - Activate
+	// POST /api/dispatch-pools/:id/activate - Activate
 	fastify.post(
 		"/dispatch-pools/:id/activate",
 		{
@@ -407,7 +407,7 @@ export async function registerDispatchPoolsRoutes(
 		},
 	);
 
-	// POST /api/admin/dispatch-pools/sync - Sync from SDK
+	// POST /api/dispatch-pools/sync - Sync from SDK
 	fastify.post(
 		"/dispatch-pools/sync",
 		{

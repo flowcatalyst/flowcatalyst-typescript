@@ -24,7 +24,7 @@ class GetApiAdminConfigByAppCode extends \FlowCatalyst\Generated\Runtime\Client\
     }
     public function getUri(): string
     {
-        return str_replace(['{appCode}'], [$this->appCode], '/api/admin/config/{appCode}');
+        return str_replace(['{appCode}'], [$this->appCode], '/api/config/{appCode}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

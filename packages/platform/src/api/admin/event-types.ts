@@ -255,7 +255,7 @@ export async function registerEventTypesRoutes(
 		syncEventTypesUseCase,
 	} = deps;
 
-	// GET /api/admin/event-types - List with filters
+	// GET /api/event-types - List with filters
 	fastify.get(
 		"/event-types",
 		{
@@ -290,7 +290,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// GET /api/admin/event-types/:id - Get by ID
+	// GET /api/event-types/:id - Get by ID
 	fastify.get(
 		"/event-types/:id",
 		{
@@ -315,7 +315,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// POST /api/admin/event-types/:id/codegen - Generate code from schema
+	// POST /api/event-types/:id/codegen - Generate code from schema
 	fastify.post(
 		"/event-types/:id/codegen",
 		{
@@ -378,7 +378,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// POST /api/admin/event-types - Create
+	// POST /api/event-types - Create
 	fastify.post(
 		"/event-types",
 		{
@@ -421,7 +421,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// PATCH /api/admin/event-types/:id - Update metadata
+	// PATCH /api/event-types/:id - Update metadata
 	fastify.patch(
 		"/event-types/:id",
 		{
@@ -462,7 +462,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// DELETE /api/admin/event-types/:id - Delete
+	// DELETE /api/event-types/:id - Delete
 	fastify.delete(
 		"/event-types/:id",
 		{
@@ -490,7 +490,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// POST /api/admin/event-types/:id/archive - Archive
+	// POST /api/event-types/:id/archive - Archive
 	fastify.post(
 		"/event-types/:id/archive",
 		{
@@ -521,7 +521,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// POST /api/admin/event-types/:id/schemas - Add schema
+	// POST /api/event-types/:id/schemas - Add schema
 	fastify.post(
 		"/event-types/:id/schemas",
 		{
@@ -562,7 +562,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// POST /api/admin/event-types/:id/schemas/:version/finalise - Finalise schema
+	// POST /api/event-types/:id/schemas/:version/finalise - Finalise schema
 	fastify.post(
 		"/event-types/:id/schemas/:version/finalise",
 		{
@@ -597,7 +597,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// POST /api/admin/event-types/:id/schemas/:version/deprecate - Deprecate schema
+	// POST /api/event-types/:id/schemas/:version/deprecate - Deprecate schema
 	fastify.post(
 		"/event-types/:id/schemas/:version/deprecate",
 		{
@@ -632,7 +632,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// POST /api/admin/event-types/sync - Sync event types from SDK
+	// POST /api/event-types/sync - Sync event types from SDK
 	fastify.post(
 		"/event-types/sync",
 		{
@@ -672,7 +672,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// GET /api/admin/event-types/filters/applications - Distinct applications
+	// GET /api/event-types/filters/applications - Distinct applications
 	fastify.get(
 		"/event-types/filters/applications",
 		{
@@ -689,7 +689,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// GET /api/admin/event-types/filters/subdomains - Distinct subdomains
+	// GET /api/event-types/filters/subdomains - Distinct subdomains
 	fastify.get(
 		"/event-types/filters/subdomains",
 		{
@@ -711,7 +711,7 @@ export async function registerEventTypesRoutes(
 		},
 	);
 
-	// GET /api/admin/event-types/filters/aggregates - Distinct aggregates
+	// GET /api/event-types/filters/aggregates - Distinct aggregates
 	fastify.get(
 		"/event-types/filters/aggregates",
 		{

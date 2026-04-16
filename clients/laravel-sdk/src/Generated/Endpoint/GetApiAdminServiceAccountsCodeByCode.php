@@ -19,7 +19,7 @@ class GetApiAdminServiceAccountsCodeByCode extends \FlowCatalyst\Generated\Runti
     }
     public function getUri(): string
     {
-        return str_replace(['{code}'], [$this->code], '/api/admin/service-accounts/code/{code}');
+        return str_replace(['{code}'], [$this->code], '/api/service-accounts/code/{code}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

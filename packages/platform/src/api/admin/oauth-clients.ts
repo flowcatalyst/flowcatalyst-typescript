@@ -242,7 +242,7 @@ export async function registerOAuthClientsRoutes(
 		return new Map(apps.map((a) => [a.id, a.name]));
 	}
 
-	// GET /api/admin/oauth-clients - List all OAuth clients
+	// GET /api/oauth-clients - List all OAuth clients
 	fastify.get(
 		"/oauth-clients",
 		{
@@ -271,7 +271,7 @@ export async function registerOAuthClientsRoutes(
 		},
 	);
 
-	// GET /api/admin/oauth-clients/:id - Get OAuth client by ID
+	// GET /api/oauth-clients/:id - Get OAuth client by ID
 	fastify.get(
 		"/oauth-clients/:id",
 		{
@@ -297,7 +297,7 @@ export async function registerOAuthClientsRoutes(
 		},
 	);
 
-	// GET /api/admin/oauth-clients/by-client-id/:clientId - Get OAuth client by clientId
+	// GET /api/oauth-clients/by-client-id/:clientId - Get OAuth client by clientId
 	fastify.get(
 		"/oauth-clients/by-client-id/:clientId",
 		{
@@ -323,7 +323,7 @@ export async function registerOAuthClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/oauth-clients - Create OAuth client
+	// POST /api/oauth-clients - Create OAuth client
 	fastify.post(
 		"/oauth-clients",
 		{
@@ -386,7 +386,7 @@ export async function registerOAuthClientsRoutes(
 		},
 	);
 
-	// PUT /api/admin/oauth-clients/:id - Update OAuth client
+	// PUT /api/oauth-clients/:id - Update OAuth client
 	fastify.put(
 		"/oauth-clients/:id",
 		{
@@ -435,7 +435,7 @@ export async function registerOAuthClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/oauth-clients/:id/regenerate-secret - Regenerate client secret
+	// POST /api/oauth-clients/:id/regenerate-secret - Regenerate client secret
 	fastify.post(
 		"/oauth-clients/:id/regenerate-secret",
 		{
@@ -487,7 +487,7 @@ export async function registerOAuthClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/oauth-clients/:id/activate - Activate OAuth client
+	// POST /api/oauth-clients/:id/activate - Activate OAuth client
 	fastify.post(
 		"/oauth-clients/:id/activate",
 		{
@@ -513,7 +513,7 @@ export async function registerOAuthClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/oauth-clients/:id/deactivate - Deactivate OAuth client
+	// POST /api/oauth-clients/:id/deactivate - Deactivate OAuth client
 	fastify.post(
 		"/oauth-clients/:id/deactivate",
 		{
@@ -539,7 +539,7 @@ export async function registerOAuthClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/oauth-clients/:id/rotate-secret - Alias for regenerate-secret
+	// POST /api/oauth-clients/:id/rotate-secret - Alias for regenerate-secret
 	fastify.post(
 		"/oauth-clients/:id/rotate-secret",
 		{
@@ -591,7 +591,7 @@ export async function registerOAuthClientsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/oauth-clients/:id - Delete OAuth client
+	// DELETE /api/oauth-clients/:id - Delete OAuth client
 	fastify.delete(
 		"/oauth-clients/:id",
 		{

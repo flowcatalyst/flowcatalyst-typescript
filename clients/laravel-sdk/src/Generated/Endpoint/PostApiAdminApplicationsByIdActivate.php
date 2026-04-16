@@ -19,7 +19,7 @@ class PostApiAdminApplicationsByIdActivate extends \FlowCatalyst\Generated\Runti
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/applications/{id}/activate');
+        return str_replace(['{id}'], [$this->id], '/api/applications/{id}/activate');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -19,7 +19,7 @@ class DeleteApiAdminApplicationById extends \FlowCatalyst\Generated\Runtime\Clie
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/applications/{id}');
+        return str_replace(['{id}'], [$this->id], '/api/applications/{id}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

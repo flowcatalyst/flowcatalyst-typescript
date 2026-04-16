@@ -19,7 +19,7 @@ class PostApiAdminDispatchPoolsByIdActivate extends \FlowCatalyst\Generated\Runt
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/dispatch-pools/{id}/activate');
+        return str_replace(['{id}'], [$this->id], '/api/dispatch-pools/{id}/activate');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

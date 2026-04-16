@@ -19,7 +19,7 @@ class DeleteApiAdminPlatformCorById extends \FlowCatalyst\Generated\Runtime\Clie
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/platform/cors/{id}');
+        return str_replace(['{id}'], [$this->id], '/api/platform/cors/{id}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -19,7 +19,7 @@ class PostApiAdminServiceAccountsByIdRegenerateToken extends \FlowCatalyst\Gener
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/service-accounts/{id}/regenerate-token');
+        return str_replace(['{id}'], [$this->id], '/api/service-accounts/{id}/regenerate-token');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

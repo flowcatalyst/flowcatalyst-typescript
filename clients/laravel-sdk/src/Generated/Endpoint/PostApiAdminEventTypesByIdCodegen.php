@@ -21,7 +21,7 @@ class PostApiAdminEventTypesByIdCodegen extends \FlowCatalyst\Generated\Runtime\
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/event-types/{id}/codegen');
+        return str_replace(['{id}'], [$this->id], '/api/event-types/{id}/codegen');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

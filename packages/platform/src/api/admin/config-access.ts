@@ -73,7 +73,7 @@ export async function registerConfigAccessRoutes(
 ): Promise<void> {
 	const { platformConfigAccessRepository } = deps;
 
-	// GET /api/admin/config-access/:appCode - List access grants
+	// GET /api/config-access/:appCode - List access grants
 	fastify.get(
 		"/config-access/:appCode",
 		{
@@ -95,7 +95,7 @@ export async function registerConfigAccessRoutes(
 		},
 	);
 
-	// POST /api/admin/config-access/:appCode - Grant config access
+	// POST /api/config-access/:appCode - Grant config access
 	fastify.post(
 		"/config-access/:appCode",
 		{
@@ -139,7 +139,7 @@ export async function registerConfigAccessRoutes(
 		},
 	);
 
-	// PUT /api/admin/config-access/:appCode/:roleCode - Update access grant
+	// PUT /api/config-access/:appCode/:roleCode - Update access grant
 	fastify.put(
 		"/config-access/:appCode/:roleCode",
 		{
@@ -175,7 +175,7 @@ export async function registerConfigAccessRoutes(
 		},
 	);
 
-	// DELETE /api/admin/config-access/:appCode/:roleCode - Revoke access
+	// DELETE /api/config-access/:appCode/:roleCode - Revoke access
 	fastify.delete(
 		"/config-access/:appCode/:roleCode",
 		{

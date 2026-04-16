@@ -18,7 +18,7 @@ class PostApiAdminSubscription extends \FlowCatalyst\Generated\Runtime\Client\Ba
     }
     public function getUri(): string
     {
-        return '/api/admin/subscriptions';
+        return '/api/subscriptions';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

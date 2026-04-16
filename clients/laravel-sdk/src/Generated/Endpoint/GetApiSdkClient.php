@@ -11,7 +11,7 @@ class GetApiSdkClient extends \FlowCatalyst\Generated\Runtime\Client\BaseEndpoin
     }
     public function getUri(): string
     {
-        return '/api/sdk/clients';
+        return '/api/clients';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

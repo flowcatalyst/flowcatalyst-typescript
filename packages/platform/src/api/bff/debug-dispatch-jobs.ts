@@ -3,7 +3,7 @@
  *
  * Admin/debug endpoint for querying raw dispatch jobs from the transactional
  * dispatch_jobs table. The raw table has minimal indexes optimized for writes.
- * Regular UI queries should use /api/admin/dispatch-jobs which queries the
+ * Regular UI queries should use /api/dispatch-jobs which queries the
  * read-optimized projection.
  */
 

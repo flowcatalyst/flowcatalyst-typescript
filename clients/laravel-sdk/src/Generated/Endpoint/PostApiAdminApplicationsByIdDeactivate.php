@@ -19,7 +19,7 @@ class PostApiAdminApplicationsByIdDeactivate extends \FlowCatalyst\Generated\Run
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/applications/{id}/deactivate');
+        return str_replace(['{id}'], [$this->id], '/api/applications/{id}/deactivate');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

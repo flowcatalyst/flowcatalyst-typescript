@@ -91,7 +91,7 @@ export async function registerAnchorDomainsRoutes(
 		deleteAnchorDomainUseCase,
 	} = deps;
 
-	// POST /api/admin/anchor-domains - Create anchor domain
+	// POST /api/anchor-domains - Create anchor domain
 	fastify.post(
 		"/anchor-domains",
 		{
@@ -128,7 +128,7 @@ export async function registerAnchorDomainsRoutes(
 		},
 	);
 
-	// GET /api/admin/anchor-domains - List anchor domains
+	// GET /api/anchor-domains - List anchor domains
 	fastify.get(
 		"/anchor-domains",
 		{
@@ -150,7 +150,7 @@ export async function registerAnchorDomainsRoutes(
 		},
 	);
 
-	// GET /api/admin/anchor-domains/:id - Get anchor domain by ID
+	// GET /api/anchor-domains/:id - Get anchor domain by ID
 	fastify.get(
 		"/anchor-domains/:id",
 		{
@@ -175,7 +175,7 @@ export async function registerAnchorDomainsRoutes(
 		},
 	);
 
-	// PUT /api/admin/anchor-domains/:id - Update anchor domain
+	// PUT /api/anchor-domains/:id - Update anchor domain
 	fastify.put(
 		"/anchor-domains/:id",
 		{
@@ -213,7 +213,7 @@ export async function registerAnchorDomainsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/anchor-domains/:id - Delete anchor domain
+	// DELETE /api/anchor-domains/:id - Delete anchor domain
 	fastify.delete(
 		"/anchor-domains/:id",
 		{

@@ -19,7 +19,7 @@ class GetApiAdminAuthConfigById extends \FlowCatalyst\Generated\Runtime\Client\B
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/auth-configs/{id}');
+        return str_replace(['{id}'], [$this->id], '/api/auth-configs/{id}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

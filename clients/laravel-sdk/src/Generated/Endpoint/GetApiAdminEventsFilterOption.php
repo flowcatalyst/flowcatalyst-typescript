@@ -23,7 +23,7 @@ class GetApiAdminEventsFilterOption extends \FlowCatalyst\Generated\Runtime\Clie
     }
     public function getUri(): string
     {
-        return '/api/admin/events/filter-options';
+        return '/api/events/filter-options';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

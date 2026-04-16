@@ -24,7 +24,7 @@ class GetApiAdminRole extends \FlowCatalyst\Generated\Runtime\Client\BaseEndpoin
     }
     public function getUri(): string
     {
-        return '/api/admin/roles';
+        return '/api/roles';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

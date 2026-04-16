@@ -21,7 +21,7 @@ class PutApiAdminServiceAccountsByIdRole extends \FlowCatalyst\Generated\Runtime
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/service-accounts/{id}/roles');
+        return str_replace(['{id}'], [$this->id], '/api/service-accounts/{id}/roles');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

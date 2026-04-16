@@ -24,7 +24,7 @@ class GetApiAdminSubscription extends \FlowCatalyst\Generated\Runtime\Client\Bas
     }
     public function getUri(): string
     {
-        return '/api/admin/subscriptions';
+        return '/api/subscriptions';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

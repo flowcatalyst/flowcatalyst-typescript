@@ -19,7 +19,7 @@ class GetApiAdminRolesByApplicationByApplicationId extends \FlowCatalyst\Generat
     }
     public function getUri(): string
     {
-        return str_replace(['{applicationId}'], [$this->applicationId], '/api/admin/roles/by-application/{applicationId}');
+        return str_replace(['{applicationId}'], [$this->applicationId], '/api/roles/by-application/{applicationId}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

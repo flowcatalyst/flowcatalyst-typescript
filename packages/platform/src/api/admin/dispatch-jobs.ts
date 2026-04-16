@@ -230,7 +230,7 @@ export async function registerDispatchJobsRoutes(
 ): Promise<void> {
 	const { dispatchJobReadRepository } = deps;
 
-	// GET /api/admin/dispatch-jobs - List dispatch jobs with filters
+	// GET /api/dispatch-jobs - List dispatch jobs with filters
 	fastify.get(
 		"/dispatch-jobs",
 		{
@@ -299,7 +299,7 @@ export async function registerDispatchJobsRoutes(
 		},
 	);
 
-	// GET /api/admin/dispatch-jobs/filter-options - Get cascading filter options
+	// GET /api/dispatch-jobs/filter-options - Get cascading filter options
 	fastify.get(
 		"/dispatch-jobs/filter-options",
 		{
@@ -341,7 +341,7 @@ export async function registerDispatchJobsRoutes(
 		},
 	);
 
-	// GET /api/admin/dispatch-jobs/:id - Get single dispatch job
+	// GET /api/dispatch-jobs/:id - Get single dispatch job
 	fastify.get(
 		"/dispatch-jobs/:id",
 		{
@@ -366,7 +366,7 @@ export async function registerDispatchJobsRoutes(
 		},
 	);
 
-	// GET /api/admin/dispatch-jobs/:id/attempts - Get attempts for a dispatch job
+	// GET /api/dispatch-jobs/:id/attempts - Get attempts for a dispatch job
 	fastify.get(
 		"/dispatch-jobs/:id/attempts",
 		{
@@ -398,7 +398,7 @@ export async function registerDispatchJobsRoutes(
 		},
 	);
 
-	// GET /api/admin/dispatch-jobs/raw - Raw jobs directly from msg_dispatch_jobs (no stream processor needed)
+	// GET /api/dispatch-jobs/raw - Raw jobs directly from msg_dispatch_jobs (no stream processor needed)
 	fastify.get(
 		"/dispatch-jobs/raw",
 		{

@@ -21,7 +21,7 @@ class PutApiAdminAuthConfigsByIdConfigType extends \FlowCatalyst\Generated\Runti
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/auth-configs/{id}/config-type');
+        return str_replace(['{id}'], [$this->id], '/api/auth-configs/{id}/config-type');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

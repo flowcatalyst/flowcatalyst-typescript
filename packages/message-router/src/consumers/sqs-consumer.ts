@@ -55,12 +55,18 @@ export class SqsConsumer implements QueueConsumer {
 	private metricsTask: Promise<void> | null = null;
 	private abortController = new AbortController();
 
-	// Track pending deletes for expired receipt handles.
-	// Each entry has a timestamp so we can expire after 1 minute (avoid blocking deliberate resends).
+	// Track acked SQS message IDs so any redelivery within the TTL is
+	// batch-deleted immediately instead of being re-routed to the mediator.
+	// Populated on every ack (success or failure) — SQS standard queues are
+	// at-least-once, so even a successful DeleteMessage can be followed by
+	// a redelivery; a failed ack obviously needs the same guard.
+	// Keyed by SQS MessageId (stable across redeliveries, different per republish).
 	private readonly pendingDeleteSqsMessageIds = new Map<
 		string,
 		{ messageId: string; addedAt: number }
 	>();
+	private pendingDeleteCleanupInterval: ReturnType<typeof setInterval> | null =
+		null;
 
 	// Queue metrics
 	private pendingMessages = 0;
@@ -68,6 +74,10 @@ export class SqsConsumer implements QueueConsumer {
 
 	// Health check timeout (60 seconds)
 	private static readonly POLL_TIMEOUT_MS = 60_000;
+
+	// Pending-delete TTL — how long to suppress redeliveries of an acked message
+	private static readonly PENDING_DELETE_TTL_MS = 15 * 60 * 1000;
+	private static readonly PENDING_DELETE_CLEANUP_INTERVAL_MS = 60_000;
 
 	// Adaptive delays
 	// Empty batch: 1s — long poll already waited up to 20s, brief pause before re-poll
@@ -121,6 +131,12 @@ export class SqsConsumer implements QueueConsumer {
 
 		// Start metrics polling
 		this.metricsTask = this.metricsLoop();
+
+		// Start pending-delete TTL sweeper
+		this.pendingDeleteCleanupInterval = setInterval(
+			() => this.purgeExpiredPendingDeletes(),
+			SqsConsumer.PENDING_DELETE_CLEANUP_INTERVAL_MS,
+		);
 	}
 
 	/**
@@ -135,6 +151,11 @@ export class SqsConsumer implements QueueConsumer {
 		await Promise.allSettled(this.pollingTasks);
 		if (this.metricsTask) {
 			await this.metricsTask;
+		}
+
+		if (this.pendingDeleteCleanupInterval) {
+			clearInterval(this.pendingDeleteCleanupInterval);
+			this.pendingDeleteCleanupInterval = null;
 		}
 
 		this.pollingTasks = [];
@@ -330,20 +351,27 @@ export class SqsConsumer implements QueueConsumer {
 				continue;
 			}
 
-			// Check for pending deletes (messages that were processed but delete failed)
+			// Check for acked messages (redeliveries we should swallow).
+			// Keep the entry until it ages out — SQS may redeliver many times
+			// within the TTL and every hit must short-circuit to batch-delete
+			// without re-routing to the mediator.
 			const pendingEntry = this.pendingDeleteSqsMessageIds.get(sqsMsg.MessageId);
 			if (pendingEntry) {
-				if (Date.now() - pendingEntry.addedAt < 60_000) {
-					// Within 1 minute — this is an SQS redelivery, delete it
+				if (
+					Date.now() - pendingEntry.addedAt <
+					SqsConsumer.PENDING_DELETE_TTL_MS
+				) {
 					this.logger.info(
 						{ sqsMessageId: sqsMsg.MessageId },
-						"Found pending delete - deleting message",
+						"Found pending delete - batch-deleting redelivery",
 					);
-					skipDeletes.push({ id: sqsMsg.MessageId, receiptHandle: sqsMsg.ReceiptHandle });
-					this.pendingDeleteSqsMessageIds.delete(sqsMsg.MessageId);
+					skipDeletes.push({
+						id: sqsMsg.MessageId,
+						receiptHandle: sqsMsg.ReceiptHandle,
+					});
 					continue;
 				}
-				// Older than 1 minute — could be a deliberate resend, let it through
+				// Aged out — drop and let it route (covers deliberate resends after TTL)
 				this.pendingDeleteSqsMessageIds.delete(sqsMsg.MessageId);
 			}
 
@@ -460,18 +488,28 @@ export class SqsConsumer implements QueueConsumer {
 	}
 
 	/**
-	 * ACK a message (delete from queue)
+	 * ACK a message (delete from queue).
+	 *
+	 * Always records the SQS MessageId in the pending-delete list — regardless
+	 * of whether DeleteMessage succeeds or fails. SQS standard queues are
+	 * at-least-once, so even a successful delete can be followed by a
+	 * redelivery; a failed delete obviously needs the guard. Redeliveries
+	 * inside the TTL are batch-deleted without re-routing to the mediator.
 	 */
 	private async ackMessage(
 		sqsMessageId: string,
 		receiptHandle: string,
 		pointer: MessagePointer,
 	): Promise<void> {
+		this.pendingDeleteSqsMessageIds.set(sqsMessageId, {
+			messageId: pointer.messageId,
+			addedAt: Date.now(),
+		});
+
 		try {
 			await this.deleteMessage(receiptHandle);
 			this.logger.debug({ messageId: pointer.messageId }, "Message ACKed");
 		} catch (error) {
-			// Check if receipt handle expired
 			const errorMessage =
 				error instanceof Error ? error.message : String(error);
 			if (
@@ -480,18 +518,36 @@ export class SqsConsumer implements QueueConsumer {
 			) {
 				this.logger.warn(
 					{ messageId: pointer.messageId, sqsMessageId },
-					"Receipt handle expired - adding to pending deletes",
+					"Receipt handle expired - relying on pending-delete guard",
 				);
-				this.pendingDeleteSqsMessageIds.set(sqsMessageId, {
-					messageId: pointer.messageId,
-					addedAt: Date.now(),
-				});
 			} else {
 				this.logger.error(
-					{ err: error, messageId: pointer.messageId },
-					"Unexpected error deleting message",
+					{ err: error, messageId: pointer.messageId, sqsMessageId },
+					"Error deleting message - relying on pending-delete guard",
 				);
 			}
+		}
+	}
+
+	/**
+	 * Purge pending-delete entries older than the TTL.
+	 * Runs on a timer so entries for messages that never get redelivered
+	 * don't accumulate indefinitely.
+	 */
+	private purgeExpiredPendingDeletes(): void {
+		const cutoff = Date.now() - SqsConsumer.PENDING_DELETE_TTL_MS;
+		let removed = 0;
+		for (const [sqsMessageId, entry] of this.pendingDeleteSqsMessageIds) {
+			if (entry.addedAt < cutoff) {
+				this.pendingDeleteSqsMessageIds.delete(sqsMessageId);
+				removed++;
+			}
+		}
+		if (removed > 0) {
+			this.logger.debug(
+				{ removed, remaining: this.pendingDeleteSqsMessageIds.size },
+				"Purged expired pending-delete entries",
+			);
 		}
 	}
 

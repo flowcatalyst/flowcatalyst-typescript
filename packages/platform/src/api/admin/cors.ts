@@ -82,7 +82,7 @@ export async function registerCorsRoutes(
 		deleteCorsOriginUseCase,
 	} = deps;
 
-	// POST /api/admin/platform/cors - Add CORS origin
+	// POST /api/platform/cors - Add CORS origin
 	fastify.post(
 		"/platform/cors",
 		{
@@ -120,7 +120,7 @@ export async function registerCorsRoutes(
 		},
 	);
 
-	// GET /api/admin/platform/cors - List CORS origins
+	// GET /api/platform/cors - List CORS origins
 	fastify.get(
 		"/platform/cors",
 		{
@@ -142,7 +142,7 @@ export async function registerCorsRoutes(
 		},
 	);
 
-	// GET /api/admin/platform/cors/allowed - Get allowed origins (just the origin strings)
+	// GET /api/platform/cors/allowed - Get allowed origins (just the origin strings)
 	fastify.get(
 		"/platform/cors/allowed",
 		{
@@ -161,7 +161,7 @@ export async function registerCorsRoutes(
 		},
 	);
 
-	// GET /api/admin/platform/cors/:id - Get CORS origin by ID
+	// GET /api/platform/cors/:id - Get CORS origin by ID
 	fastify.get(
 		"/platform/cors/:id",
 		{
@@ -186,7 +186,7 @@ export async function registerCorsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/platform/cors/:id - Delete CORS origin
+	// DELETE /api/platform/cors/:id - Delete CORS origin
 	fastify.delete(
 		"/platform/cors/:id",
 		{

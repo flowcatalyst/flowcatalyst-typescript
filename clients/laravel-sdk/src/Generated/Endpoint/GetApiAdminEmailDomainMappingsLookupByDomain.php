@@ -19,7 +19,7 @@ class GetApiAdminEmailDomainMappingsLookupByDomain extends \FlowCatalyst\Generat
     }
     public function getUri(): string
     {
-        return str_replace(['{domain}'], [$this->domain], '/api/admin/email-domain-mappings/lookup/{domain}');
+        return str_replace(['{domain}'], [$this->domain], '/api/email-domain-mappings/lookup/{domain}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

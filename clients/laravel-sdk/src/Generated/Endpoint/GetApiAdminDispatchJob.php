@@ -36,7 +36,7 @@ class GetApiAdminDispatchJob extends \FlowCatalyst\Generated\Runtime\Client\Base
     }
     public function getUri(): string
     {
-        return '/api/admin/dispatch-jobs';
+        return '/api/dispatch-jobs';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

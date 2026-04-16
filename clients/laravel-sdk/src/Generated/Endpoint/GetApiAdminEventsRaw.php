@@ -21,7 +21,7 @@ class GetApiAdminEventsRaw extends \FlowCatalyst\Generated\Runtime\Client\BaseEn
     }
     public function getUri(): string
     {
-        return '/api/admin/events/raw';
+        return '/api/events/raw';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

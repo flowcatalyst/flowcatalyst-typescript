@@ -29,7 +29,7 @@ class GetApiAdminLoginAttempt extends \FlowCatalyst\Generated\Runtime\Client\Bas
     }
     public function getUri(): string
     {
-        return '/api/admin/login-attempts';
+        return '/api/login-attempts';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

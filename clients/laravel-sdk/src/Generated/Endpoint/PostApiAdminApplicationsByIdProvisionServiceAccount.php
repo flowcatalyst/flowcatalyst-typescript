@@ -21,7 +21,7 @@ class PostApiAdminApplicationsByIdProvisionServiceAccount extends \FlowCatalyst\
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/applications/{id}/provision-service-account');
+        return str_replace(['{id}'], [$this->id], '/api/applications/{id}/provision-service-account');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -154,7 +154,7 @@ export async function registerAuditLogsRoutes(
 	const DEFAULT_LIMIT = 100;
 	const MAX_LIMIT = 500;
 
-	// GET /api/admin/audit-logs - List audit logs with filters
+	// GET /api/audit-logs - List audit logs with filters
 	fastify.get(
 		"/audit-logs",
 		{
@@ -216,7 +216,7 @@ export async function registerAuditLogsRoutes(
 		},
 	);
 
-	// GET /api/admin/audit-logs/:id - Get single audit log
+	// GET /api/audit-logs/:id - Get single audit log
 	fastify.get(
 		"/audit-logs/:id",
 		{
@@ -246,7 +246,7 @@ export async function registerAuditLogsRoutes(
 		},
 	);
 
-	// GET /api/admin/audit-logs/entity/:entityType/:entityId - Get logs for specific entity
+	// GET /api/audit-logs/entity/:entityType/:entityId - Get logs for specific entity
 	fastify.get(
 		"/audit-logs/entity/:entityType/:entityId",
 		{
@@ -297,7 +297,7 @@ export async function registerAuditLogsRoutes(
 		},
 	);
 
-	// GET /api/admin/audit-logs/entity-types - Get distinct entity types
+	// GET /api/audit-logs/entity-types - Get distinct entity types
 	fastify.get(
 		"/audit-logs/entity-types",
 		{
@@ -317,7 +317,7 @@ export async function registerAuditLogsRoutes(
 		},
 	);
 
-	// GET /api/admin/audit-logs/operations - Get distinct operations
+	// GET /api/audit-logs/operations - Get distinct operations
 	fastify.get(
 		"/audit-logs/operations",
 		{
@@ -337,7 +337,7 @@ export async function registerAuditLogsRoutes(
 		},
 	);
 
-	// GET /api/admin/audit-logs/application-ids - Get distinct application IDs present in audit logs
+	// GET /api/audit-logs/application-ids - Get distinct application IDs present in audit logs
 	fastify.get(
 		"/audit-logs/application-ids",
 		{
@@ -356,7 +356,7 @@ export async function registerAuditLogsRoutes(
 		},
 	);
 
-	// GET /api/admin/audit-logs/client-ids - Get distinct client IDs present in audit logs
+	// GET /api/audit-logs/client-ids - Get distinct client IDs present in audit logs
 	fastify.get(
 		"/audit-logs/client-ids",
 		{

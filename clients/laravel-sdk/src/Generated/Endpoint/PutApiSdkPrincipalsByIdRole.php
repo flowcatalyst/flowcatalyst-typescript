@@ -21,7 +21,7 @@ class PutApiSdkPrincipalsByIdRole extends \FlowCatalyst\Generated\Runtime\Client
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/sdk/principals/{id}/roles');
+        return str_replace(['{id}'], [$this->id], '/api/principals/{id}/roles');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

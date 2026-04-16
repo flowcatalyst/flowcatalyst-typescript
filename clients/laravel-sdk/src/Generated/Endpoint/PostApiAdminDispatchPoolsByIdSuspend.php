@@ -19,7 +19,7 @@ class PostApiAdminDispatchPoolsByIdSuspend extends \FlowCatalyst\Generated\Runti
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/dispatch-pools/{id}/suspend');
+        return str_replace(['{id}'], [$this->id], '/api/dispatch-pools/{id}/suspend');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

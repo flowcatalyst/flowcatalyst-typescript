@@ -32,7 +32,7 @@ class PutApiAdminConfigByAppCodeBySectionByProperty extends \FlowCatalyst\Genera
     }
     public function getUri(): string
     {
-        return str_replace(['{appCode}', '{section}', '{property}'], [$this->appCode, $this->section, $this->property], '/api/admin/config/{appCode}/{section}/{property}');
+        return str_replace(['{appCode}', '{section}', '{property}'], [$this->appCode, $this->section, $this->property], '/api/config/{appCode}/{section}/{property}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

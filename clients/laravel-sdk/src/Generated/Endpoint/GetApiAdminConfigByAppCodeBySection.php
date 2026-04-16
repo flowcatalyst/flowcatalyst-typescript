@@ -27,7 +27,7 @@ class GetApiAdminConfigByAppCodeBySection extends \FlowCatalyst\Generated\Runtim
     }
     public function getUri(): string
     {
-        return str_replace(['{appCode}', '{section}'], [$this->appCode, $this->section], '/api/admin/config/{appCode}/{section}');
+        return str_replace(['{appCode}', '{section}'], [$this->appCode, $this->section], '/api/config/{appCode}/{section}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

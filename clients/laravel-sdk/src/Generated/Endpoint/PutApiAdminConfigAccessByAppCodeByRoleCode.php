@@ -24,7 +24,7 @@ class PutApiAdminConfigAccessByAppCodeByRoleCode extends \FlowCatalyst\Generated
     }
     public function getUri(): string
     {
-        return str_replace(['{appCode}', '{roleCode}'], [$this->appCode, $this->roleCode], '/api/admin/config-access/{appCode}/{roleCode}');
+        return str_replace(['{appCode}', '{roleCode}'], [$this->appCode, $this->roleCode], '/api/config-access/{appCode}/{roleCode}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

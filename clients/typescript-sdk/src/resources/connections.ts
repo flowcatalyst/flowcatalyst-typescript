@@ -73,7 +73,7 @@ export class ConnectionsResource {
 		return this.client.request<ConnectionListResponse>(
 			(httpClient, headers) =>
 				httpClient.get({
-					url: "/api/admin/connections",
+					url: "/api/connections",
 					headers,
 					query: filters,
 				}),
@@ -86,7 +86,7 @@ export class ConnectionsResource {
 	get(id: string): ResultAsync<ConnectionDto, SdkError> {
 		return this.client.request<ConnectionDto>((httpClient, headers) =>
 			httpClient.get({
-				url: "/api/admin/connections/{id}",
+				url: "/api/connections/{id}",
 				headers,
 				path: { id },
 			}),
@@ -101,7 +101,7 @@ export class ConnectionsResource {
 	): ResultAsync<ConnectionDto, SdkError> {
 		return this.client.request<ConnectionDto>((httpClient, headers) =>
 			httpClient.post({
-				url: "/api/admin/connections",
+				url: "/api/connections",
 				headers: {
 					...headers,
 					"Content-Type": "application/json",
@@ -120,7 +120,7 @@ export class ConnectionsResource {
 	): ResultAsync<ConnectionDto, SdkError> {
 		return this.client.request<ConnectionDto>((httpClient, headers) =>
 			httpClient.put({
-				url: "/api/admin/connections/{id}",
+				url: "/api/connections/{id}",
 				headers: {
 					...headers,
 					"Content-Type": "application/json",
@@ -137,7 +137,7 @@ export class ConnectionsResource {
 	delete(id: string): ResultAsync<unknown, SdkError> {
 		return this.client.request<unknown>((httpClient, headers) =>
 			httpClient.delete({
-				url: "/api/admin/connections/{id}",
+				url: "/api/connections/{id}",
 				headers,
 				path: { id },
 			}),
@@ -150,7 +150,7 @@ export class ConnectionsResource {
 	pause(id: string): ResultAsync<ConnectionDto, SdkError> {
 		return this.client.request<ConnectionDto>((httpClient, headers) =>
 			httpClient.post({
-				url: "/api/admin/connections/{id}/pause",
+				url: "/api/connections/{id}/pause",
 				headers,
 				path: { id },
 			}),
@@ -163,7 +163,7 @@ export class ConnectionsResource {
 	activate(id: string): ResultAsync<ConnectionDto, SdkError> {
 		return this.client.request<ConnectionDto>((httpClient, headers) =>
 			httpClient.post({
-				url: "/api/admin/connections/{id}/activate",
+				url: "/api/connections/{id}/activate",
 				headers,
 				path: { id },
 			}),

@@ -172,7 +172,7 @@ export async function registerClientsRoutes(
 		disableApplicationForClientUseCase,
 	} = deps;
 
-	// POST /api/admin/clients - Create client
+	// POST /api/clients - Create client
 	fastify.post(
 		"/clients",
 		{
@@ -211,7 +211,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// GET /api/admin/clients - List clients (with optional status filter)
+	// GET /api/clients - List clients (with optional status filter)
 	fastify.get(
 		"/clients",
 		{
@@ -262,7 +262,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// GET /api/admin/clients/search - Search clients
+	// GET /api/clients/search - Search clients
 	fastify.get(
 		"/clients/search",
 		{
@@ -307,7 +307,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// GET /api/admin/clients/:id - Get client by ID
+	// GET /api/clients/:id - Get client by ID
 	fastify.get(
 		"/clients/:id",
 		{
@@ -335,7 +335,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// GET /api/admin/clients/by-identifier/:identifier - Get client by identifier
+	// GET /api/clients/by-identifier/:identifier - Get client by identifier
 	fastify.get(
 		"/clients/by-identifier/:identifier",
 		{
@@ -366,7 +366,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// PUT /api/admin/clients/:id - Update client
+	// PUT /api/clients/:id - Update client
 	fastify.put(
 		"/clients/:id",
 		{
@@ -405,7 +405,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/clients/:id/activate - Activate client
+	// POST /api/clients/:id/activate - Activate client
 	fastify.post(
 		"/clients/:id/activate",
 		{
@@ -446,7 +446,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/clients/:id/suspend - Suspend client
+	// POST /api/clients/:id/suspend - Suspend client
 	fastify.post(
 		"/clients/:id/suspend",
 		{
@@ -487,7 +487,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/clients/:id/deactivate - Deactivate client
+	// POST /api/clients/:id/deactivate - Deactivate client
 	fastify.post(
 		"/clients/:id/deactivate",
 		{
@@ -528,7 +528,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/clients/:id/notes - Add note to client
+	// POST /api/clients/:id/notes - Add note to client
 	fastify.post(
 		"/clients/:id/notes",
 		{
@@ -567,7 +567,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// GET /api/admin/clients/:id/applications - List applications for client
+	// GET /api/clients/:id/applications - List applications for client
 	fastify.get(
 		"/clients/:id/applications",
 		{
@@ -635,7 +635,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// PUT /api/admin/clients/:id/applications - Bulk update enabled applications
+	// PUT /api/clients/:id/applications - Bulk update enabled applications
 	fastify.put(
 		"/clients/:id/applications",
 		{
@@ -704,7 +704,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/clients/:id/applications/:appId/enable - Enable application for client
+	// POST /api/clients/:id/applications/:appId/enable - Enable application for client
 	fastify.post(
 		"/clients/:id/applications/:appId/enable",
 		{
@@ -741,7 +741,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// POST /api/admin/clients/:id/applications/:appId/disable - Disable application for client
+	// POST /api/clients/:id/applications/:appId/disable - Disable application for client
 	fastify.post(
 		"/clients/:id/applications/:appId/disable",
 		{
@@ -778,7 +778,7 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/clients/:id - Delete client
+	// DELETE /api/clients/:id - Delete client
 	fastify.delete(
 		"/clients/:id",
 		{

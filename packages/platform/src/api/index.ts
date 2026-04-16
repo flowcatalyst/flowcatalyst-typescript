@@ -104,15 +104,6 @@ import {
 	type ApplicationSyncRoutesDeps,
 } from "./applications/sync.js";
 import {
-	registerSdkClientsRoutes,
-	type SdkClientsDeps,
-} from "./sdk/clients.js";
-import { registerSdkRolesRoutes, type SdkRolesDeps } from "./sdk/roles.js";
-import {
-	registerSdkPrincipalsRoutes,
-	type SdkPrincipalsDeps,
-} from "./sdk/principals.js";
-import {
 	registerEventsBatchRoutes,
 	type EventsBatchDeps,
 } from "./sdk/events-batch.js";
@@ -161,37 +152,40 @@ export interface AdminRoutesDeps
 		LoginAttemptsRoutesDeps {}
 
 /**
- * Register all admin API routes.
+ * Register all API routes. Gated by permissions, not URL tier.
+ *
+ * Previously split across `/api/admin/*` and `/api/sdk/*`; consolidated into
+ * a single `/api/*` surface. See CLAUDE.md for tier convention.
  */
 export async function registerAdminRoutes(
 	fastify: FastifyInstance,
 	deps: AdminRoutesDeps,
 ): Promise<void> {
 	await fastify.register(
-		async (adminRouter) => {
-			await registerPrincipalsRoutes(adminRouter, deps);
-			await registerClientsRoutes(adminRouter, deps);
-			await registerAnchorDomainsRoutes(adminRouter, deps);
-			await registerApplicationsRoutes(adminRouter, deps);
-			await registerRolesRoutes(adminRouter, deps);
-			await registerAuthConfigsRoutes(adminRouter, deps);
-			await registerOAuthClientsRoutes(adminRouter, deps);
-			await registerAuditLogsRoutes(adminRouter, deps);
-			await registerEventTypesRoutes(adminRouter, deps);
-			await registerDispatchPoolsRoutes(adminRouter, deps);
-			await registerConnectionsRoutes(adminRouter, deps);
-			await registerSubscriptionsRoutes(adminRouter, deps);
-			await registerEventsRoutes(adminRouter, deps);
-			await registerDispatchJobsRoutes(adminRouter, deps);
-			await registerIdentityProvidersRoutes(adminRouter, deps);
-			await registerEmailDomainMappingsRoutes(adminRouter, deps);
-			await registerServiceAccountsRoutes(adminRouter, deps);
-			await registerCorsRoutes(adminRouter, deps);
-			await registerConfigRoutes(adminRouter, deps);
-			await registerConfigAccessRoutes(adminRouter, deps);
-			await registerLoginAttemptsRoutes(adminRouter, deps);
+		async (apiRouter) => {
+			await registerPrincipalsRoutes(apiRouter, deps);
+			await registerClientsRoutes(apiRouter, deps);
+			await registerAnchorDomainsRoutes(apiRouter, deps);
+			await registerApplicationsRoutes(apiRouter, deps);
+			await registerRolesRoutes(apiRouter, deps);
+			await registerAuthConfigsRoutes(apiRouter, deps);
+			await registerOAuthClientsRoutes(apiRouter, deps);
+			await registerAuditLogsRoutes(apiRouter, deps);
+			await registerEventTypesRoutes(apiRouter, deps);
+			await registerDispatchPoolsRoutes(apiRouter, deps);
+			await registerConnectionsRoutes(apiRouter, deps);
+			await registerSubscriptionsRoutes(apiRouter, deps);
+			await registerEventsRoutes(apiRouter, deps);
+			await registerDispatchJobsRoutes(apiRouter, deps);
+			await registerIdentityProvidersRoutes(apiRouter, deps);
+			await registerEmailDomainMappingsRoutes(apiRouter, deps);
+			await registerServiceAccountsRoutes(apiRouter, deps);
+			await registerCorsRoutes(apiRouter, deps);
+			await registerConfigRoutes(apiRouter, deps);
+			await registerConfigAccessRoutes(apiRouter, deps);
+			await registerLoginAttemptsRoutes(apiRouter, deps);
 		},
-		{ prefix: "/api/admin" },
+		{ prefix: "/api" },
 	);
 }
 
@@ -241,31 +235,6 @@ export async function registerDebugBffRoutes(
 	};
 
 	await fastify.register(registerRoutes, { prefix: "/bff/debug" });
-}
-
-/**
- * Dependencies for SDK routes.
- */
-export interface SdkRoutesDeps
-	extends SdkClientsDeps,
-		SdkRolesDeps,
-		SdkPrincipalsDeps {}
-
-/**
- * Register all SDK routes (external integrations).
- */
-export async function registerSdkRoutes(
-	fastify: FastifyInstance,
-	deps: SdkRoutesDeps,
-): Promise<void> {
-	await fastify.register(
-		async (sdkRouter) => {
-			await registerSdkClientsRoutes(sdkRouter, deps);
-			await registerSdkRolesRoutes(sdkRouter, deps);
-			await registerSdkPrincipalsRoutes(sdkRouter, deps);
-		},
-		{ prefix: "/api/sdk" },
-	);
 }
 
 /**
@@ -396,9 +365,6 @@ export { type EventTypesBffDeps } from "./bff/event-types.js";
 export { type RolesBffDeps } from "./bff/roles.js";
 export { type DebugEventsBffDeps } from "./bff/debug-events.js";
 export { type DebugDispatchJobsBffDeps } from "./bff/debug-dispatch-jobs.js";
-export { type SdkClientsDeps } from "./sdk/clients.js";
-export { type SdkRolesDeps } from "./sdk/roles.js";
-export { type SdkPrincipalsDeps } from "./sdk/principals.js";
 export { type EventsBatchDeps } from "./sdk/events-batch.js";
 export { type DispatchJobsBatchDeps } from "./sdk/dispatch-jobs-batch.js";
 export { type AuditLogsBatchDeps } from "./sdk/audit-logs-batch.js";

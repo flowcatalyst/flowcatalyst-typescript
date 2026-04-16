@@ -21,7 +21,7 @@ class PutApiAdminServiceAccountById extends \FlowCatalyst\Generated\Runtime\Clie
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/service-accounts/{id}');
+        return str_replace(['{id}'], [$this->id], '/api/service-accounts/{id}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

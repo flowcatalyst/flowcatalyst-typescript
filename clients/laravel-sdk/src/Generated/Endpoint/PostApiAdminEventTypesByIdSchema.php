@@ -21,7 +21,7 @@ class PostApiAdminEventTypesByIdSchema extends \FlowCatalyst\Generated\Runtime\C
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/event-types/{id}/schemas');
+        return str_replace(['{id}'], [$this->id], '/api/event-types/{id}/schemas');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -27,7 +27,7 @@ class GetApiAdminAuditLogsEntityByEntityTypeByEntityId extends \FlowCatalyst\Gen
     }
     public function getUri(): string
     {
-        return str_replace(['{entityType}', '{entityId}'], [$this->entityType, $this->entityId], '/api/admin/audit-logs/entity/{entityType}/{entityId}');
+        return str_replace(['{entityType}', '{entityId}'], [$this->entityType, $this->entityId], '/api/audit-logs/entity/{entityType}/{entityId}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

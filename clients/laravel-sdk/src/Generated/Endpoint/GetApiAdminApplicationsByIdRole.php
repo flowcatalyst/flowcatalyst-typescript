@@ -19,7 +19,7 @@ class GetApiAdminApplicationsByIdRole extends \FlowCatalyst\Generated\Runtime\Cl
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/applications/{id}/roles');
+        return str_replace(['{id}'], [$this->id], '/api/applications/{id}/roles');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -18,7 +18,7 @@ class PostApiAdminAuthConfigsOidc extends \FlowCatalyst\Generated\Runtime\Client
     }
     public function getUri(): string
     {
-        return '/api/admin/auth-configs/oidc';
+        return '/api/auth-configs/oidc';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

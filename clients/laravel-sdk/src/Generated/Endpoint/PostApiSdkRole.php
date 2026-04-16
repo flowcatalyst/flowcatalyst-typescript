@@ -18,7 +18,7 @@ class PostApiSdkRole extends \FlowCatalyst\Generated\Runtime\Client\BaseEndpoint
     }
     public function getUri(): string
     {
-        return '/api/sdk/roles';
+        return '/api/roles';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

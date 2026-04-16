@@ -19,7 +19,7 @@ class PostApiAdminConnectionsByIdActivate extends \FlowCatalyst\Generated\Runtim
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/connections/{id}/activate');
+        return str_replace(['{id}'], [$this->id], '/api/connections/{id}/activate');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -21,7 +21,7 @@ class GetApiAdminEventTypesFiltersAggregate extends \FlowCatalyst\Generated\Runt
     }
     public function getUri(): string
     {
-        return '/api/admin/event-types/filters/aggregates';
+        return '/api/event-types/filters/aggregates';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

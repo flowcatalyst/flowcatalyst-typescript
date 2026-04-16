@@ -11,7 +11,7 @@ class GetApiAdminPlatformCorsAllowed extends \FlowCatalyst\Generated\Runtime\Cli
     }
     public function getUri(): string
     {
-        return '/api/admin/platform/cors/allowed';
+        return '/api/platform/cors/allowed';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

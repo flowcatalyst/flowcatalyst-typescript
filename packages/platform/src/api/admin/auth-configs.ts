@@ -211,7 +211,7 @@ export async function registerAuthConfigsRoutes(
 		deleteAuthConfigUseCase,
 	} = deps;
 
-	// GET /api/admin/auth-configs - List all auth configs
+	// GET /api/auth-configs - List all auth configs
 	fastify.get(
 		"/auth-configs",
 		{
@@ -246,7 +246,7 @@ export async function registerAuthConfigsRoutes(
 		},
 	);
 
-	// GET /api/admin/auth-configs/:id - Get auth config by ID
+	// GET /api/auth-configs/:id - Get auth config by ID
 	fastify.get(
 		"/auth-configs/:id",
 		{
@@ -271,7 +271,7 @@ export async function registerAuthConfigsRoutes(
 		},
 	);
 
-	// GET /api/admin/auth-configs/by-domain/:domain - Get auth config by email domain
+	// GET /api/auth-configs/by-domain/:domain - Get auth config by email domain
 	fastify.get(
 		"/auth-configs/by-domain/:domain",
 		{
@@ -296,7 +296,7 @@ export async function registerAuthConfigsRoutes(
 		},
 	);
 
-	// POST /api/admin/auth-configs/internal - Create INTERNAL auth config
+	// POST /api/auth-configs/internal - Create INTERNAL auth config
 	fastify.post(
 		"/auth-configs/internal",
 		{
@@ -340,7 +340,7 @@ export async function registerAuthConfigsRoutes(
 		},
 	);
 
-	// POST /api/admin/auth-configs/oidc - Create OIDC auth config
+	// POST /api/auth-configs/oidc - Create OIDC auth config
 	fastify.post(
 		"/auth-configs/oidc",
 		{
@@ -386,7 +386,7 @@ export async function registerAuthConfigsRoutes(
 		},
 	);
 
-	// PUT /api/admin/auth-configs/:id/oidc - Update OIDC settings
+	// PUT /api/auth-configs/:id/oidc - Update OIDC settings
 	fastify.put(
 		"/auth-configs/:id/oidc",
 		{
@@ -429,7 +429,7 @@ export async function registerAuthConfigsRoutes(
 		},
 	);
 
-	// PUT /api/admin/auth-configs/:id/config-type - Update config type
+	// PUT /api/auth-configs/:id/config-type - Update config type
 	fastify.put(
 		"/auth-configs/:id/config-type",
 		{
@@ -469,7 +469,7 @@ export async function registerAuthConfigsRoutes(
 		},
 	);
 
-	// PUT /api/admin/auth-configs/:id/additional-clients - Update additional clients
+	// PUT /api/auth-configs/:id/additional-clients - Update additional clients
 	fastify.put(
 		"/auth-configs/:id/additional-clients",
 		{
@@ -507,7 +507,7 @@ export async function registerAuthConfigsRoutes(
 		},
 	);
 
-	// PUT /api/admin/auth-configs/:id/granted-clients - Update granted clients
+	// PUT /api/auth-configs/:id/granted-clients - Update granted clients
 	fastify.put(
 		"/auth-configs/:id/granted-clients",
 		{
@@ -545,7 +545,7 @@ export async function registerAuthConfigsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/auth-configs/:id - Delete auth config
+	// DELETE /api/auth-configs/:id - Delete auth config
 	fastify.delete(
 		"/auth-configs/:id",
 		{

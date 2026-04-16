@@ -19,7 +19,7 @@ class PostApiAdminEventTypesByIdArchive extends \FlowCatalyst\Generated\Runtime\
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/event-types/{id}/archive');
+        return str_replace(['{id}'], [$this->id], '/api/event-types/{id}/archive');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -19,7 +19,7 @@ class PostApiAdminConnectionsByIdPause extends \FlowCatalyst\Generated\Runtime\C
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/connections/{id}/pause');
+        return str_replace(['{id}'], [$this->id], '/api/connections/{id}/pause');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

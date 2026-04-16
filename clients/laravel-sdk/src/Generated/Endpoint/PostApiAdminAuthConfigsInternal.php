@@ -18,7 +18,7 @@ class PostApiAdminAuthConfigsInternal extends \FlowCatalyst\Generated\Runtime\Cl
     }
     public function getUri(): string
     {
-        return '/api/admin/auth-configs/internal';
+        return '/api/auth-configs/internal';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

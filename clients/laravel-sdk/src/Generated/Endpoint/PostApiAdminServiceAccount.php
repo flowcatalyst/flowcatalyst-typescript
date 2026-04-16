@@ -18,7 +18,7 @@ class PostApiAdminServiceAccount extends \FlowCatalyst\Generated\Runtime\Client\
     }
     public function getUri(): string
     {
-        return '/api/admin/service-accounts';
+        return '/api/service-accounts';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -19,7 +19,7 @@ class GetApiAdminAuthConfigsByDomainByDomain extends \FlowCatalyst\Generated\Run
     }
     public function getUri(): string
     {
-        return str_replace(['{domain}'], [$this->domain], '/api/admin/auth-configs/by-domain/{domain}');
+        return str_replace(['{domain}'], [$this->domain], '/api/auth-configs/by-domain/{domain}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

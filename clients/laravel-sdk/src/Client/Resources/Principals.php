@@ -42,7 +42,7 @@ class Principals
 
         $query = !empty($queryParams) ? '?' . http_build_query($queryParams) : '';
 
-        $response = $this->client->request('GET', "/api/sdk/principals{$query}");
+        $response = $this->client->request('GET', "/api/principals{$query}");
 
         return [
             'principals' => array_map(
@@ -58,7 +58,7 @@ class Principals
      */
     public function get(string $id): Principal
     {
-        $response = $this->client->request('GET', "/api/sdk/principals/{$id}");
+        $response = $this->client->request('GET', "/api/principals/{$id}");
 
         return Principal::fromArray($response);
     }
@@ -91,7 +91,7 @@ class Principals
      */
     public function createUser(array $data): Principal
     {
-        $response = $this->client->request('POST', '/api/sdk/principals/user', [
+        $response = $this->client->request('POST', '/api/principals/users', [
             'json' => $data,
         ]);
 
@@ -107,7 +107,7 @@ class Principals
      */
     public function update(string $id, array $data): Principal
     {
-        $response = $this->client->request('PUT', "/api/sdk/principals/{$id}", [
+        $response = $this->client->request('PUT', "/api/principals/{$id}", [
             'json' => $data,
         ]);
 
@@ -119,7 +119,7 @@ class Principals
      */
     public function activate(string $id): void
     {
-        $this->client->request('POST', "/api/sdk/principals/{$id}/activate");
+        $this->client->request('POST', "/api/principals/{$id}/activate");
     }
 
     /**
@@ -127,7 +127,7 @@ class Principals
      */
     public function deactivate(string $id): void
     {
-        $this->client->request('POST', "/api/sdk/principals/{$id}/deactivate");
+        $this->client->request('POST', "/api/principals/{$id}/deactivate");
     }
 
     /**
@@ -137,7 +137,7 @@ class Principals
      */
     public function getRoles(string $id): array
     {
-        return $this->client->request('GET', "/api/sdk/principals/{$id}/roles");
+        return $this->client->request('GET', "/api/principals/{$id}/roles");
     }
 
     /**
@@ -147,7 +147,7 @@ class Principals
      */
     public function assignRole(string $id, string $roleName): array
     {
-        return $this->client->request('POST', "/api/sdk/principals/{$id}/roles/{$roleName}");
+        return $this->client->request('POST', "/api/principals/{$id}/roles/{$roleName}");
     }
 
     /**
@@ -155,7 +155,7 @@ class Principals
      */
     public function removeRole(string $id, string $roleName): void
     {
-        $this->client->request('DELETE', "/api/sdk/principals/{$id}/roles/{$roleName}");
+        $this->client->request('DELETE', "/api/principals/{$id}/roles/{$roleName}");
     }
 
     /**
@@ -169,7 +169,7 @@ class Principals
      */
     public function assignRoles(string $id, array $roles): array
     {
-        return $this->client->request('PUT', "/api/sdk/principals/{$id}/roles", [
+        return $this->client->request('PUT', "/api/principals/{$id}/roles", [
             'json' => ['roles' => $roles],
         ]);
     }
@@ -181,7 +181,7 @@ class Principals
      */
     public function getClientAccessGrants(string $id): array
     {
-        return $this->client->request('GET', "/api/sdk/principals/{$id}/clients");
+        return $this->client->request('GET', "/api/principals/{$id}/clients");
     }
 
     /**
@@ -191,7 +191,7 @@ class Principals
      */
     public function grantClientAccess(string $id, string $clientId): array
     {
-        return $this->client->request('POST', "/api/sdk/principals/{$id}/clients/{$clientId}");
+        return $this->client->request('POST', "/api/principals/{$id}/clients/{$clientId}");
     }
 
     /**
@@ -199,7 +199,7 @@ class Principals
      */
     public function revokeClientAccess(string $id, string $clientId): void
     {
-        $this->client->request('DELETE', "/api/sdk/principals/{$id}/clients/{$clientId}");
+        $this->client->request('DELETE', "/api/principals/{$id}/clients/{$clientId}");
     }
 
     /**

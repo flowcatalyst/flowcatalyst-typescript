@@ -22,7 +22,7 @@ class GetApiAdminDispatchPool extends \FlowCatalyst\Generated\Runtime\Client\Bas
     }
     public function getUri(): string
     {
-        return '/api/admin/dispatch-pools';
+        return '/api/dispatch-pools';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

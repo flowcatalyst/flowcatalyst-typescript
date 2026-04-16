@@ -18,7 +18,7 @@ class PostApiAdminDispatchPoolsSync extends \FlowCatalyst\Generated\Runtime\Clie
     }
     public function getUri(): string
     {
-        return '/api/admin/dispatch-pools/sync';
+        return '/api/dispatch-pools/sync';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

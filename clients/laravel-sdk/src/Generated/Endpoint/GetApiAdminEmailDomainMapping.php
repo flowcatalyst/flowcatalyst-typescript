@@ -11,7 +11,7 @@ class GetApiAdminEmailDomainMapping extends \FlowCatalyst\Generated\Runtime\Clie
     }
     public function getUri(): string
     {
-        return '/api/admin/email-domain-mappings';
+        return '/api/email-domain-mappings';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

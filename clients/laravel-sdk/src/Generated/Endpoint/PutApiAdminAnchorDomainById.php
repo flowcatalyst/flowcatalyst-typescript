@@ -21,7 +21,7 @@ class PutApiAdminAnchorDomainById extends \FlowCatalyst\Generated\Runtime\Client
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/anchor-domains/{id}');
+        return str_replace(['{id}'], [$this->id], '/api/anchor-domains/{id}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

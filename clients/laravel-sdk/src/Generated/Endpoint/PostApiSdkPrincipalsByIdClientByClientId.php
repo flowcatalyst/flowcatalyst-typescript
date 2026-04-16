@@ -22,7 +22,7 @@ class PostApiSdkPrincipalsByIdClientByClientId extends \FlowCatalyst\Generated\R
     }
     public function getUri(): string
     {
-        return str_replace(['{id}', '{clientId}'], [$this->id, $this->clientId], '/api/sdk/principals/{id}/clients/{clientId}');
+        return str_replace(['{id}', '{clientId}'], [$this->id, $this->clientId], '/api/principals/{id}/clients/{clientId}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

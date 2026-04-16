@@ -34,7 +34,7 @@ class GetApiAdminEvent extends \FlowCatalyst\Generated\Runtime\Client\BaseEndpoi
     }
     public function getUri(): string
     {
-        return '/api/admin/events';
+        return '/api/events';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -144,7 +144,7 @@ export async function registerConnectionsRoutes(
 		deleteConnectionUseCase,
 	} = deps;
 
-	// GET /api/admin/connections - List with filters
+	// GET /api/connections - List with filters
 	fastify.get(
 		"/connections",
 		{
@@ -181,7 +181,7 @@ export async function registerConnectionsRoutes(
 		},
 	);
 
-	// GET /api/admin/connections/:id - Get by ID
+	// GET /api/connections/:id - Get by ID
 	fastify.get(
 		"/connections/:id",
 		{
@@ -206,7 +206,7 @@ export async function registerConnectionsRoutes(
 		},
 	);
 
-	// POST /api/admin/connections - Create
+	// POST /api/connections - Create
 	fastify.post(
 		"/connections",
 		{
@@ -249,7 +249,7 @@ export async function registerConnectionsRoutes(
 		},
 	);
 
-	// PUT /api/admin/connections/:id - Update
+	// PUT /api/connections/:id - Update
 	fastify.put(
 		"/connections/:id",
 		{
@@ -297,7 +297,7 @@ export async function registerConnectionsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/connections/:id - Delete
+	// DELETE /api/connections/:id - Delete
 	fastify.delete(
 		"/connections/:id",
 		{
@@ -327,7 +327,7 @@ export async function registerConnectionsRoutes(
 		},
 	);
 
-	// POST /api/admin/connections/:id/pause - Pause
+	// POST /api/connections/:id/pause - Pause
 	fastify.post(
 		"/connections/:id/pause",
 		{
@@ -362,7 +362,7 @@ export async function registerConnectionsRoutes(
 		},
 	);
 
-	// POST /api/admin/connections/:id/activate - Activate
+	// POST /api/connections/:id/activate - Activate
 	fastify.post(
 		"/connections/:id/activate",
 		{

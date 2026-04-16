@@ -18,7 +18,7 @@ class PostApiSdkPrincipalsUser extends \FlowCatalyst\Generated\Runtime\Client\Ba
     }
     public function getUri(): string
     {
-        return '/api/sdk/principals/user';
+        return '/api/principals/users';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -18,7 +18,7 @@ class PostApiAdminConnection extends \FlowCatalyst\Generated\Runtime\Client\Base
     }
     public function getUri(): string
     {
-        return '/api/admin/connections';
+        return '/api/connections';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

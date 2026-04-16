@@ -22,7 +22,7 @@ class PostApiAdminEventTypesByIdSchemasByVersionFinalise extends \FlowCatalyst\G
     }
     public function getUri(): string
     {
-        return str_replace(['{id}', '{version}'], [$this->id, $this->version], '/api/admin/event-types/{id}/schemas/{version}/finalise');
+        return str_replace(['{id}', '{version}'], [$this->id, $this->version], '/api/event-types/{id}/schemas/{version}/finalise');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

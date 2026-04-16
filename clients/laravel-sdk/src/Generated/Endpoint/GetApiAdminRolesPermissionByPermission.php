@@ -19,7 +19,7 @@ class GetApiAdminRolesPermissionByPermission extends \FlowCatalyst\Generated\Run
     }
     public function getUri(): string
     {
-        return str_replace(['{permission}'], [$this->permission], '/api/admin/roles/permissions/{permission}');
+        return str_replace(['{permission}'], [$this->permission], '/api/roles/permissions/{permission}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

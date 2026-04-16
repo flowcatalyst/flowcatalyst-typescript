@@ -19,7 +19,7 @@ class PostApiAdminServiceAccountsByIdRegenerateSecret extends \FlowCatalyst\Gene
     }
     public function getUri(): string
     {
-        return str_replace(['{id}'], [$this->id], '/api/admin/service-accounts/{id}/regenerate-secret');
+        return str_replace(['{id}'], [$this->id], '/api/service-accounts/{id}/regenerate-secret');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

@@ -15,8 +15,6 @@ import {
 	type AdminRoutesDeps,
 	registerBffRoutes,
 	type BffRoutesDeps,
-	registerSdkRoutes,
-	type SdkRoutesDeps,
 	registerBatchRoutes,
 	type BatchRoutesDeps,
 	registerMeApiRoutes,
@@ -151,36 +149,6 @@ export async function registerPlatformRoutes(
 	};
 
 	await registerBffRoutes(fastify, bffDeps);
-
-	// SDK routes (external integrations)
-	const sdkDeps: SdkRoutesDeps = {
-		// SDK Clients
-		clientRepository: repos.clientRepository,
-		...pick(useCases, [
-			"createClientUseCase",
-			"updateClientUseCase",
-			"changeClientStatusUseCase",
-			"deleteClientUseCase",
-			"createRoleUseCase",
-			"updateRoleUseCase",
-			"deleteRoleUseCase",
-			"createUserUseCase",
-			"updateUserUseCase",
-			"activateUserUseCase",
-			"deactivateUserUseCase",
-			"assignRolesUseCase",
-			"grantClientAccessUseCase",
-			"revokeClientAccessUseCase",
-		]),
-		// SDK Roles
-		roleRepository: repos.roleRepository,
-		applicationRepository: repos.applicationRepository,
-		// SDK Principals
-		principalRepository: repos.principalRepository,
-		clientAccessGrantRepository: repos.clientAccessGrantRepository,
-	};
-
-	await registerSdkRoutes(fastify, sdkDeps);
 
 	// Application-scoped sync routes (SDK sync endpoints)
 	const applicationSyncDeps: ApplicationSyncRoutesDeps = {

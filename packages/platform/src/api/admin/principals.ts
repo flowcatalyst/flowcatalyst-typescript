@@ -322,7 +322,7 @@ export async function registerPrincipalsRoutes(
 		revokeClientAccessUseCase,
 	} = deps;
 
-	// GET /api/admin/principals - List principals with filters
+	// GET /api/principals - List principals with filters
 	fastify.get(
 		"/principals",
 		{
@@ -373,7 +373,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// GET /api/admin/principals/:id - Get principal by ID
+	// GET /api/principals/:id - Get principal by ID
 	fastify.get(
 		"/principals/:id",
 		{
@@ -416,7 +416,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// POST /api/admin/principals/users - Create user
+	// POST /api/principals/users - Create user
 	fastify.post(
 		"/principals/users",
 		{
@@ -498,7 +498,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// PUT /api/admin/principals/:id - Update principal
+	// PUT /api/principals/:id - Update principal
 	fastify.put(
 		"/principals/:id",
 		{
@@ -545,7 +545,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// POST /api/admin/principals/:id/activate - Activate principal
+	// POST /api/principals/:id/activate - Activate principal
 	fastify.post(
 		"/principals/:id/activate",
 		{
@@ -573,7 +573,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// POST /api/admin/principals/:id/deactivate - Deactivate principal
+	// POST /api/principals/:id/deactivate - Deactivate principal
 	fastify.post(
 		"/principals/:id/deactivate",
 		{
@@ -601,7 +601,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/principals/:id - Delete principal
+	// DELETE /api/principals/:id - Delete principal
 	fastify.delete(
 		"/principals/:id",
 		{
@@ -629,7 +629,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// POST /api/admin/principals/:id/reset-password - Reset password
+	// POST /api/principals/:id/reset-password - Reset password
 	fastify.post(
 		"/principals/:id/reset-password",
 		{
@@ -692,7 +692,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// GET /api/admin/principals/:id/roles - Get principal roles
+	// GET /api/principals/:id/roles - Get principal roles
 	fastify.get(
 		"/principals/:id/roles",
 		{
@@ -723,7 +723,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// POST /api/admin/principals/:id/roles - Assign single role
+	// POST /api/principals/:id/roles - Assign single role
 	fastify.post(
 		"/principals/:id/roles",
 		{
@@ -779,7 +779,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/principals/:id/roles/:roleName - Remove single role
+	// DELETE /api/principals/:id/roles/:roleName - Remove single role
 	fastify.delete(
 		"/principals/:id/roles/:roleName",
 		{
@@ -820,7 +820,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// PUT /api/admin/principals/:id/roles - Declarative batch assign roles
+	// PUT /api/principals/:id/roles - Declarative batch assign roles
 	fastify.put(
 		"/principals/:id/roles",
 		{
@@ -877,7 +877,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// GET /api/admin/principals/:id/client-access - Get client access grants
+	// GET /api/principals/:id/client-access - Get client access grants
 	fastify.get(
 		"/principals/:id/client-access",
 		{
@@ -911,7 +911,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// POST /api/admin/principals/:id/client-access - Grant client access
+	// POST /api/principals/:id/client-access - Grant client access
 	fastify.post(
 		"/principals/:id/client-access",
 		{
@@ -959,7 +959,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// DELETE /api/admin/principals/:id/client-access/:clientId - Revoke client access
+	// DELETE /api/principals/:id/client-access/:clientId - Revoke client access
 	fastify.delete(
 		"/principals/:id/client-access/:clientId",
 		{
@@ -991,7 +991,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// GET /api/admin/principals/check-email-domain - Check email domain configuration
+	// GET /api/principals/check-email-domain - Check email domain configuration
 	fastify.get(
 		"/principals/check-email-domain",
 		{
@@ -1082,7 +1082,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// GET /api/admin/principals/:id/application-access - Get application access
+	// GET /api/principals/:id/application-access - Get application access
 	fastify.get(
 		"/principals/:id/application-access",
 		{
@@ -1124,7 +1124,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// PUT /api/admin/principals/:id/application-access - Set application access (declarative)
+	// PUT /api/principals/:id/application-access - Set application access (declarative)
 	fastify.put(
 		"/principals/:id/application-access",
 		{
@@ -1193,7 +1193,7 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// GET /api/admin/principals/:id/available-applications - Get apps available to a principal
+	// GET /api/principals/:id/available-applications - Get apps available to a principal
 	fastify.get(
 		"/principals/:id/available-applications",
 		{

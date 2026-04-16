@@ -21,7 +21,7 @@ class PostApiAdminConfigAccessByAppCode extends \FlowCatalyst\Generated\Runtime\
     }
     public function getUri(): string
     {
-        return str_replace(['{appCode}'], [$this->appCode], '/api/admin/config-access/{appCode}');
+        return str_replace(['{appCode}'], [$this->appCode], '/api/config-access/{appCode}');
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

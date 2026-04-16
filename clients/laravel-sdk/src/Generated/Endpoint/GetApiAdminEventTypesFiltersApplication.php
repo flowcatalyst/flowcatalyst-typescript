@@ -11,7 +11,7 @@ class GetApiAdminEventTypesFiltersApplication extends \FlowCatalyst\Generated\Ru
     }
     public function getUri(): string
     {
-        return '/api/admin/event-types/filters/applications';
+        return '/api/event-types/filters/applications';
     }
     public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
     {

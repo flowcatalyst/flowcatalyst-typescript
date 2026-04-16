@@ -67,7 +67,7 @@ export async function registerLoginAttemptsRoutes(
 	const DEFAULT_PAGE_SIZE = 100;
 	const MAX_PAGE_SIZE = 500;
 
-	// GET /api/admin/login-attempts - List login attempts with filters
+	// GET /api/login-attempts - List login attempts with filters
 	fastify.get(
 		"/login-attempts",
 		{
