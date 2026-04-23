@@ -59,6 +59,13 @@ export const events = pgTable(
 
 		// Metadata
 		createdAt: timestampColumn("created_at").notNull().defaultNow(),
+
+		// Stamped by the stream processor once the row has been projected into
+		// msg_events_read. The Rust projector reads unprojected rows via
+		// `WHERE projected_at IS NULL`; the TS projector ignores the column
+		// and drives off msg_event_projection_feed instead. Kept nullable so
+		// either projector can fill it without a schema change.
+		projectedAt: timestampColumn("projected_at"),
 	},
 	(table) => [
 		// Index for event type queries

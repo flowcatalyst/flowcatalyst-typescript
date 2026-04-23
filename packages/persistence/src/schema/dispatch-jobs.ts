@@ -140,6 +140,17 @@ export const dispatchJobs = pgTable(
 		// Timestamps
 		createdAt: timestampColumn("created_at").notNull().defaultNow(),
 		updatedAt: timestampColumn("updated_at").notNull().defaultNow(),
+
+		// Stamped the moment the scheduler publishes the job onto the queue.
+		// Used by the Rust scheduler's stale-queued recovery (resets rows
+		// that have sat in QUEUED past the configured threshold).
+		queuedAt: timestampColumn("queued_at"),
+
+		// Stamped by the Rust projector when the row is pushed into
+		// msg_dispatch_jobs_read. The TS projector ignores it and reads from
+		// msg_dispatch_job_projection_feed instead. Additive — either
+		// projector can fill the column without breaking the other.
+		projectedAt: timestampColumn("projected_at"),
 	},
 	(table) => [
 		index("idx_msg_dispatch_jobs_status").on(table.status),

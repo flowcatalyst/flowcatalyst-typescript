@@ -24,6 +24,7 @@ import type { RefreshableDatabase } from "@flowcatalyst/persistence";
 import type { PlatformResult } from "@flowcatalyst/platform";
 import { createStandbyManager, type StandbyManager } from "@flowcatalyst/standby";
 import { createSecretProviderFromEnv } from "./secret-providers.js";
+import { startEmbeddedPostgres } from "./embedded-postgres.js";
 
 const VERSION = "0.0.1";
 
@@ -259,6 +260,23 @@ const AUTO_MIGRATE =
 const needsDatabase =
 	PLATFORM_ENABLED || STREAM_PROCESSOR_ENABLED || OUTBOX_PROCESSOR_ENABLED || DISPATCH_SCHEDULER_ENABLED;
 
+// Embedded Postgres (PGlite) — zero-setup dev DB.
+// Defaults ON in dev when DATABASE_URL isn't set. Exposed over TCP so devs
+// can `psql` it. Set EMBEDDED_POSTGRES_ENABLED=false to disable explicitly.
+const EMBEDDED_POSTGRES_ENABLED = (() => {
+	const explicit = process.env["EMBEDDED_POSTGRES_ENABLED"];
+	if (explicit === "true") return true;
+	if (explicit === "false") return false;
+	return isDev && !process.env["DATABASE_URL"];
+})();
+const EMBEDDED_POSTGRES_PORT = Number(
+	process.env["EMBEDDED_POSTGRES_PORT"] ?? "5432",
+);
+const EMBEDDED_POSTGRES_HOST =
+	process.env["EMBEDDED_POSTGRES_HOST"] ?? "127.0.0.1";
+const EMBEDDED_POSTGRES_DATA_DIR =
+	process.env["EMBEDDED_POSTGRES_DATA_DIR"] ?? ".fc-data/pg";
+
 // Frontend dir override
 const FRONTEND_DIR = process.env["FRONTEND_DIR"];
 
@@ -308,6 +326,22 @@ async function shutdown(signal: string) {
 }
 
 async function main() {
+	// --- Embedded Postgres (dev) ---
+	// Starts before credential resolution so its URL can be picked up below.
+	if (EMBEDDED_POSTGRES_ENABLED && needsDatabase) {
+		const embedded = await startEmbeddedPostgres({
+			port: EMBEDDED_POSTGRES_PORT,
+			host: EMBEDDED_POSTGRES_HOST,
+			dataDir: EMBEDDED_POSTGRES_DATA_DIR,
+			logger,
+		});
+		process.env["DATABASE_URL"] = embedded.url;
+		stopFns.push(async () => {
+			logger.info("Stopping embedded Postgres...");
+			await embedded.stop();
+		});
+	}
+
 	// --- Database credential resolution ---
 	// DB_SECRET_PROVIDER controls how credentials are obtained (default: env).
 	// When a cloud provider is configured, credentials are fetched at startup and

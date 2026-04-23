@@ -21,6 +21,8 @@
 	"dependencies": {
 		"@aws-sdk/client-elastic-load-balancing-v2": "^3.717.0",
 		"@aws-sdk/client-sqs": "^3.717.0",
+		"@electric-sql/pglite": "^0.3.4",
+		"@electric-sql/pglite-socket": "^0.0.9",
 		"@fastify/cookie": "^11.0.2",
 		"@fastify/cors": "^10.0.2",
 		"@fastify/static": "^9.0.0",

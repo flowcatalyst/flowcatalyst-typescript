@@ -19,6 +19,8 @@ export default defineConfig({
 		"stompit",
 		"sql.js",
 		"oidc-provider",
+		"@electric-sql/pglite",
+		"@electric-sql/pglite-socket",
 	],
 	esbuildOptions(options) {
 		options.alias = {

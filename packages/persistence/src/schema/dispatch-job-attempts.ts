@@ -14,7 +14,7 @@ import {
 	uniqueIndex,
 	index,
 } from "drizzle-orm/pg-core";
-import { tsidColumn, rawTsidColumn, timestampColumn } from "./common.js";
+import { rawTsidColumn, timestampColumn } from "./common.js";
 
 /**
  * Error type classification for failed attempts.
@@ -32,8 +32,10 @@ export type DispatchErrorType =
 export const dispatchJobAttempts = pgTable(
 	"msg_dispatch_job_attempts",
 	{
-		// Primary key
-		id: tsidColumn("id").primaryKey(),
+		// Primary key — unprefixed 13-char TSID. Matches what recordAttempt()
+		// actually writes (generateRaw()) and what the Rust DB constrains
+		// after migration 012.
+		id: rawTsidColumn("id").primaryKey(),
 
 		// Reference to parent dispatch job (unprefixed - dispatch_jobs use raw TSIDs)
 		dispatchJobId: rawTsidColumn("dispatch_job_id").notNull(),
