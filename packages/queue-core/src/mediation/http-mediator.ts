@@ -26,6 +26,19 @@ export interface HttpMediatorConfig {
 	retries: number;
 	/** Initial retry delay in milliseconds */
 	retryDelayMs: number;
+	/**
+	 * HTTP/2 only: client-side cap on concurrent streams per connection.
+	 * Effective value is min(this, server's SETTINGS_MAX_CONCURRENT_STREAMS).
+	 * undici's default (100) starves at high fan-out; set higher for
+	 * wide-multiplex workloads.
+	 */
+	h2MaxConcurrentStreams?: number;
+	/**
+	 * Number of connections (H/1 sockets or H/2 connections) per origin.
+	 * For H/2, a small number (2–4) is usually sufficient because of
+	 * stream multiplexing; more gives bandwidth headroom and failover.
+	 */
+	connectionsPerOrigin?: number;
 }
 
 /**
@@ -59,6 +72,12 @@ export class HttpMediator {
 			headersTimeout: config.headersTimeoutMs,
 			bodyTimeout: config.bodyTimeoutMs,
 			allowH2: config.useHttp2,
+			...(config.connectionsPerOrigin != null
+				? { connections: config.connectionsPerOrigin }
+				: {}),
+			...(config.useHttp2 && config.h2MaxConcurrentStreams != null
+				? { maxConcurrentStreams: config.h2MaxConcurrentStreams }
+				: {}),
 		});
 
 		this.logger.info(
@@ -66,6 +85,10 @@ export class HttpMediator {
 				http2: config.useHttp2,
 				connectTimeoutMs: config.connectTimeoutMs,
 				bodyTimeoutMs: config.bodyTimeoutMs,
+				connectionsPerOrigin: config.connectionsPerOrigin ?? "default",
+				h2MaxConcurrentStreams: config.useHttp2
+					? (config.h2MaxConcurrentStreams ?? "default(100)")
+					: "n/a",
 			},
 			"HTTP mediator initialized",
 		);

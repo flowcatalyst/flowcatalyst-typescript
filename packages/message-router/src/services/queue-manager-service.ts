@@ -137,6 +137,8 @@ export class QueueManagerService {
 			bodyTimeoutMs: env.MEDIATION_REQUEST_TIMEOUT_MS,
 			retries: env.MEDIATION_RETRIES,
 			retryDelayMs: env.MEDIATION_RETRY_DELAY_MS,
+			h2MaxConcurrentStreams: env.MEDIATION_H2_MAX_CONCURRENT_STREAMS,
+			connectionsPerOrigin: env.MEDIATION_CONNECTIONS_PER_ORIGIN,
 		};
 
 		this.httpMediator = new HttpMediator(

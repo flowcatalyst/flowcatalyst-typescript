@@ -125,6 +125,31 @@ export const envSchema = z.object({
 		.transform((v) => Number.parseInt(v, 10))
 		.prefault("1000"),
 
+	/**
+	 * HTTP/2 only: max concurrent streams per connection (client-side cap).
+	 * undici's default is 100 — too low for wide-multiplex workloads with
+	 * thousands of in-flight requests. The effective value is negotiated
+	 * with the server (min of client setting and server's advertised
+	 * SETTINGS_MAX_CONCURRENT_STREAMS), so setting this high is safe.
+	 * Default: 1000
+	 */
+	MEDIATION_H2_MAX_CONCURRENT_STREAMS: z
+		.string()
+		.transform((v) => Number.parseInt(v, 10))
+		.prefault("1000"),
+
+	/**
+	 * Number of connections per origin. For H/2 this is the number of
+	 * parallel multiplexed connections (each carrying up to
+	 * MEDIATION_H2_MAX_CONCURRENT_STREAMS streams). For H/1 it's the
+	 * socket pool size. Small values (2–4) are typical for H/2.
+	 * Default: 4
+	 */
+	MEDIATION_CONNECTIONS_PER_ORIGIN: z
+		.string()
+		.transform((v) => Number.parseInt(v, 10))
+		.prefault("4"),
+
 	// Instance identification
 	INSTANCE_ID: z.string().default(() => `router-${Date.now()}`),
 
