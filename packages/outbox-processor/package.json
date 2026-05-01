@@ -9,7 +9,7 @@
 		"@flowcatalyst/logging": "workspace:*",
 		"pino": "^9.6.0",
 		"postgres": "^3.4.5",
-		"undici": "^7.3.0",
+		"undici": "^8.1.0",
 		"zod": "^4.1.13"
 	}
 }

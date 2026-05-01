@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { toast } from "@/utils/errorBus";
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
 import {
 	eventTypesApi,
 	type EventType,
@@ -13,7 +13,6 @@ import SchemaViewerDialog from "./SchemaViewerDialog.vue";
 const route = useRoute();
 const router = useRouter();
 const confirm = useConfirm();
-const toast = useToast();
 
 const loading = ref(true);
 const eventType = ref<EventType | null>(null);
@@ -91,19 +90,9 @@ async function saveChanges() {
 			description: editDescription.value,
 		});
 		editing.value = false;
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Event type updated",
-			life: 3000,
-		});
+		toast.success("Success", "Event type updated");
 	} catch (e) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to update",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
 	}
@@ -152,19 +141,9 @@ async function finaliseSchema(version: string) {
 			eventType.value.id,
 			version,
 		);
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: `Schema ${version} finalised`,
-			life: 3000,
-		});
+		toast.success("Success", `Schema ${version} finalised`);
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to finalise",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 
@@ -186,19 +165,9 @@ async function deprecateSchema(version: string) {
 			eventType.value.id,
 			version,
 		);
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: `Schema ${version} deprecated`,
-			life: 3000,
-		});
+		toast.success("Success", `Schema ${version} deprecated`);
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to deprecate",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 
@@ -218,19 +187,9 @@ async function archiveEventType() {
 	if (!eventType.value) return;
 	try {
 		eventType.value = await eventTypesApi.archive(eventType.value.id);
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Event type archived",
-			life: 3000,
-		});
+		toast.success("Success", "Event type archived");
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to archive",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 
@@ -249,20 +208,10 @@ async function deleteEventType() {
 	if (!eventType.value) return;
 	try {
 		await eventTypesApi.delete(eventType.value.id);
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Event type deleted",
-			life: 3000,
-		});
+		toast.success("Success", "Event type deleted");
 		router.push("/event-types");
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to delete",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 </script>

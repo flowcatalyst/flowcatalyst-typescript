@@ -1,19 +1,17 @@
 <script setup lang="ts">
+import { toast } from "@/utils/errorBus";
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
 import {
 	applicationsApi,
 	type Application,
 	type ServiceAccountCredentials,
 } from "@/api/applications";
-import { getErrorMessage } from "@/utils/errors";
 
 const route = useRoute();
 const router = useRouter();
 const confirm = useConfirm();
-const toast = useToast();
 
 const loading = ref(true);
 const application = ref<Application | null>(null);
@@ -85,19 +83,9 @@ async function saveChanges() {
 			logoMimeType: editLogoMimeType.value || undefined,
 		});
 		editing.value = false;
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Application updated",
-			life: 3000,
-		});
+		toast.success("Success", "Application updated");
 	} catch (e) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to update",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
 	}
@@ -118,19 +106,9 @@ async function activateApplication() {
 	if (!id) return;
 	try {
 		application.value = await applicationsApi.activate(id);
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Application activated",
-			life: 3000,
-		});
+		toast.success("Success", "Application activated");
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to activate",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 
@@ -151,19 +129,9 @@ async function deactivateApplication() {
 	if (!id) return;
 	try {
 		application.value = await applicationsApi.deactivate(id);
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Application deactivated",
-			life: 3000,
-		});
+		toast.success("Success", "Application deactivated");
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to deactivate",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 
@@ -181,42 +149,22 @@ function confirmDelete() {
 async function deleteApplication() {
 	const id = application.value?.id || (route.params['id'] as string);
 	if (!id) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Application ID not found",
-			life: 3000,
-		});
+		toast.error("Error", "Application ID not found");
 		return;
 	}
 	try {
 		await applicationsApi.delete(id);
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Application deleted",
-			life: 3000,
-		});
+		toast.success("Success", "Application deleted");
 		router.push("/applications");
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to delete",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 
 async function provisionServiceAccount() {
 	const id = application.value?.id || (route.params['id'] as string);
 	if (!id) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Application ID not found",
-			life: 3000,
-		});
+		toast.error("Error", "Application ID not found");
 		return;
 	}
 
@@ -229,12 +177,7 @@ async function provisionServiceAccount() {
 		// Reload application to get updated serviceAccountPrincipalId
 		await loadApplication(id);
 	} catch (e: unknown) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: getErrorMessage(e, "Failed to provision service account"),
-			life: 5000,
-		});
+		// Global banner shown by bffFetch
 	} finally {
 		provisioning.value = false;
 	}
@@ -247,12 +190,7 @@ function onCredentialsDialogClose() {
 
 function copyToClipboard(text: string) {
 	navigator.clipboard.writeText(text);
-	toast.add({
-		severity: "info",
-		summary: "Copied",
-		detail: "Copied to clipboard",
-		life: 2000,
-	});
+	toast.info("Copied", "Copied to clipboard");
 }
 
 function formatDate(dateString: string) {

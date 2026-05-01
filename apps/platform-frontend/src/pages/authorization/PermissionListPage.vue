@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useToast } from "primevue/usetoast";
 import { permissionsApi, type Permission } from "@/api/permissions";
 import { useListState } from "@/composables/useListState";
-
-const toast = useToast();
 
 const { filters, searchQuery, hasActiveFilters, clearFilters: clearListFilters } = useListState({
 	filters: {
@@ -87,12 +84,7 @@ async function loadPermissions() {
 		const response = await permissionsApi.list();
 		permissions.value = response.items;
 	} catch (e) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: e instanceof Error ? e.message : "Failed to load permissions",
-			life: 5000,
-		});
+		// Global banner shown by bffFetch
 	} finally {
 		loading.value = false;
 	}

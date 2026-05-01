@@ -183,10 +183,12 @@ export function mapHttpStatusToError(
 	message?: string,
 ): SdkError {
 	const errorBody = body as Record<string, unknown> | undefined;
+	// Platform error shape is `{ code, message }`. Prefer the human-readable
+	// `message`; fall back to the machine `code` only if message is missing.
 	const errorMessage =
 		message ??
-		errorBody?.["error"]?.toString() ??
 		errorBody?.["message"]?.toString() ??
+		errorBody?.["code"]?.toString() ??
 		`HTTP ${status}`;
 
 	switch (status) {

@@ -1,16 +1,14 @@
 <script setup lang="ts">
+import { toast } from "@/utils/errorBus";
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useToast } from "primevue/usetoast";
 import {
 	identityProvidersApi,
 	type IdentityProvider,
 } from "@/api/identity-providers";
-import { getErrorMessage } from "@/utils/errors";
 import { useListState } from "@/composables/useListState";
 
 const router = useRouter();
-const toast = useToast();
 
 const { searchQuery } = useListState({
 	filters: {},
@@ -73,19 +71,9 @@ async function deleteProvider() {
 			(p) => p.id !== providerToDelete.value?.id,
 		);
 		showDeleteDialog.value = false;
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: `Identity provider "${providerToDelete.value.name}" deleted`,
-			life: 3000,
-		});
+		toast.success("Success", `Identity provider "${providerToDelete.value.name}" deleted`);
 	} catch (e: unknown) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: getErrorMessage(e, "Failed to delete identity provider"),
-			life: 5000,
-		});
+		// Global banner shown by bffFetch
 	} finally {
 		deleteLoading.value = false;
 		providerToDelete.value = null;

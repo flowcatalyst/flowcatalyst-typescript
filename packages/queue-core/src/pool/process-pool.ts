@@ -5,8 +5,8 @@ import type {
 	PoolStats,
 	QueueMessage,
 } from "@flowcatalyst/contracts";
-import { RateLimiterMemory, RateLimiterQueue } from "rate-limiter-flexible";
 import type { HttpMediator } from "../mediation/http-mediator.js";
+import { QueueFullError, TokenBucket } from "../utils/token-bucket.js";
 import { DynamicSemaphore } from "./dynamic-semaphore.js";
 import { MessageGroupHandler } from "./message-group-handler.js";
 
@@ -32,9 +32,9 @@ export class ProcessPool {
 
 	// Concurrency control (in-place adjustable, unlike p-limit)
 	private readonly concurrencyLimiter: DynamicSemaphore;
-	// Rate limiting — RateLimiterQueue wraps a drip-rate limiter to smooth
-	// bursts into evenly-spaced requests (leaky bucket behaviour).
-	private rateLimiterQueue: RateLimiterQueue | null;
+	// Rate limiting — TokenBucket smooths bursts into evenly-spaced requests
+	// (leaky bucket behaviour, capacity=1 by default).
+	private rateLimiter: TokenBucket | null;
 
 	// Statistics tracking
 	private totalProcessed = 0;
@@ -88,7 +88,7 @@ export class ProcessPool {
 		this.concurrencyLimiter = new DynamicSemaphore(config.concurrency);
 
 		// Initialize rate limiter
-		this.rateLimiterQueue = buildRateLimiterQueue(
+		this.rateLimiter = buildRateLimiter(
 			config.rateLimitPerMinute,
 			this.maxCapacity,
 		);
@@ -149,6 +149,16 @@ export class ProcessPool {
 		const currentCount = this.batchGroupMessageCount.get(batchGroupKey) || 0;
 		this.batchGroupMessageCount.set(batchGroupKey, currentCount + 1);
 
+		// IMMEDIATE: skip the per-group handler. Each message runs as an
+		// independent task gated only by the pool semaphore and rate limiter,
+		// and does not participate in the failed-batch-group cascade. Mirrors
+		// fc-router's spawn_immediate_task — without this, IMMEDIATE messages
+		// sharing a messageGroupId still serialize through MessageGroupHandler.
+		if (message.pointer.dispatchMode === "IMMEDIATE") {
+			void this.processImmediate(message, callback, batchGroupKey);
+			return true;
+		}
+
 		// Get or create message group handler
 		let groupHandler = this.messageGroups.get(message.pointer.messageGroupId);
 		if (!groupHandler) {
@@ -194,20 +204,23 @@ export class ProcessPool {
 		}
 
 		// Step 1: Rate Limiting (Wait logic)
-		// RateLimiterQueue.removeTokens() resolves when the token is available,
-		// smoothing bursts into evenly-spaced requests (leaky bucket).
-		if (this.rateLimiterQueue) {
+		// TokenBucket.acquire() resolves when a token is available, smoothing
+		// bursts into evenly-spaced requests (leaky bucket).
+		if (this.rateLimiter) {
 			try {
-				await this.rateLimiterQueue.removeTokens(1);
-			} catch {
-				// Queue is full (maxQueueSize exceeded) — count as rate-limited
-				this.totalRateLimited++;
-				this.stats5min.rateLimited++;
-				this.stats30min.rateLimited++;
-				await callback.nack(10);
-				this.decrementBatchGroupCount(batchGroupKey);
-				this.queuedMessages--;
-				return;
+				await this.rateLimiter.acquire();
+			} catch (err) {
+				// QueueFullError when maxQueueSize exceeded — count as rate-limited
+				if (err instanceof QueueFullError) {
+					this.totalRateLimited++;
+					this.stats5min.rateLimited++;
+					this.stats30min.rateLimited++;
+					await callback.nack(10);
+					this.decrementBatchGroupCount(batchGroupKey);
+					this.queuedMessages--;
+					return;
+				}
+				throw err;
 			}
 		}
 
@@ -305,6 +318,105 @@ export class ProcessPool {
 	}
 
 	/**
+	 * Process an IMMEDIATE-mode message without per-group serialization.
+	 * Does not read or write failedBatchGroups: a 5xx on one IMMEDIATE message
+	 * must not cascade-NACK siblings sharing the same batch+group.
+	 */
+	private async processImmediate(
+		message: QueueMessage,
+		callback: MessageCallback,
+		batchGroupKey: string,
+	): Promise<void> {
+		// Step 1: Rate limiting
+		if (this.rateLimiter) {
+			try {
+				await this.rateLimiter.acquire();
+			} catch (err) {
+				if (err instanceof QueueFullError) {
+					this.totalRateLimited++;
+					this.stats5min.rateLimited++;
+					this.stats30min.rateLimited++;
+					await callback.nack(10);
+					this.decrementBatchGroupCount(batchGroupKey);
+					this.queuedMessages--;
+					return;
+				}
+				throw err;
+			}
+		}
+
+		// Step 2: Concurrency + mediation
+		await this.concurrencyLimiter.run(async () => {
+			try {
+				const startTime = Date.now();
+				const result = await this.mediator.process(message);
+				const durationMs = Date.now() - startTime;
+
+				this.recordProcessingTime(durationMs);
+				this.totalProcessed++;
+				this.stats5min.processed++;
+				this.stats30min.processed++;
+
+				switch (result.outcome) {
+					case "SUCCESS":
+						this.totalSucceeded++;
+						this.stats5min.succeeded++;
+						this.stats30min.succeeded++;
+						await callback.ack();
+						break;
+
+					case "ERROR_CONFIG":
+						this.totalFailed++;
+						this.stats5min.failed++;
+						this.stats30min.failed++;
+						await callback.ack();
+						break;
+
+					case "DEFERRED":
+						this.totalDeferred++;
+						await callback.nack(result.delaySeconds || 30);
+						break;
+
+					case "ERROR_PROCESS":
+					case "BATCH_FAILED":
+						this.totalTransient++;
+						this.stats5min.transient++;
+						this.stats30min.transient++;
+						await callback.nack(result.delaySeconds ?? 30);
+						break;
+
+					case "RATE_LIMITED":
+						this.totalRateLimited++;
+						this.stats5min.rateLimited++;
+						this.stats30min.rateLimited++;
+						await callback.nack(result.delaySeconds ?? 30);
+						break;
+
+					case "ERROR_CONNECTION":
+					default:
+						this.totalFailed++;
+						this.stats5min.failed++;
+						this.stats30min.failed++;
+						await callback.nack(result.delaySeconds ?? 30);
+						break;
+				}
+			} catch (error) {
+				this.logger.error(
+					{ err: error, messageId: message.messageId },
+					"IMMEDIATE processing error",
+				);
+				this.totalFailed++;
+				this.stats5min.failed++;
+				this.stats30min.failed++;
+				await callback.nack(30);
+			} finally {
+				this.decrementBatchGroupCount(batchGroupKey);
+				this.queuedMessages--;
+			}
+		});
+	}
+
+	/**
 	 * Decrement batch group count and cleanup if zero
 	 */
 	private decrementBatchGroupCount(key: string): void {
@@ -375,17 +487,27 @@ export class ProcessPool {
 	 */
 	updateConfig(newConfig: Partial<PoolConfig>): void {
 		if (newConfig.rateLimitPerMinute !== undefined) {
-			this.rateLimiterQueue = buildRateLimiterQueue(
-				newConfig.rateLimitPerMinute,
-				this.maxCapacity,
-			);
-			if (this.rateLimiterQueue) {
+			const newRate = newConfig.rateLimitPerMinute;
+			const enabled = newRate != null && newRate > 0;
+			if (!enabled) {
+				if (this.rateLimiter) {
+					this.rateLimiter.dispose();
+					this.rateLimiter = null;
+				}
+				this.logger.info("Rate limit disabled");
+			} else if (this.rateLimiter) {
+				// In-place update preserves queued waiters' FIFO position.
+				this.rateLimiter.setRate(newRate);
 				this.logger.info(
-					{ rateLimitPerMinute: newConfig.rateLimitPerMinute },
-					"Rate limit updated",
+					{ rateLimitPerMinute: newRate },
+					"Rate limit updated in-place",
 				);
 			} else {
-				this.logger.info("Rate limit disabled");
+				this.rateLimiter = buildRateLimiter(newRate, this.maxCapacity);
+				this.logger.info(
+					{ rateLimitPerMinute: newRate },
+					"Rate limit enabled",
+				);
 			}
 		}
 
@@ -440,6 +562,10 @@ export class ProcessPool {
 			clearInterval(this.windowResetInterval30min);
 			this.windowResetInterval30min = null;
 		}
+		if (this.rateLimiter) {
+			this.rateLimiter.dispose();
+			this.rateLimiter = null;
+		}
 		this.messageGroups.clear();
 		this.failedBatchGroups.clear();
 		this.batchGroupMessageCount.clear();
@@ -476,23 +602,13 @@ export class ProcessPool {
 }
 
 /**
- * Build a RateLimiterQueue that smooths bursts into evenly-spaced requests
- * (leaky bucket). Returns null if rate limiting is disabled.
- *
- * The inner RateLimiterMemory defines the drip rate: 1 point every
- * (60 / ratePerMinute) seconds. RateLimiterQueue queues callers and
- * releases them one-by-one as tokens become available.
+ * Build a TokenBucket that smooths bursts into evenly-spaced requests
+ * (leaky bucket, capacity=1). Returns null if rate limiting is disabled.
  */
-function buildRateLimiterQueue(
+function buildRateLimiter(
 	ratePerMinute: number | null | undefined,
 	maxQueueSize: number,
-): RateLimiterQueue | null {
+): TokenBucket | null {
 	if (!ratePerMinute || ratePerMinute <= 0) return null;
-
-	const limiter = new RateLimiterMemory({
-		points: 1,
-		duration: 60 / ratePerMinute, // seconds per token
-	});
-
-	return new RateLimiterQueue(limiter, { maxQueueSize });
+	return new TokenBucket({ ratePerMinute, maxQueueSize });
 }

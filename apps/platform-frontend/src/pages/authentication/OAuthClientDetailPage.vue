@@ -1,14 +1,13 @@
 <script setup lang="ts">
+import { toast } from "@/utils/errorBus";
 import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { useToast } from "primevue/usetoast";
 import { oauthClientsApi, type OAuthClient } from "@/api/oauth-clients";
 import { applicationsApi, type Application } from "@/api/applications";
 import { getErrorMessage } from "@/utils/errors";
 
 const router = useRouter();
 const route = useRoute();
-const toast = useToast();
 
 const client = ref<OAuthClient | null>(null);
 const applications = ref<Application[]>([]);
@@ -111,12 +110,7 @@ async function loadApplications() {
 		console.log("Loaded applications:", applications.value);
 	} catch (e: unknown) {
 		console.error("Failed to load applications:", e);
-		toast.add({
-			severity: "warn",
-			summary: "Warning",
-			detail: "Could not load applications: " + getErrorMessage(e, "Unknown error"),
-			life: 5000,
-		});
+		toast.warn("Warning", "Could not load applications: " + getErrorMessage(e, "Unknown error"));
 	}
 }
 
@@ -152,12 +146,7 @@ function addRedirectUri() {
 			editForm.value.redirectUris.push(uri);
 			newRedirectUri.value = "";
 		} catch {
-			toast.add({
-				severity: "error",
-				summary: "Invalid URL",
-				detail: "Please enter a valid URL",
-				life: 3000,
-			});
+			toast.error("Invalid URL", "Please enter a valid URL");
 		}
 	}
 }
@@ -174,24 +163,13 @@ function addAllowedOrigin() {
 		try {
 			const url = new URL(origin);
 			if (url.pathname !== "/" && url.pathname !== "") {
-				toast.add({
-					severity: "error",
-					summary: "Invalid Origin",
-					detail:
-						"Origin should not include a path (e.g., https://example.com)",
-					life: 3000,
-				});
+				toast.error("Invalid Origin", "Origin should not include a path (e.g., https://example.com)");
 				return;
 			}
 			editForm.value.allowedOrigins.push(url.origin);
 			newAllowedOrigin.value = "";
 		} catch {
-			toast.add({
-				severity: "error",
-				summary: "Invalid URL",
-				detail: "Please enter a valid origin URL",
-				life: 3000,
-			});
+			toast.error("Invalid URL", "Please enter a valid origin URL");
 		}
 	}
 }
@@ -221,12 +199,7 @@ async function saveChanges() {
 
 		client.value = updated;
 		isEditing.value = false;
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "OAuth client updated successfully",
-			life: 3000,
-		});
+		toast.success("Success", "OAuth client updated successfully");
 	} catch (e: unknown) {
 		error.value = getErrorMessage(e, "Failed to update OAuth client");
 	} finally {
@@ -244,19 +217,9 @@ async function rotateSecret() {
 		newClientSecret.value = response.clientSecret;
 		showRotateSecretDialog.value = false;
 		showNewSecretDialog.value = true;
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Client secret rotated successfully",
-			life: 3000,
-		});
+		toast.success("Success", "Client secret rotated successfully");
 	} catch (e: unknown) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: getErrorMessage(e, "Failed to rotate client secret"),
-			life: 5000,
-		});
+		// Global banner shown by bffFetch
 	} finally {
 		rotateLoading.value = false;
 	}
@@ -265,24 +228,14 @@ async function rotateSecret() {
 function copySecret() {
 	if (newClientSecret.value) {
 		navigator.clipboard.writeText(newClientSecret.value);
-		toast.add({
-			severity: "success",
-			summary: "Copied",
-			detail: "Client secret copied to clipboard",
-			life: 2000,
-		});
+		toast.success("Copied", "Client secret copied to clipboard");
 	}
 }
 
 function copyClientId() {
 	if (client.value) {
 		navigator.clipboard.writeText(client.value.clientId);
-		toast.add({
-			severity: "success",
-			summary: "Copied",
-			detail: "Client ID copied to clipboard",
-			life: 2000,
-		});
+		toast.success("Copied", "Client ID copied to clipboard");
 	}
 }
 
@@ -293,29 +246,14 @@ async function toggleActive() {
 		if (client.value.active) {
 			await oauthClientsApi.deactivate(client.value.id);
 			client.value.active = false;
-			toast.add({
-				severity: "success",
-				summary: "Deactivated",
-				detail: "OAuth client has been deactivated",
-				life: 3000,
-			});
+			toast.success("Deactivated", "OAuth client has been deactivated");
 		} else {
 			await oauthClientsApi.activate(client.value.id);
 			client.value.active = true;
-			toast.add({
-				severity: "success",
-				summary: "Activated",
-				detail: "OAuth client has been activated",
-				life: 3000,
-			});
+			toast.success("Activated", "OAuth client has been activated");
 		}
 	} catch (e: unknown) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: getErrorMessage(e, "Failed to update client status"),
-			life: 5000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 

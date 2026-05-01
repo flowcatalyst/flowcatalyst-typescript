@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { toast } from "@/utils/errorBus";
 import { ref, computed, watch } from "vue";
-import { useToast } from "primevue/usetoast";
 import type { SpecVersion } from "@/api/event-types";
 import {
 	generateExample,
@@ -26,8 +26,6 @@ const props = defineProps<{
 const emit = defineEmits<{
 	(e: "update:visible", value: boolean): void;
 }>();
-
-const toast = useToast();
 const activeTab = ref<"schema" | "example" | "typescript" | "php" | "python" | "java">("schema");
 
 const tabLabels: Record<typeof activeTab.value, string> = {
@@ -145,19 +143,9 @@ function close() {
 async function copyToClipboard() {
 	try {
 		await navigator.clipboard.writeText(displayContent.value);
-		toast.add({
-			severity: "success",
-			summary: "Copied",
-			detail: `${tabLabels[activeTab.value]} copied to clipboard`,
-			life: 2000,
-		});
+		toast.success("Copied", `${tabLabels[activeTab.value]} copied to clipboard`);
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to copy",
-			life: 2000,
-		});
+		toast.error("Error", "Failed to copy");
 	}
 }
 </script>

@@ -451,3 +451,82 @@ Per-pool metrics tracked by `ProcessPool`:
 | `totalProcessed` / `totalSucceeded` / `totalFailed` | Throughput |
 | `totalTransient` / `totalRateLimited` / `totalDeferred` | Backpressure indicators |
 | `successRate` / `successRate5min` / `successRate30min` | Windowed success rates |
+
+---
+
+## Scaling and Operating Topology
+
+### Current model: single active instance
+
+The router today is designed to run as a **single active instance** with optional standby replicas. Several pieces of state are in-process and not coordinated across instances:
+
+| State | Implementation | Why it must be single-instance |
+|---|---|---|
+| Pool rate limiter (`TokenBucket`) | In-process | Token state is local; N instances = N× the configured rate |
+| Logical-requeue dedup (`appMessageIdToPipelineKey`) | In-process Map, ~5min window | Redelivery to a different instance won't be deduped |
+| Pool concurrency (`DynamicSemaphore`) | In-process | "concurrency: 50" with N replicas = 50N in-flight at downstream — silently changes during HPA |
+| In-flight tracking (`inFlightMessages`, `messageCallbacks`) | In-process Maps | Each instance owns the messages it received from the broker; no cross-instance need |
+| Circuit breakers | In-process per-URL | Each instance learns downstream health independently — generally desired |
+| Standby leader lock | Redis | Already distributed |
+
+**Multi-replica deployments are run today as primary/standby:** one instance holds the Redis lock and processes messages; others stand idle and pause their consumers. Throughput is bounded by what one Node.js process can do (≈3–5k msg/s sustained on c7i-class hardware for ALB-mediated workloads, see `docs/scaling.md` if added).
+
+### What it would take to run active/active
+
+Going beyond one active instance requires distributing the state above. The pieces, in increasing order of complexity:
+
+#### 1. Distributed rate limiter (required)
+
+Replace `TokenBucket` with `RateLimiterRedis` from `rate-limiter-flexible` (or the equivalent against your Redis client). The rate-limit check moves to the hot path with ~0.5–1ms added latency per message; in exchange the configured rate becomes fleet-wide.
+
+The `TokenBucket` interface in `packages/queue-core/src/utils/token-bucket.ts` is the contract to satisfy: `acquire()`, `setRate()`, `dispose()`. A `RedisTokenBucket` implementing the same shape would be drop-in.
+
+#### 2. Distributed dedup (required)
+
+Replace the in-process `appMessageIdToPipelineKey` with Redis: `SET dedup:<messageId> 1 NX EX 300`. If `NX` returns nil, the message is a duplicate. Keep the in-process Map as a first-level cache — only check Redis on a local miss.
+
+#### 3. Distributed concurrency (required)
+
+This is the hardest. Three options, ranked by operational complexity:
+
+**Option A — Fixed replicas, divided locally.** Operator sets per-instance `concurrency = ceil(target / replica_count)`. Zero new infrastructure, but breaks under HPA: when replica count changes, the effective fleet limit changes silently with it.
+
+**Option B — Heartbeat-based local rebalance.** Each instance announces liveness via `SET router:alive:<instanceId> 1 EX 15` refreshed every 5s. Every 10s, each instance recalculates local permits from `KEYS router:alive:*` count. Most messages take the fast local-semaphore path; ±10–20% over-shoot during scale events is tolerated. Recommended for HPA topologies.
+
+**Option C — Hard Redis semaphore.** Every acquire/release hits Redis (`INCR`/`DECR` with TTL on owner keys to handle crashed holders). Correct under arbitrary churn, but ~1.5ms/message round trip caps a single instance at ~1k msg/s. Use only when exact bounds matter more than throughput.
+
+Implementations live or die on TTL handling — instances that crash mid-message must release their permits via TTL expiry, or the fleet leaks capacity.
+
+#### 4. Drop the standby leader lock
+
+Once 1–3 are in place, the leader lock no longer protects anything — its job was preventing the per-instance state above from being multi-active. Drop it; let every instance poll, mediate, and ack.
+
+### Alternative escape hatches (no distributed coordination required)
+
+If you need to scale past one instance but don't want to take on the distributed-state work, three options:
+
+#### A. Switch to the Rust router (`flowcatalyst-rust/crates/fc-router`)
+
+Different binary, same protocol. Rust's per-process throughput is ≈2–3× the Node.js router for ALB workloads, scaling linearly across cores via tokio. A single Rust instance on c7i.4xlarge handles workloads that would require ~6 Node.js replicas. The Rust router has the same in-process state limitations — you trade horizontal scaling for vertical headroom, but one Rust instance often replaces the whole Node fleet.
+
+Tradeoff: smaller broker support (SQS only at present), and a separate binary to operate.
+
+#### B. Multi-worker Node, single binary, single host (custom)
+
+Fork N Node workers from one binary. One worker holds the rate limiter and concurrency semaphore; siblings call into it via Node IPC (`process.send` / `cluster.workers[i].send`) to acquire/release. Local message passing on a single host is sub-millisecond — comparable to or faster than Redis on the same network — and avoids the distributed-systems complexity entirely.
+
+Constraints: scales only within one host's vCPU count; requires care around ack/nack ownership (which worker handles each message). Not implemented today.
+
+#### C. Wait for Node.js shared memory primitives
+
+Worker threads with `SharedArrayBuffer` + `Atomics` already give you fast cross-thread counters, but the broader ecosystem (HTTP clients, broker SDKs) is not designed for shared-memory coordination. A future Node where `Map` / `Set` / async primitives are natively shareable across threads would let the router scale across cores within one process without IPC. Not currently on the Node roadmap; mentioned for completeness.
+
+### Recommended path
+
+For most deployments, the single-instance ceiling is generous enough that the operational simplicity of primary/standby outweighs the gains from going active/active. The threshold to revisit is roughly:
+
+- Sustained > 3k msg/s and growing: tune the existing knobs first (`connectionsPerOrigin`, `h2MaxConcurrentStreams`, pool concurrency)
+- Sustained > 5k msg/s: evaluate the Rust router
+- Sustained > 15k msg/s OR strict cross-region HA: implement distributed rate limit + dedup + concurrency (sections 1–4 above)
+
+The current code is intentionally not built for active/active — adding the distributed pieces is an explicit decision, not an oversight.

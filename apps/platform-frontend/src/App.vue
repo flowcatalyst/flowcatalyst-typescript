@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted } from "vue";
 import { onApiError } from "@/api/client";
 import { usePermissionsStore } from "@/stores/permissions";
+import NotificationBannerStack from "@/components/NotificationBannerStack.vue";
 
 const permissionsStore = usePermissionsStore();
 
@@ -23,8 +24,7 @@ onUnmounted(() => {
 
 <template>
   <RouterView />
-  <Toast />
   <ConfirmDialog />
-  <GlobalToast />
+  <NotificationBannerStack />
   <PermissionDeniedModal />
 </template>

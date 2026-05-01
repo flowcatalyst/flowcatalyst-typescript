@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { useToast } from "primevue/usetoast";
 import { usersApi, type User } from "@/api/users";
 import { clientsApi, type Client } from "@/api/clients";
 import { rolesApi, type Role } from "@/api/roles";
 import { useListState } from "@/composables/useListState";
 
 const router = useRouter();
-const toast = useToast();
 
 const { filters, page, pageSize, sortField, sortOrder, searchQuery, hasActiveFilters, clearFilters: clearListFilters } = useListState({
 	filters: {
@@ -87,12 +85,6 @@ async function loadUsers() {
 		users.value = response.principals;
 		totalRecords.value = response.total;
 	} catch (error) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to load users",
-			life: 5000,
-		});
 		console.error("Failed to fetch users:", error);
 	} finally {
 		loading.value = false;

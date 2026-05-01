@@ -17,9 +17,9 @@ import type {
 } from "@flowcatalyst/persistence";
 import { createPagedResult } from "@flowcatalyst/persistence";
 
-import type * as platformSchema from "../schema/drizzle-schema.js";
+import type { platformRelations } from "../schema/relations.js";
 
-type PlatformDb = PostgresJsDatabase<typeof platformSchema>;
+type PlatformDb = PostgresJsDatabase<typeof platformRelations>;
 
 import {
 	eventTypes,

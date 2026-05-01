@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { toast } from "@/utils/errorBus";
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
 import {
 	subscriptionsApi,
 	type Subscription,
@@ -13,7 +13,6 @@ import {
 const route = useRoute();
 const router = useRouter();
 const confirm = useConfirm();
-const toast = useToast();
 
 const loading = ref(true);
 const subscription = ref<Subscription | null>(null);
@@ -91,19 +90,9 @@ async function saveChanges() {
 			mode: editMode.value,
 		});
 		editing.value = false;
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Subscription updated",
-			life: 3000,
-		});
+		toast.success("Success", "Subscription updated");
 	} catch (e) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to update",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
 	}
@@ -125,19 +114,9 @@ async function pauseSubscription() {
 	try {
 		await subscriptionsApi.pause(subscription.value.id);
 		subscription.value = await subscriptionsApi.get(subscription.value.id);
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Subscription paused",
-			life: 3000,
-		});
+		toast.success("Success", "Subscription paused");
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to pause",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 
@@ -156,19 +135,9 @@ async function resumeSubscription() {
 	try {
 		await subscriptionsApi.resume(subscription.value.id);
 		subscription.value = await subscriptionsApi.get(subscription.value.id);
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Subscription resumed",
-			life: 3000,
-		});
+		toast.success("Success", "Subscription resumed");
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to resume",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 
@@ -187,20 +156,10 @@ async function deleteSubscription() {
 	if (!subscription.value) return;
 	try {
 		await subscriptionsApi.delete(subscription.value.id);
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: "Subscription deleted",
-			life: 3000,
-		});
+		toast.success("Success", "Subscription deleted");
 		router.push("/subscriptions");
 	} catch {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: "Failed to delete",
-			life: 3000,
-		});
+		// Global banner shown by bffFetch
 	}
 }
 

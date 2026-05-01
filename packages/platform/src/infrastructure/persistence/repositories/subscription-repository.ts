@@ -13,9 +13,9 @@ import { eq, sql, and, or, isNull, inArray } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type { Repository, TransactionContext } from "@flowcatalyst/persistence";
 
-import type * as platformSchema from "../schema/drizzle-schema.js";
+import type { platformRelations } from "../schema/relations.js";
 
-type PlatformDb = PostgresJsDatabase<typeof platformSchema>;
+type PlatformDb = PostgresJsDatabase<typeof platformRelations>;
 
 import {
 	subscriptions,

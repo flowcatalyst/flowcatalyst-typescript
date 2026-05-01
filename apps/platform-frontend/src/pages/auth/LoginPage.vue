@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { toast } from "@/utils/errorBus";
 import { ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useForm, useField } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
-import { useToast } from "primevue/usetoast";
 import { useAuthStore } from "@/stores/auth";
 import { useLoginThemeStore } from "@/stores/loginTheme";
 import { checkEmailDomain, login } from "@/api/auth";
@@ -15,7 +15,6 @@ type LoginStep = "email" | "password" | "redirecting";
 const route = useRoute();
 const authStore = useAuthStore();
 const themeStore = useLoginThemeStore();
-const toast = useToast();
 
 // Show a success banner when redirected here after a successful password reset
 const showResetSuccess = computed(() => route.query["reset"] === "success");
@@ -122,12 +121,7 @@ const onCheckEmail = handleEmailSubmit(async (values) => {
 			step.value = "password";
 		}
 	} catch (e: unknown) {
-		toast.add({
-			severity: "error",
-			summary: "Connection Error",
-			detail: getErrorMessage(e, "Unable to verify email domain. Please try again."),
-			life: 5000,
-		});
+		toast.error("Connection Error", getErrorMessage(e, "Unable to verify email domain. Please try again."));
 	} finally {
 		isSubmitting.value = false;
 	}

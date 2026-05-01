@@ -1,16 +1,14 @@
 <script setup lang="ts">
+import { toast } from "@/utils/errorBus";
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useToast } from "primevue/usetoast";
 import {
 	emailDomainMappingsApi,
 	type EmailDomainMapping,
 } from "@/api/email-domain-mappings";
-import { getErrorMessage } from "@/utils/errors";
 import { useListState } from "@/composables/useListState";
 
 const router = useRouter();
-const toast = useToast();
 
 const { searchQuery } = useListState({
 	filters: {},
@@ -73,19 +71,9 @@ async function deleteMapping() {
 			(m) => m.id !== mappingToDelete.value?.id,
 		);
 		showDeleteDialog.value = false;
-		toast.add({
-			severity: "success",
-			summary: "Success",
-			detail: `Email domain mapping for "${mappingToDelete.value.emailDomain}" deleted`,
-			life: 3000,
-		});
+		toast.success("Success", `Email domain mapping for "${mappingToDelete.value.emailDomain}" deleted`);
 	} catch (e: unknown) {
-		toast.add({
-			severity: "error",
-			summary: "Error",
-			detail: getErrorMessage(e, "Failed to delete mapping"),
-			life: 5000,
-		});
+		// Global banner shown by bffFetch
 	} finally {
 		deleteLoading.value = false;
 		mappingToDelete.value = null;
