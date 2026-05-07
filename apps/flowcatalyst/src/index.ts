@@ -87,6 +87,18 @@ async function resolveMigrationsFolder(): Promise<string> {
 	return resolve(__dirname, "../drizzle");
 }
 
+// Resolve the production-only migrations folder (declarative partitioning).
+// Returns undefined when running on the embedded PGlite DB so the partition
+// migration is skipped. SEA bundles do not include this folder — partitioning
+// only runs against real Postgres deployments.
+function resolveProductionMigrationsFolder(): string | undefined {
+	const distProd = resolve(__dirname, "drizzle-production");
+	if (existsSync(distProd)) return distProd;
+	const sourceProd = resolve(__dirname, "../drizzle-production");
+	if (existsSync(sourceProd)) return sourceProd;
+	return undefined;
+}
+
 // Resolve frontend dir — SEA asset, dist/frontend, or sibling platform-frontend/dist
 async function resolveFrontendDir(): Promise<string | undefined> {
 	// SEA: extract embedded frontend to temp dir
@@ -180,9 +192,13 @@ async function runMigrateCommand(): Promise<void> {
 		process.exit(1);
 	}
 	const migrationsFolder = await resolveMigrationsFolder();
+	// `migrate` is invoked explicitly against a real DB — always include
+	// production migrations. The auto-migrate path inside `serve` is the
+	// place that skips production migrations on the embedded PGlite DB.
+	const productionMigrationsFolder = resolveProductionMigrationsFolder();
 	const { runMigrations } = await import("@flowcatalyst/persistence");
 	console.log("Running database migrations...");
-	await runMigrations(url, migrationsFolder);
+	await runMigrations(url, migrationsFolder, { productionMigrationsFolder });
 	console.log("Migrations complete.");
 }
 
@@ -446,7 +462,12 @@ async function main() {
 		logger.info("Running database migrations...");
 		const { runMigrations } = await import("@flowcatalyst/persistence");
 		const migrationsFolder = await resolveMigrationsFolder();
-		await runMigrations(DATABASE_URL, migrationsFolder);
+		const productionMigrationsFolder = EMBEDDED_POSTGRES_ENABLED
+			? undefined
+			: resolveProductionMigrationsFolder();
+		await runMigrations(DATABASE_URL, migrationsFolder, {
+			productionMigrationsFolder,
+		});
 		logger.info("Migrations complete");
 	}
 

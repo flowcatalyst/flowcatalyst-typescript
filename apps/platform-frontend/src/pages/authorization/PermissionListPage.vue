@@ -83,7 +83,7 @@ async function loadPermissions() {
 	try {
 		const response = await permissionsApi.list();
 		permissions.value = response.items;
-	} catch (e) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		loading.value = false;

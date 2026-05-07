@@ -28,4 +28,8 @@ export {
 	OAuthClientSecretRegenerated,
 	type OAuthClientDeletedData,
 	OAuthClientDeleted,
+	type OAuthClientActivatedData,
+	OAuthClientActivated,
+	type OAuthClientDeactivatedData,
+	OAuthClientDeactivated,
 } from "./events.js";

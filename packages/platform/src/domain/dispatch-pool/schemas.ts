@@ -9,7 +9,7 @@ export const DispatchPoolCreatedDataSchema = Type.Object({
 	code: Type.String(),
 	name: Type.String(),
 	description: Type.Union([Type.String(), Type.Null()]),
-	rateLimit: Type.Integer(),
+	rateLimit: Type.Union([Type.Integer(), Type.Null()]),
 	concurrency: Type.Integer(),
 	clientId: Type.Union([Type.String(), Type.Null()]),
 	clientIdentifier: Type.Union([Type.String(), Type.Null()]),
@@ -21,7 +21,7 @@ export const DispatchPoolUpdatedDataSchema = Type.Object({
 	code: Type.String(),
 	name: Type.String(),
 	description: Type.Union([Type.String(), Type.Null()]),
-	rateLimit: Type.Integer(),
+	rateLimit: Type.Union([Type.Integer(), Type.Null()]),
 	concurrency: Type.Integer(),
 	status: Type.String(),
 });

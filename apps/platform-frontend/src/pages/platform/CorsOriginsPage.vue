@@ -103,7 +103,7 @@ async function deleteOrigin() {
 		);
 		showDeleteDialog.value = false;
 		toast.success("Success", `CORS origin "${originToDelete.value.origin}" removed`);
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		deleteLoading.value = false;

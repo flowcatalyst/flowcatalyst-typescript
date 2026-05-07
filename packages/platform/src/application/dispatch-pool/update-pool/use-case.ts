@@ -48,12 +48,16 @@ export function createUpdateDispatchPoolUseCase(
 				);
 			}
 
-			// Validate rate limit if provided
-			if (command.rateLimit !== undefined && command.rateLimit < 1) {
+			// Validate rate limit if provided. `null` clears it (concurrency-only).
+			if (
+				command.rateLimit !== undefined &&
+				command.rateLimit !== null &&
+				command.rateLimit < 1
+			) {
 				return Result.failure(
 					UseCaseError.validation(
 						"INVALID_RATE_LIMIT",
-						"Rate limit must be at least 1",
+						"Rate limit, when set, must be at least 1",
 					),
 				);
 			}

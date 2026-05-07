@@ -1,11 +1,13 @@
 import type { FastifyPluginAsync } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import {
 	SeedMessageRequestSchema,
 	SeedMessageResponseSchema,
 } from "../schemas/index.js";
 
 export const seedRoutes: FastifyPluginAsync = async (fastify) => {
-	fastify.post(
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
+	f.post(
 		"/messages",
 		{
 			schema: {

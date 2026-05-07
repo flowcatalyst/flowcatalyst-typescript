@@ -14,7 +14,9 @@ import {
 	boolean,
 	jsonb,
 	index,
+	primaryKey,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { tsidColumn, rawTsidColumn, timestampColumn } from "./common.js";
 
 /**
@@ -58,8 +60,10 @@ export interface DispatchJobMetadata {
 export const dispatchJobs = pgTable(
 	"msg_dispatch_jobs",
 	{
-		// Primary key (unprefixed TSID for high-volume performance)
-		id: rawTsidColumn("id").primaryKey(),
+		// Primary key part 1 — unprefixed TSID for high-volume performance.
+		// Combined with createdAt, the PK is composite to support range
+		// partitioning by created_at in production.
+		id: rawTsidColumn("id").notNull(),
 
 		// External reference ID (for client tracking)
 		externalId: varchar("external_id", { length: 100 }),
@@ -153,13 +157,23 @@ export const dispatchJobs = pgTable(
 		projectedAt: timestampColumn("projected_at"),
 	},
 	(table) => [
-		index("idx_msg_dispatch_jobs_status").on(table.status),
-		index("idx_msg_dispatch_jobs_client_id").on(table.clientId),
-		index("idx_msg_dispatch_jobs_message_group").on(table.messageGroup),
-		index("idx_msg_dispatch_jobs_subscription_id").on(table.subscriptionId),
-		index("idx_msg_dispatch_jobs_connection_id").on(table.connectionId),
-		index("idx_msg_dispatch_jobs_created_at").on(table.createdAt),
-		index("idx_msg_dispatch_jobs_scheduled_for").on(table.scheduledFor),
+		// Composite primary key — required when the table is partitioned by
+		// created_at; harmless when it isn't.
+		primaryKey({ columns: [table.id, table.createdAt] }),
+		// Transactional-path indexes only. Rich query indexes belong on the
+		// read projection (msg_dispatch_jobs_read).
+		index("idx_dispatch_jobs_pending_poll")
+			.on(table.messageGroup, table.sequence, table.createdAt)
+			.where(sql`status = 'PENDING'`),
+		index("idx_dispatch_jobs_blocked_groups")
+			.on(table.messageGroup, table.status)
+			.where(sql`status IN ('FAILED', 'ERROR')`),
+		index("idx_dispatch_jobs_stale_queued")
+			.on(table.queuedAt)
+			.where(sql`status = 'QUEUED'`),
+		index("idx_msg_dispatch_jobs_unprojected")
+			.on(table.createdAt)
+			.where(sql`projected_at IS NULL`),
 	],
 );
 

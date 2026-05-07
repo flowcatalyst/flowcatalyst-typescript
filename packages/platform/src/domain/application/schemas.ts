@@ -46,3 +46,10 @@ export const ApplicationDisabledForClientDataSchema = Type.Object({
 	clientId: Type.String(),
 	configId: Type.String(),
 });
+
+export const ApplicationServiceAccountProvisionedDataSchema = Type.Object({
+	applicationId: Type.String(),
+	applicationCode: Type.String(),
+	serviceAccountId: Type.String(),
+	serviceAccountCode: Type.String(),
+});

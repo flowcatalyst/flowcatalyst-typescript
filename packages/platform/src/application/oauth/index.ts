@@ -26,3 +26,17 @@ export {
 	createDeleteOAuthClientUseCase,
 	type DeleteOAuthClientUseCaseDeps,
 } from "./delete-oauth-client/index.js";
+
+// Activate OAuth Client
+export {
+	type ActivateOAuthClientCommand,
+	createActivateOAuthClientUseCase,
+	type ActivateOAuthClientUseCaseDeps,
+} from "./activate-oauth-client/index.js";
+
+// Deactivate OAuth Client
+export {
+	type DeactivateOAuthClientCommand,
+	createDeactivateOAuthClientUseCase,
+	type DeactivateOAuthClientUseCaseDeps,
+} from "./deactivate-oauth-client/index.js";

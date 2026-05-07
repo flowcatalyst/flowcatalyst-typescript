@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -26,6 +27,7 @@ import type {
 	ActivateApplicationCommand,
 	DeactivateApplicationCommand,
 	CreateServiceAccountCommand,
+	AttachServiceAccountToApplicationCommand,
 } from "../../application/index.js";
 import type {
 	ApplicationCreated,
@@ -37,6 +39,7 @@ import type {
 	ApplicationDeactivated,
 	ApplicationType,
 	ServiceAccountCreated,
+	ApplicationServiceAccountProvisioned,
 } from "../../domain/index.js";
 import type {
 	ApplicationRepository,
@@ -226,6 +229,10 @@ export interface ApplicationsRoutesDeps {
 		CreateServiceAccountCommand,
 		ServiceAccountCreated
 	>;
+	readonly attachServiceAccountToApplicationUseCase: UseCase<
+		AttachServiceAccountToApplicationCommand,
+		ApplicationServiceAccountProvisioned
+	>;
 }
 
 /**
@@ -235,6 +242,7 @@ export async function registerApplicationsRoutes(
 	fastify: FastifyInstance,
 	deps: ApplicationsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		applicationRepository,
 		applicationClientConfigRepository,
@@ -248,10 +256,11 @@ export async function registerApplicationsRoutes(
 		enableApplicationForClientUseCase,
 		disableApplicationForClientUseCase,
 		createServiceAccountUseCase,
+		attachServiceAccountToApplicationUseCase,
 	} = deps;
 
 	// POST /api/applications - Create application
-	fastify.post(
+	f.post(
 		"/applications",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.CREATE),
@@ -302,12 +311,23 @@ export async function registerApplicationsRoutes(
 					);
 
 					if (Result.isSuccess(saResult)) {
-						const principalId = saResult.value.getData().principalId;
-						// Link service account to the application
-						application = await applicationRepository.update({
-							...application,
-							serviceAccountId: principalId,
-						});
+						const saData = saResult.value.getData();
+						const attachResult =
+							await attachServiceAccountToApplicationUseCase.execute(
+								{
+									applicationId: application.id,
+									serviceAccountId: saData.principalId,
+									serviceAccountCode: saData.code,
+								},
+								ctx,
+							);
+						if (Result.isFailure(attachResult)) {
+							return sendResult(reply, attachResult);
+						}
+						const refreshed = await applicationRepository.findById(
+							application.id,
+						);
+						application = refreshed ?? application;
 					}
 
 					return jsonCreated(reply, toApplicationResponse(application));
@@ -319,7 +339,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// GET /api/applications - List applications
-	fastify.get(
+	f.get(
 		"/applications",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.READ),
@@ -356,7 +376,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// GET /api/applications/:id - Get application by ID
-	fastify.get(
+	f.get(
 		"/applications/:id",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.READ),
@@ -381,7 +401,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// GET /api/applications/by-code/:code - Get application by code
-	fastify.get(
+	f.get(
 		"/applications/by-code/:code",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.READ),
@@ -406,7 +426,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// PUT /api/applications/:id - Update application
-	fastify.put(
+	f.put(
 		"/applications/:id",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.UPDATE),
@@ -451,7 +471,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// POST /api/applications/:id/activate - Activate application
-	fastify.post(
+	f.post(
 		"/applications/:id/activate",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.ACTIVATE),
@@ -486,7 +506,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// POST /api/applications/:id/deactivate - Deactivate application
-	fastify.post(
+	f.post(
 		"/applications/:id/deactivate",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.DEACTIVATE),
@@ -521,7 +541,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// DELETE /api/applications/:id - Delete application
-	fastify.delete(
+	f.delete(
 		"/applications/:id",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.DELETE),
@@ -552,7 +572,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// GET /api/applications/:id/clients - Get client configs for application
-	fastify.get(
+	f.get(
 		"/applications/:id/clients",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.READ),
@@ -583,7 +603,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// POST /api/applications/:id/clients - Enable application for client
-	fastify.post(
+	f.post(
 		"/applications/:id/clients",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.ENABLE_CLIENT),
@@ -629,7 +649,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// DELETE /api/applications/:id/clients/:clientId - Disable application for client
-	fastify.delete(
+	f.delete(
 		"/applications/:id/clients/:clientId",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.DISABLE_CLIENT),
@@ -664,7 +684,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// GET /api/applications/:id/roles - Get roles for application (Java parity)
-	fastify.get(
+	f.get(
 		"/applications/:id/roles",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.READ),
@@ -700,7 +720,7 @@ export async function registerApplicationsRoutes(
 	);
 
 	// POST /api/applications/:id/provision-service-account - Provision service account (Java parity)
-	fastify.post(
+	f.post(
 		"/applications/:id/provision-service-account",
 		{
 			preHandler: requirePermission(APPLICATION_PERMISSIONS.UPDATE),
@@ -753,14 +773,23 @@ export async function registerApplicationsRoutes(
 			const result = await createServiceAccountUseCase.execute(command, ctx);
 
 			if (Result.isSuccess(result)) {
-				const principalId = result.value.getData().principalId;
+				const saData = result.value.getData();
+				const principalId = saData.principalId;
 				const principal = await principalRepository.findById(principalId);
 
 				// Link service account back to the application
-				await applicationRepository.update({
-					...application,
-					serviceAccountId: principalId,
-				});
+				const attachResult =
+					await attachServiceAccountToApplicationUseCase.execute(
+						{
+							applicationId: application.id,
+							serviceAccountId: principalId,
+							serviceAccountCode: saData.code,
+						},
+						ctx,
+					);
+				if (Result.isFailure(attachResult)) {
+					return sendResult(reply, attachResult);
+				}
 
 				if (principal) {
 					return jsonCreated(reply, {

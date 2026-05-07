@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -149,6 +150,7 @@ export async function registerRolesRoutes(
 	fastify: FastifyInstance,
 	deps: RolesRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		roleRepository,
 		permissionRepository,
@@ -158,7 +160,7 @@ export async function registerRolesRoutes(
 	} = deps;
 
 	// POST /api/roles - Create role
-	fastify.post(
+	f.post(
 		"/roles",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.CREATE),
@@ -206,7 +208,7 @@ export async function registerRolesRoutes(
 	);
 
 	// GET /api/roles - List roles
-	fastify.get(
+	f.get(
 		"/roles",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.READ),
@@ -239,7 +241,7 @@ export async function registerRolesRoutes(
 	);
 
 	// GET /api/roles/:name - Get role by name (Java parity: /roles/{roleName})
-	fastify.get(
+	f.get(
 		"/roles/:name",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.READ),
@@ -264,7 +266,7 @@ export async function registerRolesRoutes(
 	);
 
 	// GET /api/roles/by-source/:source - Get roles by source
-	fastify.get(
+	f.get(
 		"/roles/by-source/:source",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.READ),
@@ -298,7 +300,7 @@ export async function registerRolesRoutes(
 	);
 
 	// GET /api/roles/by-application/:applicationId - Get roles by application
-	fastify.get(
+	f.get(
 		"/roles/by-application/:applicationId",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.READ),
@@ -322,7 +324,7 @@ export async function registerRolesRoutes(
 	);
 
 	// PUT /api/roles/:name - Update role by name (Java parity: /roles/{roleName})
-	fastify.put(
+	f.put(
 		"/roles/:name",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.UPDATE),
@@ -373,7 +375,7 @@ export async function registerRolesRoutes(
 	);
 
 	// DELETE /api/roles/:name - Delete role by name (Java parity: /roles/{roleName})
-	fastify.delete(
+	f.delete(
 		"/roles/:name",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.DELETE),
@@ -409,7 +411,7 @@ export async function registerRolesRoutes(
 	);
 
 	// GET /api/roles/permissions - List all permissions (Java parity: nested under /roles)
-	fastify.get(
+	f.get(
 		"/roles/permissions",
 		{
 			preHandler: requirePermission(PERMISSION_PERMISSIONS.READ),
@@ -429,7 +431,7 @@ export async function registerRolesRoutes(
 	);
 
 	// GET /api/roles/permissions/:permission - Get permission by code (Java parity)
-	fastify.get(
+	f.get(
 		"/roles/permissions/:permission",
 		{
 			preHandler: requirePermission(PERMISSION_PERMISSIONS.READ),

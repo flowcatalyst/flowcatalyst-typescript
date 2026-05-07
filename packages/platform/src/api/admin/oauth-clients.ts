@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -26,12 +27,16 @@ import type {
 	UpdateOAuthClientCommand,
 	RegenerateOAuthClientSecretCommand,
 	DeleteOAuthClientCommand,
+	ActivateOAuthClientCommand,
+	DeactivateOAuthClientCommand,
 } from "../../application/index.js";
 import type {
 	OAuthClientCreated,
 	OAuthClientUpdated,
 	OAuthClientSecretRegenerated,
 	OAuthClientDeleted,
+	OAuthClientActivated,
+	OAuthClientDeactivated,
 	OAuthClient,
 } from "../../domain/index.js";
 import type {
@@ -179,6 +184,14 @@ export interface OAuthClientsRoutesDeps {
 		DeleteOAuthClientCommand,
 		OAuthClientDeleted
 	>;
+	readonly activateOAuthClientUseCase: UseCase<
+		ActivateOAuthClientCommand,
+		OAuthClientActivated
+	>;
+	readonly deactivateOAuthClientUseCase: UseCase<
+		DeactivateOAuthClientCommand,
+		OAuthClientDeactivated
+	>;
 }
 
 /**
@@ -223,6 +236,7 @@ export async function registerOAuthClientsRoutes(
 	fastify: FastifyInstance,
 	deps: OAuthClientsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		oauthClientRepository,
 		applicationRepository,
@@ -232,6 +246,8 @@ export async function registerOAuthClientsRoutes(
 		updateOAuthClientUseCase,
 		regenerateOAuthClientSecretUseCase,
 		deleteOAuthClientUseCase,
+		activateOAuthClientUseCase,
+		deactivateOAuthClientUseCase,
 	} = deps;
 
 	/**
@@ -243,7 +259,7 @@ export async function registerOAuthClientsRoutes(
 	}
 
 	// GET /api/oauth-clients - List all OAuth clients
-	fastify.get(
+	f.get(
 		"/oauth-clients",
 		{
 			preHandler: requirePermission(OAUTH_CLIENT_PERMISSIONS.READ),
@@ -272,7 +288,7 @@ export async function registerOAuthClientsRoutes(
 	);
 
 	// GET /api/oauth-clients/:id - Get OAuth client by ID
-	fastify.get(
+	f.get(
 		"/oauth-clients/:id",
 		{
 			preHandler: requirePermission(OAUTH_CLIENT_PERMISSIONS.READ),
@@ -298,7 +314,7 @@ export async function registerOAuthClientsRoutes(
 	);
 
 	// GET /api/oauth-clients/by-client-id/:clientId - Get OAuth client by clientId
-	fastify.get(
+	f.get(
 		"/oauth-clients/by-client-id/:clientId",
 		{
 			preHandler: requirePermission(OAUTH_CLIENT_PERMISSIONS.READ),
@@ -324,7 +340,7 @@ export async function registerOAuthClientsRoutes(
 	);
 
 	// POST /api/oauth-clients - Create OAuth client
-	fastify.post(
+	f.post(
 		"/oauth-clients",
 		{
 			preHandler: requirePermission(OAUTH_CLIENT_PERMISSIONS.CREATE),
@@ -387,7 +403,7 @@ export async function registerOAuthClientsRoutes(
 	);
 
 	// PUT /api/oauth-clients/:id - Update OAuth client
-	fastify.put(
+	f.put(
 		"/oauth-clients/:id",
 		{
 			preHandler: requirePermission(OAUTH_CLIENT_PERMISSIONS.UPDATE),
@@ -436,7 +452,7 @@ export async function registerOAuthClientsRoutes(
 	);
 
 	// POST /api/oauth-clients/:id/regenerate-secret - Regenerate client secret
-	fastify.post(
+	f.post(
 		"/oauth-clients/:id/regenerate-secret",
 		{
 			preHandler: requirePermission(OAUTH_CLIENT_PERMISSIONS.REGENERATE_SECRET),
@@ -488,7 +504,7 @@ export async function registerOAuthClientsRoutes(
 	);
 
 	// POST /api/oauth-clients/:id/activate - Activate OAuth client
-	fastify.post(
+	f.post(
 		"/oauth-clients/:id/activate",
 		{
 			preHandler: requirePermission(OAUTH_CLIENT_PERMISSIONS.UPDATE),
@@ -502,19 +518,18 @@ export async function registerOAuthClientsRoutes(
 		},
 		async (request, reply) => {
 			const { id } = request.params as Static<typeof IdParam>;
-			const client = await oauthClientRepository.findById(id);
-
-			if (!client) {
-				return notFound(reply, `OAuth client not found: ${id}`);
-			}
-
-			await oauthClientRepository.update({ ...client, active: true });
+			const ctx = request.executionContext;
+			const result = await activateOAuthClientUseCase.execute(
+				{ oauthClientId: id },
+				ctx,
+			);
+			if (Result.isFailure(result)) return sendResult(reply, result);
 			return jsonSuccess(reply, { message: "OAuth client activated" });
 		},
 	);
 
 	// POST /api/oauth-clients/:id/deactivate - Deactivate OAuth client
-	fastify.post(
+	f.post(
 		"/oauth-clients/:id/deactivate",
 		{
 			preHandler: requirePermission(OAUTH_CLIENT_PERMISSIONS.UPDATE),
@@ -528,19 +543,18 @@ export async function registerOAuthClientsRoutes(
 		},
 		async (request, reply) => {
 			const { id } = request.params as Static<typeof IdParam>;
-			const client = await oauthClientRepository.findById(id);
-
-			if (!client) {
-				return notFound(reply, `OAuth client not found: ${id}`);
-			}
-
-			await oauthClientRepository.update({ ...client, active: false });
+			const ctx = request.executionContext;
+			const result = await deactivateOAuthClientUseCase.execute(
+				{ oauthClientId: id },
+				ctx,
+			);
+			if (Result.isFailure(result)) return sendResult(reply, result);
 			return jsonSuccess(reply, { message: "OAuth client deactivated" });
 		},
 	);
 
 	// POST /api/oauth-clients/:id/rotate-secret - Alias for regenerate-secret
-	fastify.post(
+	f.post(
 		"/oauth-clients/:id/rotate-secret",
 		{
 			preHandler: requirePermission(OAUTH_CLIENT_PERMISSIONS.REGENERATE_SECRET),
@@ -592,7 +606,7 @@ export async function registerOAuthClientsRoutes(
 	);
 
 	// DELETE /api/oauth-clients/:id - Delete OAuth client
-	fastify.delete(
+	f.delete(
 		"/oauth-clients/:id",
 		{
 			preHandler: requirePermission(OAUTH_CLIENT_PERMISSIONS.DELETE),

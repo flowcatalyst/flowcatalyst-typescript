@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -115,6 +116,7 @@ export async function registerIdentityProvidersRoutes(
 	fastify: FastifyInstance,
 	deps: IdentityProvidersRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		identityProviderRepository,
 		encryptionService,
@@ -124,7 +126,7 @@ export async function registerIdentityProvidersRoutes(
 	} = deps;
 
 	// GET /identity-providers - List all
-	fastify.get(
+	f.get(
 		"/identity-providers",
 		{
 			preHandler: requirePermission(IDENTITY_PROVIDER_PERMISSIONS.READ),
@@ -144,7 +146,7 @@ export async function registerIdentityProvidersRoutes(
 	);
 
 	// GET /identity-providers/:id - Get by ID
-	fastify.get(
+	f.get(
 		"/identity-providers/:id",
 		{
 			preHandler: requirePermission(IDENTITY_PROVIDER_PERMISSIONS.READ),
@@ -167,7 +169,7 @@ export async function registerIdentityProvidersRoutes(
 	);
 
 	// POST /identity-providers - Create
-	fastify.post(
+	f.post(
 		"/identity-providers",
 		{
 			preHandler: requirePermission(IDENTITY_PROVIDER_PERMISSIONS.CREATE),
@@ -226,7 +228,7 @@ export async function registerIdentityProvidersRoutes(
 	);
 
 	// PUT /identity-providers/:id - Update
-	fastify.put(
+	f.put(
 		"/identity-providers/:id",
 		{
 			preHandler: requirePermission(IDENTITY_PROVIDER_PERMISSIONS.UPDATE),
@@ -298,7 +300,7 @@ export async function registerIdentityProvidersRoutes(
 	);
 
 	// DELETE /identity-providers/:id - Delete
-	fastify.delete(
+	f.delete(
 		"/identity-providers/:id",
 		{
 			preHandler: requirePermission(IDENTITY_PROVIDER_PERMISSIONS.DELETE),

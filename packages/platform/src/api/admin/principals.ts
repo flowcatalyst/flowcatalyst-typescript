@@ -6,6 +6,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -300,6 +301,7 @@ export async function registerPrincipalsRoutes(
 	fastify: FastifyInstance,
 	deps: PrincipalsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		principalRepository,
 		applicationRepository,
@@ -323,7 +325,7 @@ export async function registerPrincipalsRoutes(
 	} = deps;
 
 	// GET /api/principals - List principals with filters
-	fastify.get(
+	f.get(
 		"/principals",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.READ),
@@ -374,7 +376,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// GET /api/principals/:id - Get principal by ID
-	fastify.get(
+	f.get(
 		"/principals/:id",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.READ),
@@ -417,7 +419,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// POST /api/principals/users - Create user
-	fastify.post(
+	f.post(
 		"/principals/users",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.CREATE),
@@ -499,7 +501,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// PUT /api/principals/:id - Update principal
-	fastify.put(
+	f.put(
 		"/principals/:id",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.UPDATE),
@@ -546,7 +548,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// POST /api/principals/:id/activate - Activate principal
-	fastify.post(
+	f.post(
 		"/principals/:id/activate",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.UPDATE),
@@ -574,7 +576,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// POST /api/principals/:id/deactivate - Deactivate principal
-	fastify.post(
+	f.post(
 		"/principals/:id/deactivate",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.UPDATE),
@@ -602,7 +604,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// DELETE /api/principals/:id - Delete principal
-	fastify.delete(
+	f.delete(
 		"/principals/:id",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.DELETE),
@@ -630,7 +632,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// POST /api/principals/:id/reset-password - Reset password
-	fastify.post(
+	f.post(
 		"/principals/:id/reset-password",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.UPDATE),
@@ -693,7 +695,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// GET /api/principals/:id/roles - Get principal roles
-	fastify.get(
+	f.get(
 		"/principals/:id/roles",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.READ),
@@ -724,7 +726,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// POST /api/principals/:id/roles - Assign single role
-	fastify.post(
+	f.post(
 		"/principals/:id/roles",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.ASSIGN_ROLES),
@@ -780,7 +782,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// DELETE /api/principals/:id/roles/:roleName - Remove single role
-	fastify.delete(
+	f.delete(
 		"/principals/:id/roles/:roleName",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.ASSIGN_ROLES),
@@ -821,7 +823,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// PUT /api/principals/:id/roles - Declarative batch assign roles
-	fastify.put(
+	f.put(
 		"/principals/:id/roles",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.ASSIGN_ROLES),
@@ -878,7 +880,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// GET /api/principals/:id/client-access - Get client access grants
-	fastify.get(
+	f.get(
 		"/principals/:id/client-access",
 		{
 			preHandler: requirePermission(CLIENT_ACCESS_PERMISSIONS.READ),
@@ -912,7 +914,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// POST /api/principals/:id/client-access - Grant client access
-	fastify.post(
+	f.post(
 		"/principals/:id/client-access",
 		{
 			preHandler: requirePermission(CLIENT_ACCESS_PERMISSIONS.GRANT),
@@ -960,7 +962,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// DELETE /api/principals/:id/client-access/:clientId - Revoke client access
-	fastify.delete(
+	f.delete(
 		"/principals/:id/client-access/:clientId",
 		{
 			preHandler: requirePermission(CLIENT_ACCESS_PERMISSIONS.REVOKE),
@@ -992,7 +994,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// GET /api/principals/check-email-domain - Check email domain configuration
-	fastify.get(
+	f.get(
 		"/principals/check-email-domain",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.READ),
@@ -1083,7 +1085,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// GET /api/principals/:id/application-access - Get application access
-	fastify.get(
+	f.get(
 		"/principals/:id/application-access",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.READ),
@@ -1125,7 +1127,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// PUT /api/principals/:id/application-access - Set application access (declarative)
-	fastify.put(
+	f.put(
 		"/principals/:id/application-access",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.ASSIGN_ROLES),
@@ -1194,7 +1196,7 @@ export async function registerPrincipalsRoutes(
 	);
 
 	// GET /api/principals/:id/available-applications - Get apps available to a principal
-	fastify.get(
+	f.get(
 		"/principals/:id/available-applications",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.READ),

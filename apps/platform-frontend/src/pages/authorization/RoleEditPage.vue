@@ -80,7 +80,7 @@ async function loadPermissions() {
 	try {
 		const response = await permissionsApi.list();
 		allPermissions.value = response.items;
-	} catch (e) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		loading.value = false;
@@ -141,7 +141,7 @@ async function saveRole() {
 		toast.success("Saved", "Role updated successfully");
 
 		router.push(`/authorization/roles/${encodeURIComponent(roleName.value)}`);
-	} catch (e) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;

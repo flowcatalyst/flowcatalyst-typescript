@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -200,6 +201,7 @@ export async function registerAuthConfigsRoutes(
 	fastify: FastifyInstance,
 	deps: AuthConfigsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		clientAuthConfigRepository,
 		createInternalAuthConfigUseCase,
@@ -212,7 +214,7 @@ export async function registerAuthConfigsRoutes(
 	} = deps;
 
 	// GET /api/auth-configs - List all auth configs
-	fastify.get(
+	f.get(
 		"/auth-configs",
 		{
 			preHandler: requirePermission(AUTH_CONFIG_PERMISSIONS.READ),
@@ -247,7 +249,7 @@ export async function registerAuthConfigsRoutes(
 	);
 
 	// GET /api/auth-configs/:id - Get auth config by ID
-	fastify.get(
+	f.get(
 		"/auth-configs/:id",
 		{
 			preHandler: requirePermission(AUTH_CONFIG_PERMISSIONS.READ),
@@ -272,7 +274,7 @@ export async function registerAuthConfigsRoutes(
 	);
 
 	// GET /api/auth-configs/by-domain/:domain - Get auth config by email domain
-	fastify.get(
+	f.get(
 		"/auth-configs/by-domain/:domain",
 		{
 			preHandler: requirePermission(AUTH_CONFIG_PERMISSIONS.READ),
@@ -297,7 +299,7 @@ export async function registerAuthConfigsRoutes(
 	);
 
 	// POST /api/auth-configs/internal - Create INTERNAL auth config
-	fastify.post(
+	f.post(
 		"/auth-configs/internal",
 		{
 			preHandler: requirePermission(AUTH_CONFIG_PERMISSIONS.CREATE),
@@ -341,7 +343,7 @@ export async function registerAuthConfigsRoutes(
 	);
 
 	// POST /api/auth-configs/oidc - Create OIDC auth config
-	fastify.post(
+	f.post(
 		"/auth-configs/oidc",
 		{
 			preHandler: requirePermission(AUTH_CONFIG_PERMISSIONS.CREATE),
@@ -387,7 +389,7 @@ export async function registerAuthConfigsRoutes(
 	);
 
 	// PUT /api/auth-configs/:id/oidc - Update OIDC settings
-	fastify.put(
+	f.put(
 		"/auth-configs/:id/oidc",
 		{
 			preHandler: requirePermission(AUTH_CONFIG_PERMISSIONS.UPDATE),
@@ -430,7 +432,7 @@ export async function registerAuthConfigsRoutes(
 	);
 
 	// PUT /api/auth-configs/:id/config-type - Update config type
-	fastify.put(
+	f.put(
 		"/auth-configs/:id/config-type",
 		{
 			preHandler: requirePermission(AUTH_CONFIG_PERMISSIONS.UPDATE),
@@ -470,7 +472,7 @@ export async function registerAuthConfigsRoutes(
 	);
 
 	// PUT /api/auth-configs/:id/additional-clients - Update additional clients
-	fastify.put(
+	f.put(
 		"/auth-configs/:id/additional-clients",
 		{
 			preHandler: requirePermission(AUTH_CONFIG_PERMISSIONS.UPDATE),
@@ -508,7 +510,7 @@ export async function registerAuthConfigsRoutes(
 	);
 
 	// PUT /api/auth-configs/:id/granted-clients - Update granted clients
-	fastify.put(
+	f.put(
 		"/auth-configs/:id/granted-clients",
 		{
 			preHandler: requirePermission(AUTH_CONFIG_PERMISSIONS.UPDATE),
@@ -546,7 +548,7 @@ export async function registerAuthConfigsRoutes(
 	);
 
 	// DELETE /api/auth-configs/:id - Delete auth config
-	fastify.delete(
+	f.delete(
 		"/auth-configs/:id",
 		{
 			preHandler: requirePermission(AUTH_CONFIG_PERMISSIONS.DELETE),

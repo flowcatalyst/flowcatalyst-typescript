@@ -12,6 +12,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import { generateRaw } from "@flowcatalyst/tsid";
 import {
@@ -20,7 +21,7 @@ import {
 	dispatchJobProjectionFeed,
 	type DispatchErrorType,
 } from "@flowcatalyst/persistence";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 // ── Request / Response Schemas ──────────────────────────────────────────
@@ -46,9 +47,10 @@ export async function registerDispatchProcessRoutes(
 	fastify: FastifyInstance,
 	deps: DispatchProcessDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { db } = deps;
 
-	fastify.post(
+	f.post(
 		"/process",
 		{
 			schema: {
@@ -80,11 +82,17 @@ export async function registerDispatchProcessRoutes(
 				return reply.send({ ack: true });
 			}
 
-			// 3. Update status to PROCESSING
+			// 3. Update status to PROCESSING. Composite PK on the partitioned
+			// table — pin to a single partition by including createdAt.
 			await db
 				.update(dispatchJobs)
 				.set({ status: "PROCESSING", updatedAt: new Date() })
-				.where(eq(dispatchJobs.id, messageId));
+				.where(
+					and(
+						eq(dispatchJobs.id, messageId),
+						eq(dispatchJobs.createdAt, job.createdAt),
+					),
+				);
 
 			// 4. Deliver the webhook
 			const attemptNumber = (job.attemptCount ?? 0) + 1;
@@ -187,7 +195,7 @@ export async function registerDispatchProcessRoutes(
 				});
 
 				// 6. Update dispatch job
-				await updateJobAfterAttempt(db, messageId, {
+				await updateJobAfterAttempt(db, messageId, job.createdAt, {
 					status: newStatus,
 					attemptCount: attemptNumber,
 					durationMillis: durationMs,
@@ -226,7 +234,7 @@ export async function registerDispatchProcessRoutes(
 					durationMillis: durationMs,
 				});
 
-				await updateJobAfterAttempt(db, messageId, {
+				await updateJobAfterAttempt(db, messageId, job.createdAt, {
 					status: newStatus,
 					attemptCount: attemptNumber,
 					durationMillis: durationMs,
@@ -234,7 +242,7 @@ export async function registerDispatchProcessRoutes(
 				});
 			}
 
-			return reply.send({ ack, message: errorMessage ?? undefined });
+			return errorMessage != null ? { ack, message: errorMessage } : { ack };
 		},
 	);
 }
@@ -293,6 +301,7 @@ interface JobUpdate {
 async function updateJobAfterAttempt(
 	db: PostgresJsDatabase,
 	jobId: string,
+	jobCreatedAt: Date,
 	update: JobUpdate,
 ): Promise<void> {
 	const now = new Date();
@@ -311,7 +320,12 @@ async function updateJobAfterAttempt(
 			completedAt: isTerminal ? now : undefined,
 			updatedAt: now,
 		})
-		.where(eq(dispatchJobs.id, jobId));
+		.where(
+			and(
+				eq(dispatchJobs.id, jobId),
+				eq(dispatchJobs.createdAt, jobCreatedAt),
+			),
+		);
 
 	// Append to projection feed so stream processor picks up the change.
 	// Feed is append-only: each change produces a new row with a changed-fields patch.

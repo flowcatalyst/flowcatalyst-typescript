@@ -290,7 +290,7 @@ export const dispatchPools = pgTable("dispatch_pools", {
 	code: varchar({ length: 100 }).notNull(),
 	name: varchar({ length: 255 }).notNull(),
 	description: varchar({ length: 500 }),
-	rateLimit: integer("rate_limit").default(100).notNull(),
+	rateLimit: integer("rate_limit"),
 	concurrency: integer().default(10).notNull(),
 	clientId: varchar("client_id", { length: 17 }),
 	clientIdentifier: varchar("client_identifier", { length: 100 }),

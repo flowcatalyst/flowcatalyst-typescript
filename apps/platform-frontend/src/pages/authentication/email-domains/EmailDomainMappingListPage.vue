@@ -72,7 +72,7 @@ async function deleteMapping() {
 		);
 		showDeleteDialog.value = false;
 		toast.success("Success", `Email domain mapping for "${mappingToDelete.value.emailDomain}" deleted`);
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		deleteLoading.value = false;

@@ -8,6 +8,7 @@
 	"dependencies": {
 		"@flowcatalyst/logging": "workspace:*",
 		"@flowcatalyst/config": "workspace:*",
+		"@flowcatalyst/tsid": "workspace:*",
 		"pino": "^9.6.0",
 		"postgres": "^3.4.5"
 	}

@@ -1719,6 +1719,33 @@ export class QueueManagerService {
 	}
 
 	/**
+	 * Cheap presence check by **application** message ID. O(1) — two
+	 * map lookups (appMessageIdToPipelineKey, then inFlightMessages),
+	 * no iteration. Designed for an external recovery system that wants
+	 * to know whether the router is already actively processing a
+	 * message before re-enqueueing it.
+	 */
+	isInFlightByAppId(appMessageId: string): boolean {
+		const pipelineKey = this.appMessageIdToPipelineKey.get(appMessageId);
+		if (!pipelineKey) return false;
+		return this.inFlightMessages.has(pipelineKey);
+	}
+
+	/**
+	 * Batch presence check by application message IDs. Returns a
+	 * `Record<messageId, boolean>` where `true` means the router is
+	 * currently holding the message (caller should NOT resend) and
+	 * `false` means it does not (safe to resend). Each lookup is O(1).
+	 */
+	areInFlightByAppIds(appMessageIds: string[]): Record<string, boolean> {
+		const result: Record<string, boolean> = {};
+		for (const id of appMessageIds) {
+			result[id] = this.isInFlightByAppId(id);
+		}
+		return result;
+	}
+
+	/**
 	 * Publish a message to the embedded queue (only works in EMBEDDED mode)
 	 */
 	publishToEmbeddedQueue(message: {

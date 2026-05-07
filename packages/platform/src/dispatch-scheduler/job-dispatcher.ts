@@ -6,7 +6,7 @@
  * and updates the job status to QUEUED on success.
  */
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import {
 	dispatchJobs,
 	type DispatchJobRecord,
@@ -48,12 +48,19 @@ export function createJobDispatcher(
 					body: messageBody,
 				});
 
+				// PK is composite (id, createdAt) on the partitioned table —
+				// include both in the WHERE so PG prunes to a single partition
+				// instead of scanning every active partition's PK index.
+				const byPk = and(
+					eq(dispatchJobs.id, job.id),
+					eq(dispatchJobs.createdAt, job.createdAt),
+				);
+
 				if (result.success) {
-					// Update status to QUEUED
 					await db
 						.update(dispatchJobs)
 						.set({ status: "QUEUED", updatedAt: new Date() })
-						.where(eq(dispatchJobs.id, job.id));
+						.where(byPk);
 
 					logger.debug(
 						{ jobId: job.id },
@@ -70,7 +77,7 @@ export function createJobDispatcher(
 					await db
 						.update(dispatchJobs)
 						.set({ status: "QUEUED", updatedAt: new Date() })
-						.where(eq(dispatchJobs.id, job.id));
+						.where(byPk);
 
 					logger.debug(
 						{ jobId: job.id },

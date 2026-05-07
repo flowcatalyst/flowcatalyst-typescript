@@ -39,6 +39,8 @@ import {
 	OAuthClientUpdatedDataSchema,
 	OAuthClientSecretRegeneratedDataSchema,
 	OAuthClientDeletedDataSchema,
+	OAuthClientActivatedDataSchema,
+	OAuthClientDeactivatedDataSchema,
 } from "./oauth/schemas.js";
 
 // ─── Identity Provider (IAM) ────────────────────────────────────────────────
@@ -69,6 +71,7 @@ import {
 	ClientStatusChangedDataSchema,
 	ClientDeletedDataSchema,
 	ClientNoteAddedDataSchema,
+	ClientApplicationsUpdatedDataSchema,
 } from "./client/schemas.js";
 
 // ─── Anchor (Admin) ─────────────────────────────────────────────────────────
@@ -87,6 +90,7 @@ import {
 	ApplicationDeletedDataSchema,
 	ApplicationEnabledForClientDataSchema,
 	ApplicationDisabledForClientDataSchema,
+	ApplicationServiceAccountProvisionedDataSchema,
 } from "./application/schemas.js";
 
 // ─── Role (Admin) ───────────────────────────────────────────────────────────
@@ -175,6 +179,8 @@ export const PLATFORM_EVENT_SCHEMAS: ReadonlyMap<string, AnySchema> = new Map<st
 	["platform:iam:oauth-client:updated", OAuthClientUpdatedDataSchema],
 	["platform:iam:oauth-client:secret-regenerated", OAuthClientSecretRegeneratedDataSchema],
 	["platform:iam:oauth-client:deleted", OAuthClientDeletedDataSchema],
+	["platform:iam:oauth-client:activated", OAuthClientActivatedDataSchema],
+	["platform:iam:oauth-client:deactivated", OAuthClientDeactivatedDataSchema],
 
 	// ─── IAM > Identity Provider ─────────────────────────────────────────
 	["platform:iam:identity-provider:created", IdentityProviderCreatedDataSchema],
@@ -197,6 +203,7 @@ export const PLATFORM_EVENT_SCHEMAS: ReadonlyMap<string, AnySchema> = new Map<st
 	["platform:admin:client:status-changed", ClientStatusChangedDataSchema],
 	["platform:admin:client:deleted", ClientDeletedDataSchema],
 	["platform:admin:client:note-added", ClientNoteAddedDataSchema],
+	["platform:admin:client:applications-updated", ClientApplicationsUpdatedDataSchema],
 
 	// ─── Admin > Anchor Domain ───────────────────────────────────────────
 	["platform:admin:anchor-domain:created", AnchorDomainCreatedDataSchema],
@@ -211,6 +218,7 @@ export const PLATFORM_EVENT_SCHEMAS: ReadonlyMap<string, AnySchema> = new Map<st
 	["platform:admin:application:deleted", ApplicationDeletedDataSchema],
 	["platform:admin:application:enabled-for-client", ApplicationEnabledForClientDataSchema],
 	["platform:admin:application:disabled-for-client", ApplicationDisabledForClientDataSchema],
+	["platform:admin:application:service-account-provisioned", ApplicationServiceAccountProvisionedDataSchema],
 
 	// ─── Admin > Role ────────────────────────────────────────────────────
 	["platform:admin:role:created", RoleCreatedDataSchema],

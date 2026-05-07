@@ -16,6 +16,7 @@ import {
 	createEnableApplicationForClientUseCase,
 	createDisableApplicationForClientUseCase,
 	createAssignApplicationAccessUseCase,
+	createAttachServiceAccountToApplicationUseCase,
 } from "../../application/index.js";
 
 export function createApplicationUseCases(deps: CreateUseCasesDeps) {
@@ -74,6 +75,12 @@ export function createApplicationUseCases(deps: CreateUseCasesDeps) {
 		unitOfWork,
 	});
 
+	const attachServiceAccountToApplicationUseCase =
+		createAttachServiceAccountToApplicationUseCase({
+			applicationRepository: repos.applicationRepository,
+			unitOfWork,
+		});
+
 	return {
 		createApplicationUseCase,
 		updateApplicationUseCase,
@@ -83,5 +90,6 @@ export function createApplicationUseCases(deps: CreateUseCasesDeps) {
 		activateApplicationUseCase,
 		deactivateApplicationUseCase,
 		assignApplicationAccessUseCase,
+		attachServiceAccountToApplicationUseCase,
 	};
 }

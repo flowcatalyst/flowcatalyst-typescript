@@ -5,8 +5,8 @@ import type {
 	PoolStats,
 	QueueMessage,
 } from "@flowcatalyst/contracts";
+import { RateLimiterMemory, RateLimiterQueue } from "rate-limiter-flexible";
 import type { HttpMediator } from "../mediation/http-mediator.js";
-import { QueueFullError, TokenBucket } from "../utils/token-bucket.js";
 import { DynamicSemaphore } from "./dynamic-semaphore.js";
 import { MessageGroupHandler } from "./message-group-handler.js";
 
@@ -32,9 +32,9 @@ export class ProcessPool {
 
 	// Concurrency control (in-place adjustable, unlike p-limit)
 	private readonly concurrencyLimiter: DynamicSemaphore;
-	// Rate limiting — TokenBucket smooths bursts into evenly-spaced requests
-	// (leaky bucket behaviour, capacity=1 by default).
-	private rateLimiter: TokenBucket | null;
+	// Rate limiting — RateLimiterQueue wraps a drip-rate limiter to smooth
+	// bursts into evenly-spaced requests (leaky bucket behaviour).
+	private rateLimiterQueue: RateLimiterQueue | null;
 
 	// Statistics tracking
 	private totalProcessed = 0;
@@ -88,10 +88,7 @@ export class ProcessPool {
 		this.concurrencyLimiter = new DynamicSemaphore(config.concurrency);
 
 		// Initialize rate limiter
-		this.rateLimiter = buildRateLimiter(
-			config.rateLimitPerMinute,
-			this.maxCapacity,
-		);
+		this.rateLimiterQueue = buildRateLimiterQueue(config.rateLimitPerMinute);
 
 		// Start windowed stat reset timers
 		this.windowResetInterval5min = setInterval(() => {
@@ -204,24 +201,13 @@ export class ProcessPool {
 		}
 
 		// Step 1: Rate Limiting (Wait logic)
-		// TokenBucket.acquire() resolves when a token is available, smoothing
-		// bursts into evenly-spaced requests (leaky bucket).
-		if (this.rateLimiter) {
-			try {
-				await this.rateLimiter.acquire();
-			} catch (err) {
-				// QueueFullError when maxQueueSize exceeded — count as rate-limited
-				if (err instanceof QueueFullError) {
-					this.totalRateLimited++;
-					this.stats5min.rateLimited++;
-					this.stats30min.rateLimited++;
-					await callback.nack(10);
-					this.decrementBatchGroupCount(batchGroupKey);
-					this.queuedMessages--;
-					return;
-				}
-				throw err;
-			}
+		// RateLimiterQueue.removeTokens() resolves when a token is available,
+		// smoothing bursts into evenly-spaced requests (leaky bucket). The
+		// wait queue is unbounded (see buildRateLimiterQueue): the worker
+		// always waits for a token rather than bouncing back to the source
+		// queue. Capacity backpressure is enforced upstream at submit().
+		if (this.rateLimiterQueue) {
+			await this.rateLimiterQueue.removeTokens(1);
 		}
 
 		// Step 2: Concurrency Control (Work logic)
@@ -327,22 +313,9 @@ export class ProcessPool {
 		callback: MessageCallback,
 		batchGroupKey: string,
 	): Promise<void> {
-		// Step 1: Rate limiting
-		if (this.rateLimiter) {
-			try {
-				await this.rateLimiter.acquire();
-			} catch (err) {
-				if (err instanceof QueueFullError) {
-					this.totalRateLimited++;
-					this.stats5min.rateLimited++;
-					this.stats30min.rateLimited++;
-					await callback.nack(10);
-					this.decrementBatchGroupCount(batchGroupKey);
-					this.queuedMessages--;
-					return;
-				}
-				throw err;
-			}
+		// Step 1: Rate limiting (unbounded wait — see processMessage above).
+		if (this.rateLimiterQueue) {
+			await this.rateLimiterQueue.removeTokens(1);
 		}
 
 		// Step 2: Concurrency + mediation
@@ -487,27 +460,16 @@ export class ProcessPool {
 	 */
 	updateConfig(newConfig: Partial<PoolConfig>): void {
 		if (newConfig.rateLimitPerMinute !== undefined) {
-			const newRate = newConfig.rateLimitPerMinute;
-			const enabled = newRate != null && newRate > 0;
-			if (!enabled) {
-				if (this.rateLimiter) {
-					this.rateLimiter.dispose();
-					this.rateLimiter = null;
-				}
-				this.logger.info("Rate limit disabled");
-			} else if (this.rateLimiter) {
-				// In-place update preserves queued waiters' FIFO position.
-				this.rateLimiter.setRate(newRate);
+			this.rateLimiterQueue = buildRateLimiterQueue(
+				newConfig.rateLimitPerMinute,
+			);
+			if (this.rateLimiterQueue) {
 				this.logger.info(
-					{ rateLimitPerMinute: newRate },
-					"Rate limit updated in-place",
+					{ rateLimitPerMinute: newConfig.rateLimitPerMinute },
+					"Rate limit updated",
 				);
 			} else {
-				this.rateLimiter = buildRateLimiter(newRate, this.maxCapacity);
-				this.logger.info(
-					{ rateLimitPerMinute: newRate },
-					"Rate limit enabled",
-				);
+				this.logger.info("Rate limit disabled");
 			}
 		}
 
@@ -562,10 +524,6 @@ export class ProcessPool {
 			clearInterval(this.windowResetInterval30min);
 			this.windowResetInterval30min = null;
 		}
-		if (this.rateLimiter) {
-			this.rateLimiter.dispose();
-			this.rateLimiter = null;
-		}
 		this.messageGroups.clear();
 		this.failedBatchGroups.clear();
 		this.batchGroupMessageCount.clear();
@@ -602,13 +560,31 @@ export class ProcessPool {
 }
 
 /**
- * Build a TokenBucket that smooths bursts into evenly-spaced requests
- * (leaky bucket, capacity=1). Returns null if rate limiting is disabled.
+ * Build a RateLimiterQueue that smooths bursts into evenly-spaced requests
+ * (leaky bucket). Returns null if rate limiting is disabled.
+ *
+ * The inner RateLimiterMemory defines the drip rate: 1 point every
+ * (60 / ratePerMinute) seconds. RateLimiterQueue queues callers and
+ * releases them one-by-one as tokens become available.
+ *
+ * The wait queue is intentionally **unbounded** (`maxQueueSize` set to
+ * MAX_SAFE_INTEGER). Bouncing a message back to SQS via a "queue full"
+ * rejection only to have it re-arrive and queue here again creates
+ * round-trip churn that makes throughput strictly worse than just letting
+ * the worker wait. Capacity backpressure already lives at the pool's
+ * submit/enqueue gate; the rate limiter is internal pacing only.
  */
-function buildRateLimiter(
+function buildRateLimiterQueue(
 	ratePerMinute: number | null | undefined,
-	maxQueueSize: number,
-): TokenBucket | null {
+): RateLimiterQueue | null {
 	if (!ratePerMinute || ratePerMinute <= 0) return null;
-	return new TokenBucket({ ratePerMinute, maxQueueSize });
+
+	const limiter = new RateLimiterMemory({
+		points: 1,
+		duration: 60 / ratePerMinute, // seconds per token
+	});
+
+	return new RateLimiterQueue(limiter, {
+		maxQueueSize: Number.MAX_SAFE_INTEGER,
+	});
 }

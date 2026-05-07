@@ -131,7 +131,11 @@ export type SyncResponseType = Static<typeof SyncResponseSchema>;
  */
 export const BatchResultItemSchema = Type.Object({
 	id: Type.String(),
-	status: Type.Union([Type.Literal("SUCCESS"), Type.Literal("ERROR")]),
+	status: Type.Union([
+		Type.Literal("SUCCESS"),
+		Type.Literal("ERROR"),
+		Type.Literal("SKIPPED"),
+	]),
 	error: Type.Optional(Type.String()),
 });
 

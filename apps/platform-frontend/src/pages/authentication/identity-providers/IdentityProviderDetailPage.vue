@@ -149,7 +149,7 @@ async function deleteProvider() {
 		await identityProvidersApi.delete(provider.value.id);
 		toast.success("Success", `Identity provider "${provider.value.name}" deleted`);
 		router.push("/authentication/identity-providers");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		deleteLoading.value = false;

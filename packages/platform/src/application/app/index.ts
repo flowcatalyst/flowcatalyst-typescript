@@ -9,3 +9,4 @@ export * from "./activate-application/index.js";
 export * from "./deactivate-application/index.js";
 export * from "./enable-application-for-client/index.js";
 export * from "./disable-application-for-client/index.js";
+export * from "./attach-service-account-to-application/index.js";

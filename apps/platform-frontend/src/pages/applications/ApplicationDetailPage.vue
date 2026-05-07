@@ -84,7 +84,7 @@ async function saveChanges() {
 		});
 		editing.value = false;
 		toast.success("Success", "Application updated");
-	} catch (e) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
@@ -176,7 +176,7 @@ async function provisionServiceAccount() {
 
 		// Reload application to get updated serviceAccountPrincipalId
 		await loadApplication(id);
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		provisioning.value = false;

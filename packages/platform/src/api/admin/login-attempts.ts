@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import { jsonSuccess } from "@flowcatalyst/http";
 
@@ -62,13 +63,14 @@ export async function registerLoginAttemptsRoutes(
 	fastify: FastifyInstance,
 	deps: LoginAttemptsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { loginAttemptRepository } = deps;
 
 	const DEFAULT_PAGE_SIZE = 100;
 	const MAX_PAGE_SIZE = 500;
 
 	// GET /api/login-attempts - List login attempts with filters
-	fastify.get(
+	f.get(
 		"/login-attempts",
 		{
 			preHandler: requirePermission(LOGIN_ATTEMPT_PERMISSIONS.READ),

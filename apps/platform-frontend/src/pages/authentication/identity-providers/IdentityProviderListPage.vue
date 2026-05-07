@@ -72,7 +72,7 @@ async function deleteProvider() {
 		);
 		showDeleteDialog.value = false;
 		toast.success("Success", `Identity provider "${providerToDelete.value.name}" deleted`);
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		deleteLoading.value = false;

@@ -8,6 +8,8 @@ import {
 	createUpdateOAuthClientUseCase,
 	createRegenerateOAuthClientSecretUseCase,
 	createDeleteOAuthClientUseCase,
+	createActivateOAuthClientUseCase,
+	createDeactivateOAuthClientUseCase,
 } from "../../application/index.js";
 
 export function createOAuthUseCases(deps: CreateUseCasesDeps) {
@@ -34,10 +36,22 @@ export function createOAuthUseCases(deps: CreateUseCasesDeps) {
 		unitOfWork,
 	});
 
+	const activateOAuthClientUseCase = createActivateOAuthClientUseCase({
+		oauthClientRepository: repos.oauthClientRepository,
+		unitOfWork,
+	});
+
+	const deactivateOAuthClientUseCase = createDeactivateOAuthClientUseCase({
+		oauthClientRepository: repos.oauthClientRepository,
+		unitOfWork,
+	});
+
 	return {
 		createOAuthClientUseCase,
 		updateOAuthClientUseCase,
 		regenerateOAuthClientSecretUseCase,
 		deleteOAuthClientUseCase,
+		activateOAuthClientUseCase,
+		deactivateOAuthClientUseCase,
 	};
 }

@@ -8,7 +8,8 @@ export interface SyncPoolItem {
 	readonly code: string;
 	readonly name: string;
 	readonly description?: string | null | undefined;
-	readonly rateLimit?: number | undefined;
+	/** Optional. `undefined` / `null` = concurrency-only. */
+	readonly rateLimit?: number | null | undefined;
 	readonly concurrency?: number | undefined;
 }
 

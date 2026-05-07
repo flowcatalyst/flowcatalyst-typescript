@@ -19,6 +19,7 @@ import {
 	bigint,
 	boolean,
 	index,
+	primaryKey,
 } from "drizzle-orm/pg-core";
 import { tsidColumn, rawTsidColumn, timestampColumn } from "./common.js";
 import type {
@@ -34,8 +35,8 @@ import type {
 export const dispatchJobsRead = pgTable(
 	"msg_dispatch_jobs_read",
 	{
-		// Primary key (same as source dispatch_job.id, unprefixed for performance)
-		id: rawTsidColumn("id").primaryKey(),
+		// Primary key part 1 — same as source dispatch_job.id (1:1 projection).
+		id: rawTsidColumn("id").notNull(),
 
 		// External reference
 		externalId: varchar("external_id", { length: 100 }),
@@ -99,6 +100,7 @@ export const dispatchJobsRead = pgTable(
 		projectedAt: timestampColumn("projected_at"),
 	},
 	(table) => [
+		primaryKey({ columns: [table.id, table.createdAt] }),
 		index("idx_msg_dispatch_jobs_read_status").on(table.status),
 		index("idx_msg_dispatch_jobs_read_client_id").on(table.clientId),
 		index("idx_msg_dispatch_jobs_read_application").on(table.application),

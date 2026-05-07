@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -76,6 +77,7 @@ export async function registerCorsRoutes(
 	fastify: FastifyInstance,
 	deps: CorsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		corsAllowedOriginRepository,
 		addCorsOriginUseCase,
@@ -83,7 +85,7 @@ export async function registerCorsRoutes(
 	} = deps;
 
 	// POST /api/platform/cors - Add CORS origin
-	fastify.post(
+	f.post(
 		"/platform/cors",
 		{
 			preHandler: requirePermission(CORS_ORIGIN_PERMISSIONS.CREATE),
@@ -121,7 +123,7 @@ export async function registerCorsRoutes(
 	);
 
 	// GET /api/platform/cors - List CORS origins
-	fastify.get(
+	f.get(
 		"/platform/cors",
 		{
 			preHandler: requirePermission(CORS_ORIGIN_PERMISSIONS.READ),
@@ -143,7 +145,7 @@ export async function registerCorsRoutes(
 	);
 
 	// GET /api/platform/cors/allowed - Get allowed origins (just the origin strings)
-	fastify.get(
+	f.get(
 		"/platform/cors/allowed",
 		{
 			preHandler: requirePermission(CORS_ORIGIN_PERMISSIONS.READ),
@@ -162,7 +164,7 @@ export async function registerCorsRoutes(
 	);
 
 	// GET /api/platform/cors/:id - Get CORS origin by ID
-	fastify.get(
+	f.get(
 		"/platform/cors/:id",
 		{
 			preHandler: requirePermission(CORS_ORIGIN_PERMISSIONS.READ),
@@ -187,7 +189,7 @@ export async function registerCorsRoutes(
 	);
 
 	// DELETE /api/platform/cors/:id - Delete CORS origin
-	fastify.delete(
+	f.delete(
 		"/platform/cors/:id",
 		{
 			preHandler: requirePermission(CORS_ORIGIN_PERMISSIONS.DELETE),

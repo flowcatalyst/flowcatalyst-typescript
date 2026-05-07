@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -236,6 +237,7 @@ export async function registerSubscriptionsRoutes(
 	fastify: FastifyInstance,
 	deps: SubscriptionsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		subscriptionRepository,
 		createSubscriptionUseCase,
@@ -245,7 +247,7 @@ export async function registerSubscriptionsRoutes(
 	} = deps;
 
 	// GET /api/subscriptions - List with filters
-	fastify.get(
+	f.get(
 		"/subscriptions",
 		{
 			preHandler: requirePermission(SUBSCRIPTION_PERMISSIONS.READ),
@@ -284,7 +286,7 @@ export async function registerSubscriptionsRoutes(
 	);
 
 	// GET /api/subscriptions/:id - Get by ID
-	fastify.get(
+	f.get(
 		"/subscriptions/:id",
 		{
 			preHandler: requirePermission(SUBSCRIPTION_PERMISSIONS.READ),
@@ -309,7 +311,7 @@ export async function registerSubscriptionsRoutes(
 	);
 
 	// POST /api/subscriptions - Create
-	fastify.post(
+	f.post(
 		"/subscriptions",
 		{
 			preHandler: requirePermission(SUBSCRIPTION_PERMISSIONS.CREATE),
@@ -369,7 +371,7 @@ export async function registerSubscriptionsRoutes(
 	);
 
 	// PUT /api/subscriptions/:id - Update
-	fastify.put(
+	f.put(
 		"/subscriptions/:id",
 		{
 			preHandler: requirePermission(SUBSCRIPTION_PERMISSIONS.UPDATE),
@@ -453,7 +455,7 @@ export async function registerSubscriptionsRoutes(
 	);
 
 	// DELETE /api/subscriptions/:id - Delete
-	fastify.delete(
+	f.delete(
 		"/subscriptions/:id",
 		{
 			preHandler: requirePermission(SUBSCRIPTION_PERMISSIONS.DELETE),
@@ -481,7 +483,7 @@ export async function registerSubscriptionsRoutes(
 	);
 
 	// POST /api/subscriptions/:id/pause - Pause
-	fastify.post(
+	f.post(
 		"/subscriptions/:id/pause",
 		{
 			preHandler: requirePermission(SUBSCRIPTION_PERMISSIONS.UPDATE),
@@ -515,7 +517,7 @@ export async function registerSubscriptionsRoutes(
 	);
 
 	// POST /api/subscriptions/:id/resume - Resume
-	fastify.post(
+	f.post(
 		"/subscriptions/:id/resume",
 		{
 			preHandler: requirePermission(SUBSCRIPTION_PERMISSIONS.UPDATE),
@@ -549,7 +551,7 @@ export async function registerSubscriptionsRoutes(
 	);
 
 	// POST /api/subscriptions/sync - Sync from SDK
-	fastify.post(
+	f.post(
 		"/subscriptions/sync",
 		{
 			preHandler: requirePermission(SUBSCRIPTION_PERMISSIONS.SYNC),

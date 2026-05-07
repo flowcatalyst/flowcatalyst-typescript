@@ -82,6 +82,16 @@ export function createPostgresOutboxRepository(
 		async markWithStatus(type, ids, status) {
 			if (ids.length === 0) return;
 			const table = getTableName(type);
+			// SUCCESS is terminal — the platform now owns the message. Delete
+			// the outbox row instead of updating it; otherwise the customer's
+			// outbox table grows unbounded.
+			if (status === OutboxStatus.SUCCESS) {
+				await sql.unsafe(
+					`DELETE FROM ${table} WHERE id = ANY($1)`,
+					[ids],
+				);
+				return;
+			}
 			await sql.unsafe(
 				`UPDATE ${table}
          SET status = $1, updated_at = NOW()
@@ -93,6 +103,13 @@ export function createPostgresOutboxRepository(
 		async markWithStatusAndError(type, ids, status, errorMessage) {
 			if (ids.length === 0) return;
 			const table = getTableName(type);
+			if (status === OutboxStatus.SUCCESS) {
+				await sql.unsafe(
+					`DELETE FROM ${table} WHERE id = ANY($1)`,
+					[ids],
+				);
+				return;
+			}
 			await sql.unsafe(
 				`UPDATE ${table}
          SET status = $1, error_message = $2, updated_at = NOW()

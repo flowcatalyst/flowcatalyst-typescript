@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -26,6 +27,7 @@ import type {
 	AddClientNoteCommand,
 	EnableApplicationForClientCommand,
 	DisableApplicationForClientCommand,
+	UpdateClientApplicationsCommand,
 } from "../../application/index.js";
 import type {
 	ClientCreated,
@@ -36,6 +38,7 @@ import type {
 	ClientStatus,
 	ApplicationEnabledForClient,
 	ApplicationDisabledForClient,
+	ClientApplicationsUpdated,
 } from "../../domain/index.js";
 import type {
 	ClientRepository,
@@ -150,6 +153,10 @@ export interface ClientsRoutesDeps {
 		DisableApplicationForClientCommand,
 		ApplicationDisabledForClient
 	>;
+	readonly updateClientApplicationsUseCase: UseCase<
+		UpdateClientApplicationsCommand,
+		ClientApplicationsUpdated
+	>;
 }
 
 /**
@@ -159,6 +166,7 @@ export async function registerClientsRoutes(
 	fastify: FastifyInstance,
 	deps: ClientsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		clientRepository,
 		applicationRepository,
@@ -170,10 +178,11 @@ export async function registerClientsRoutes(
 		addClientNoteUseCase,
 		enableApplicationForClientUseCase,
 		disableApplicationForClientUseCase,
+		updateClientApplicationsUseCase,
 	} = deps;
 
 	// POST /api/clients - Create client
-	fastify.post(
+	f.post(
 		"/clients",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.CREATE),
@@ -212,7 +221,7 @@ export async function registerClientsRoutes(
 	);
 
 	// GET /api/clients - List clients (with optional status filter)
-	fastify.get(
+	f.get(
 		"/clients",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.READ),
@@ -263,7 +272,7 @@ export async function registerClientsRoutes(
 	);
 
 	// GET /api/clients/search - Search clients
-	fastify.get(
+	f.get(
 		"/clients/search",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.READ),
@@ -308,7 +317,7 @@ export async function registerClientsRoutes(
 	);
 
 	// GET /api/clients/:id - Get client by ID
-	fastify.get(
+	f.get(
 		"/clients/:id",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.READ),
@@ -336,7 +345,7 @@ export async function registerClientsRoutes(
 	);
 
 	// GET /api/clients/by-identifier/:identifier - Get client by identifier
-	fastify.get(
+	f.get(
 		"/clients/by-identifier/:identifier",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.READ),
@@ -367,7 +376,7 @@ export async function registerClientsRoutes(
 	);
 
 	// PUT /api/clients/:id - Update client
-	fastify.put(
+	f.put(
 		"/clients/:id",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.UPDATE),
@@ -406,7 +415,7 @@ export async function registerClientsRoutes(
 	);
 
 	// POST /api/clients/:id/activate - Activate client
-	fastify.post(
+	f.post(
 		"/clients/:id/activate",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.ACTIVATE),
@@ -447,7 +456,7 @@ export async function registerClientsRoutes(
 	);
 
 	// POST /api/clients/:id/suspend - Suspend client
-	fastify.post(
+	f.post(
 		"/clients/:id/suspend",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.SUSPEND),
@@ -488,7 +497,7 @@ export async function registerClientsRoutes(
 	);
 
 	// POST /api/clients/:id/deactivate - Deactivate client
-	fastify.post(
+	f.post(
 		"/clients/:id/deactivate",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.DEACTIVATE),
@@ -529,7 +538,7 @@ export async function registerClientsRoutes(
 	);
 
 	// POST /api/clients/:id/notes - Add note to client
-	fastify.post(
+	f.post(
 		"/clients/:id/notes",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.UPDATE),
@@ -568,7 +577,7 @@ export async function registerClientsRoutes(
 	);
 
 	// GET /api/clients/:id/applications - List applications for client
-	fastify.get(
+	f.get(
 		"/clients/:id/applications",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.READ),
@@ -636,7 +645,7 @@ export async function registerClientsRoutes(
 	);
 
 	// PUT /api/clients/:id/applications - Bulk update enabled applications
-	fastify.put(
+	f.put(
 		"/clients/:id/applications",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.UPDATE),
@@ -658,54 +667,19 @@ export async function registerClientsRoutes(
 			};
 			const ctx = request.executionContext;
 
-			const client = await clientRepository.findById(id);
-			if (
-				!client ||
-				!canAccessResourceByClient(client.id, request.audit?.principal)
-			) {
-				return notFound(reply, `Client not found: ${id}`);
-			}
-
-			// Get current configs
-			const currentConfigs =
-				await applicationClientConfigRepository.findByClient(id);
-			const currentlyEnabled = new Set(
-				currentConfigs.filter((c) => c.enabled).map((c) => c.applicationId),
+			const result = await updateClientApplicationsUseCase.execute(
+				{ clientId: id, enabledApplicationIds },
+				ctx,
 			);
-			const desiredEnabled = new Set(enabledApplicationIds);
-
-			// Enable apps that should be enabled but aren't
-			for (const appId of enabledApplicationIds) {
-				if (!currentlyEnabled.has(appId)) {
-					const result = await enableApplicationForClientUseCase.execute(
-						{ applicationId: appId, clientId: id },
-						ctx,
-					);
-					if (Result.isFailure(result)) {
-						return sendResult(reply, result);
-					}
-				}
+			if (Result.isFailure(result)) {
+				return sendResult(reply, result);
 			}
-
-			// Disable apps that are currently enabled but shouldn't be
-			for (const appId of currentlyEnabled) {
-				if (!desiredEnabled.has(appId)) {
-					const result = await disableApplicationForClientUseCase.execute(
-						{ applicationId: appId, clientId: id },
-						ctx,
-					);
-					if (Result.isFailure(result)) {
-						return sendResult(reply, result);
-					}
-				}
-			}
-
 			return jsonSuccess(reply, { message: "Applications updated" });
 		},
 	);
 
 	// POST /api/clients/:id/applications/:appId/enable - Enable application for client
-	fastify.post(
+	f.post(
 		"/clients/:id/applications/:appId/enable",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.UPDATE),
@@ -742,7 +716,7 @@ export async function registerClientsRoutes(
 	);
 
 	// POST /api/clients/:id/applications/:appId/disable - Disable application for client
-	fastify.post(
+	f.post(
 		"/clients/:id/applications/:appId/disable",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.UPDATE),
@@ -779,7 +753,7 @@ export async function registerClientsRoutes(
 	);
 
 	// DELETE /api/clients/:id - Delete client
-	fastify.delete(
+	f.delete(
 		"/clients/:id",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.DELETE),

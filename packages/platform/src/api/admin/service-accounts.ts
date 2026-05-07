@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -204,6 +205,7 @@ export async function registerServiceAccountsRoutes(
 	fastify: FastifyInstance,
 	deps: ServiceAccountsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		principalRepository,
 		oauthClientRepository,
@@ -226,7 +228,7 @@ export async function registerServiceAccountsRoutes(
 	}
 
 	// POST /api/service-accounts - Create service account
-	fastify.post(
+	f.post(
 		"/service-accounts",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.CREATE),
@@ -287,7 +289,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// GET /api/service-accounts - List service accounts
-	fastify.get(
+	f.get(
 		"/service-accounts",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.READ),
@@ -325,7 +327,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// GET /api/service-accounts/:id - Get service account by ID
-	fastify.get(
+	f.get(
 		"/service-accounts/:id",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.READ),
@@ -354,7 +356,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// GET /api/service-accounts/code/:code - Get service account by code
-	fastify.get(
+	f.get(
 		"/service-accounts/code/:code",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.READ),
@@ -380,7 +382,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// PUT /api/service-accounts/:id - Update service account
-	fastify.put(
+	f.put(
 		"/service-accounts/:id",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.UPDATE),
@@ -420,7 +422,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// DELETE /api/service-accounts/:id - Delete service account
-	fastify.delete(
+	f.delete(
 		"/service-accounts/:id",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.DELETE),
@@ -451,7 +453,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// PUT /api/service-accounts/:id/auth-token - Update auth token with custom value
-	fastify.put(
+	f.put(
 		"/service-accounts/:id/auth-token",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.MANAGE),
@@ -511,7 +513,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// POST /api/service-accounts/:id/regenerate-token
-	fastify.post(
+	f.post(
 		"/service-accounts/:id/regenerate-token",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.MANAGE),
@@ -543,7 +545,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// POST /api/service-accounts/:id/regenerate-auth-token (legacy URL)
-	fastify.post(
+	f.post(
 		"/service-accounts/:id/regenerate-auth-token",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.MANAGE),
@@ -575,7 +577,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// POST /api/service-accounts/:id/regenerate-secret
-	fastify.post(
+	f.post(
 		"/service-accounts/:id/regenerate-secret",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.MANAGE),
@@ -609,7 +611,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// POST /api/service-accounts/:id/regenerate-signing-secret (legacy URL)
-	fastify.post(
+	f.post(
 		"/service-accounts/:id/regenerate-signing-secret",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.MANAGE),
@@ -643,7 +645,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// GET /api/service-accounts/:id/roles - Get assigned roles
-	fastify.get(
+	f.get(
 		"/service-accounts/:id/roles",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.READ),
@@ -678,7 +680,7 @@ export async function registerServiceAccountsRoutes(
 	);
 
 	// PUT /api/service-accounts/:id/roles - Assign roles
-	fastify.put(
+	f.put(
 		"/service-accounts/:id/roles",
 		{
 			preHandler: requirePermission(SERVICE_ACCOUNT_PERMISSIONS.MANAGE),

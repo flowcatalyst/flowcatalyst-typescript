@@ -91,7 +91,7 @@ async function loadRoles() {
 
 		const response = await rolesApi.list(filters);
 		roles.value = response.items;
-	} catch (e) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		loading.value = false;
@@ -203,7 +203,7 @@ async function deleteRole(role: Role) {
 		await rolesApi.delete(role.name);
 		toast.success("Success", "Role deleted successfully");
 		loadRoles();
-	} catch (e) {
+	} catch {
 		// Global banner shown by bffFetch
 	}
 }

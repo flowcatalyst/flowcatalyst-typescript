@@ -10,16 +10,33 @@ import { readMigrationFiles } from "drizzle-orm/migrator";
 import { createMigrationDatabase } from "./connection.js";
 
 /**
+ * Optional configuration for runMigrations.
+ */
+export interface MigrationOptions {
+	/**
+	 * Optional second folder of Drizzle-shaped migrations applied AFTER the
+	 * main folder. Use this for production-only schema work that the embedded
+	 * dev DB should skip (e.g. declarative partitioning, which PGlite doesn't
+	 * support). Tracked in the same `drizzle.__drizzle_migrations` table by
+	 * name, so it's idempotent on rerun and won't conflict with the main
+	 * folder's migrations as long as names are unique.
+	 */
+	productionMigrationsFolder?: string | undefined;
+}
+
+/**
  * Run database migrations from the specified folder.
  *
  * Uses a single non-pooled connection that is closed after migrations complete.
  *
  * @param databaseUrl - PostgreSQL connection URL
  * @param migrationsFolder - Path to the folder containing migration files
+ * @param options - Optional config (e.g. an additional production-only folder)
  */
 export async function runMigrations(
 	databaseUrl: string,
 	migrationsFolder: string,
+	options: MigrationOptions = {},
 ): Promise<void> {
 	const database = createMigrationDatabase({ url: databaseUrl });
 	const sql = database.client;
@@ -42,8 +59,7 @@ export async function runMigrations(
 		await sql`ALTER TABLE drizzle."__drizzle_migrations" ADD COLUMN IF NOT EXISTS name text`;
 		await sql`ALTER TABLE drizzle."__drizzle_migrations" ADD COLUMN IF NOT EXISTS applied_at timestamp with time zone DEFAULT now()`;
 
-		// Read local migration files
-		const localMigrations = readMigrationFiles({ migrationsFolder });
+		const mainMigrations = readMigrationFiles({ migrationsFolder });
 
 		// Backfill names for any v0 rows (have hash but no name)
 		const unnamed = await sql`
@@ -52,9 +68,7 @@ export async function runMigrations(
 			ORDER BY id ASC
 		`;
 		if (unnamed.length > 0) {
-			const hashToName = new Map(
-				localMigrations.map((m) => [m.hash, m.name]),
-			);
+			const hashToName = new Map(mainMigrations.map((m) => [m.hash, m.name]));
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			await sql.begin(async (tx: any) => {
 				for (const row of unnamed) {
@@ -76,35 +90,52 @@ export async function runMigrations(
 			});
 		}
 
-		// Get already-applied migration names from the database
-		const dbRows = await sql`
-			SELECT name FROM drizzle."__drizzle_migrations"
-			WHERE name IS NOT NULL
-			ORDER BY id ASC
-		`;
-		const appliedNames = new Set(dbRows.map((r) => r["name"] as string));
+		await applyMigrationFolder(sql, mainMigrations);
 
-		// Determine which migrations need to run
-		const toRun = localMigrations.filter(
-			(m) => m.name && !appliedNames.has(m.name),
-		);
-
-		if (toRun.length === 0) return;
-
-		// Run pending migrations in a transaction
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		await sql.begin(async (tx: any) => {
-			for (const migration of toRun) {
-				for (const stmt of migration.sql) {
-					if (stmt.trim()) await tx.unsafe(stmt);
-				}
-				await tx`
-					INSERT INTO drizzle."__drizzle_migrations" (hash, created_at, name)
-					VALUES (${migration.hash}, ${migration.folderMillis}, ${migration.name})
-				`;
-			}
-		});
+		if (options.productionMigrationsFolder) {
+			const productionMigrations = readMigrationFiles({
+				migrationsFolder: options.productionMigrationsFolder,
+			});
+			await applyMigrationFolder(sql, productionMigrations);
+		}
 	} finally {
 		await database.close();
 	}
+}
+
+/**
+ * Apply pending migrations from a parsed folder. Migrations not yet recorded
+ * in `drizzle.__drizzle_migrations` (by name) are run inside a single
+ * transaction; their names are then inserted as a record of completion.
+ */
+async function applyMigrationFolder(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	sql: any,
+	migrations: ReturnType<typeof readMigrationFiles>,
+): Promise<void> {
+	const dbRows = await sql`
+		SELECT name FROM drizzle."__drizzle_migrations"
+		WHERE name IS NOT NULL
+		ORDER BY id ASC
+	`;
+	const appliedNames = new Set(dbRows.map((r: { name: string }) => r.name));
+
+	const toRun = migrations.filter(
+		(m) => m.name && !appliedNames.has(m.name),
+	);
+
+	if (toRun.length === 0) return;
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	await sql.begin(async (tx: any) => {
+		for (const migration of toRun) {
+			for (const stmt of migration.sql) {
+				if (stmt.trim()) await tx.unsafe(stmt);
+			}
+			await tx`
+				INSERT INTO drizzle."__drizzle_migrations" (hash, created_at, name)
+				VALUES (${migration.hash}, ${migration.folderMillis}, ${migration.name})
+			`;
+		}
+	});
 }

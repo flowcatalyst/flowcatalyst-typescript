@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	jsonCreated,
@@ -71,10 +72,11 @@ export async function registerConfigAccessRoutes(
 	fastify: FastifyInstance,
 	deps: ConfigAccessRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { platformConfigAccessRepository } = deps;
 
 	// GET /api/config-access/:appCode - List access grants
-	fastify.get(
+	f.get(
 		"/config-access/:appCode",
 		{
 			schema: {
@@ -96,7 +98,7 @@ export async function registerConfigAccessRoutes(
 	);
 
 	// POST /api/config-access/:appCode - Grant config access
-	fastify.post(
+	f.post(
 		"/config-access/:appCode",
 		{
 			schema: {
@@ -140,7 +142,7 @@ export async function registerConfigAccessRoutes(
 	);
 
 	// PUT /api/config-access/:appCode/:roleCode - Update access grant
-	fastify.put(
+	f.put(
 		"/config-access/:appCode/:roleCode",
 		{
 			schema: {
@@ -176,7 +178,7 @@ export async function registerConfigAccessRoutes(
 	);
 
 	// DELETE /api/config-access/:appCode/:roleCode - Revoke access
-	fastify.delete(
+	f.delete(
 		"/config-access/:appCode/:roleCode",
 		{
 			schema: {

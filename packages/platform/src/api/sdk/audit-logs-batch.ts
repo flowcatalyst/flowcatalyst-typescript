@@ -12,11 +12,13 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	jsonSuccess,
 	badRequest,
 	BatchResponseSchema,
+	ErrorResponseSchema,
 } from "@flowcatalyst/http";
 import { generate } from "@flowcatalyst/tsid";
 import { auditLogs, type NewAuditLog } from "@flowcatalyst/persistence";
@@ -113,18 +115,22 @@ export async function registerAuditLogsBatchRoutes(
 	fastify: FastifyInstance,
 	deps: AuditLogsBatchDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { db, applicationRepository, clientRepository } = deps;
 
 	// Code→ID cache shared across requests (module-level per registered route)
 	const cache = createCodeCache(applicationRepository, clientRepository);
 
-	fastify.post(
+	f.post(
 		"/audit-logs/batch",
 		{
 			preHandler: requirePermission(BATCH_PERMISSIONS.AUDIT_LOGS_WRITE),
 			schema: {
 				body: BatchAuditLogsRequestSchema,
-				response: { 200: BatchResponseSchema },
+				response: {
+					200: BatchResponseSchema,
+					400: ErrorResponseSchema,
+				},
 			},
 		},
 		async (request, reply) => {

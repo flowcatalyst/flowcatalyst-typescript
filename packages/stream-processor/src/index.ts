@@ -15,6 +15,8 @@ import { createLogger, setDefaultLogger } from "@flowcatalyst/logging";
 import { env } from "./env.js";
 import { createEventProjectionService } from "./event-projection-service.js";
 import { createDispatchJobProjectionService } from "./dispatch-job-projection-service.js";
+import { createPartitionManagerService } from "./partition-manager.js";
+import { createEventFanOutService } from "./event-fan-out-service.js";
 
 /**
  * Stream processor configuration options for in-process embedding.
@@ -77,6 +79,27 @@ export async function startStreamProcessor(
 		logger.child({ service: "dispatch-job-projection" }),
 	);
 
+	const partitionManager = createPartitionManagerService(
+		sql,
+		{
+			enabled: env.STREAM_PROCESSOR_PARTITION_MANAGER_ENABLED,
+			monthsForward: env.STREAM_PROCESSOR_PARTITION_MONTHS_FORWARD,
+			retentionDays: env.STREAM_PROCESSOR_PARTITION_RETENTION_DAYS,
+			tickIntervalMs: 24 * 60 * 60 * 1000,
+		},
+		logger.child({ service: "partition-manager" }),
+	);
+
+	const fanOutService = createEventFanOutService(
+		sql,
+		{
+			enabled: env.STREAM_PROCESSOR_FAN_OUT_ENABLED,
+			batchSize: env.STREAM_PROCESSOR_FAN_OUT_BATCH_SIZE,
+			subscriptionRefreshMs: env.STREAM_PROCESSOR_FAN_OUT_SUBSCRIPTION_REFRESH_MS,
+		},
+		logger.child({ service: "event-fan-out" }),
+	);
+
 	// Start services
 	if (env.STREAM_PROCESSOR_EVENTS_ENABLED) {
 		eventProjection.start();
@@ -90,12 +113,28 @@ export async function startStreamProcessor(
 		logger.info("Dispatch job projection service disabled");
 	}
 
+	if (env.STREAM_PROCESSOR_PARTITION_MANAGER_ENABLED) {
+		partitionManager.start();
+	} else {
+		logger.info("Partition manager disabled");
+	}
+
+	if (env.STREAM_PROCESSOR_FAN_OUT_ENABLED) {
+		fanOutService.start();
+	} else {
+		logger.info(
+			"Event fan-out service disabled (in-UoW fan-out is the active path)",
+		);
+	}
+
 	logger.info(
 		{
 			eventsEnabled: env.STREAM_PROCESSOR_EVENTS_ENABLED,
 			eventsBatchSize: env.STREAM_PROCESSOR_EVENTS_BATCH_SIZE,
 			dispatchJobsEnabled: env.STREAM_PROCESSOR_DISPATCH_JOBS_ENABLED,
 			dispatchJobsBatchSize: env.STREAM_PROCESSOR_DISPATCH_JOBS_BATCH_SIZE,
+			partitionManagerEnabled: env.STREAM_PROCESSOR_PARTITION_MANAGER_ENABLED,
+			fanOutEnabled: env.STREAM_PROCESSOR_FAN_OUT_ENABLED,
 		},
 		"Stream processor started",
 	);
@@ -105,6 +144,8 @@ export async function startStreamProcessor(
 			logger.info("Shutting down stream processor...");
 			eventProjection.stop();
 			dispatchJobProjection.stop();
+			partitionManager.stop();
+			fanOutService.stop();
 			// Allow current polls to complete (max 2 seconds)
 			await new Promise((resolve) => setTimeout(resolve, 2000));
 			await sql.end();

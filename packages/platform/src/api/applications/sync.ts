@@ -12,6 +12,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -189,6 +190,7 @@ export async function registerApplicationSyncRoutes(
 	fastify: FastifyInstance,
 	deps: ApplicationSyncRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		syncRolesUseCase,
 		syncEventTypesUseCase,
@@ -198,7 +200,7 @@ export async function registerApplicationSyncRoutes(
 	} = deps;
 
 	// POST /api/applications/:appCode/roles/sync
-	fastify.post(
+	f.post(
 		"/:appCode/roles/sync",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.MANAGE),
@@ -260,7 +262,7 @@ export async function registerApplicationSyncRoutes(
 	);
 
 	// POST /api/applications/:appCode/event-types/sync
-	fastify.post(
+	f.post(
 		"/:appCode/event-types/sync",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.SYNC),
@@ -311,7 +313,7 @@ export async function registerApplicationSyncRoutes(
 	);
 
 	// POST /api/applications/:appCode/subscriptions/sync
-	fastify.post(
+	f.post(
 		"/:appCode/subscriptions/sync",
 		{
 			preHandler: requirePermission(SUBSCRIPTION_PERMISSIONS.SYNC),
@@ -376,7 +378,7 @@ export async function registerApplicationSyncRoutes(
 	);
 
 	// POST /api/applications/:appCode/dispatch-pools/sync
-	fastify.post(
+	f.post(
 		"/:appCode/dispatch-pools/sync",
 		{
 			preHandler: requirePermission(DISPATCH_POOL_PERMISSIONS.SYNC),
@@ -426,7 +428,7 @@ export async function registerApplicationSyncRoutes(
 	);
 
 	// POST /api/applications/:appCode/principals/sync
-	fastify.post(
+	f.post(
 		"/:appCode/principals/sync",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.MANAGE),

@@ -56,7 +56,7 @@ async function syncPlatformEvents() {
 				? `${parts.join(", ")} (${result.total} total)`
 				: `${result.total} event types up to date`) + schemaDetail);
 		await loadEventTypes();
-	} catch (e) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		syncing.value = false;

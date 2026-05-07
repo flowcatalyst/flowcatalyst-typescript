@@ -69,7 +69,7 @@ async function deleteClient() {
 		);
 		showDeleteDialog.value = false;
 		toast.success("Success", `OAuth client "${clientToDelete.value.clientName}" deleted`);
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		deleteLoading.value = false;
@@ -88,7 +88,7 @@ async function toggleActive(client: OAuthClient) {
 			client.active = true;
 			toast.success("Activated", `OAuth client "${client.clientName}" has been activated`);
 		}
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	}
 }

@@ -1,8 +1,11 @@
 import type { FastifyPluginAsync } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { LocalConfigResponseSchema } from "../schemas/index.js";
 
 export const configRoutes: FastifyPluginAsync = async (fastify) => {
-	fastify.get(
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
+
+	f.get(
 		"/",
 		{
 			schema: {

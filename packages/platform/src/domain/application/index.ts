@@ -37,4 +37,6 @@ export {
 	ApplicationEnabledForClient,
 	type ApplicationDisabledForClientData,
 	ApplicationDisabledForClient,
+	type ApplicationServiceAccountProvisionedData,
+	ApplicationServiceAccountProvisioned,
 } from "./events.js";

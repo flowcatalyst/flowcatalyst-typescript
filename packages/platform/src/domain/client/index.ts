@@ -24,4 +24,6 @@ export {
 	ClientDeleted,
 	type ClientNoteAddedData,
 	ClientNoteAdded,
+	type ClientApplicationsUpdatedData,
+	ClientApplicationsUpdated,
 } from "./events.js";

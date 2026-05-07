@@ -1,4 +1,5 @@
 import type { FastifyPluginAsync } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
 import {
 	MonitoringHealthResponseSchema,
@@ -20,8 +21,9 @@ import {
 } from "../schemas/index.js";
 
 export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	// GET /monitoring/health
-	fastify.get(
+	f.get(
 		"/health",
 		{
 			schema: {
@@ -36,7 +38,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/queue-stats
-	fastify.get(
+	f.get(
 		"/queue-stats",
 		{
 			schema: {
@@ -51,7 +53,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /monitoring/queue-stats/refresh
-	fastify.post(
+	f.post(
 		"/queue-stats/refresh",
 		{
 			schema: {
@@ -67,7 +69,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/pool-stats
-	fastify.get(
+	f.get(
 		"/pool-stats",
 		{
 			schema: {
@@ -82,7 +84,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/warnings
-	fastify.get(
+	f.get(
 		"/warnings",
 		{
 			schema: {
@@ -97,7 +99,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/warnings/unacknowledged
-	fastify.get(
+	f.get(
 		"/warnings/unacknowledged",
 		{
 			schema: {
@@ -112,7 +114,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/warnings/severity/:severity
-	fastify.get<{ Params: { severity: string } }>(
+	f.get<{ Params: { severity: string } }>(
 		"/warnings/severity/:severity",
 		{
 			schema: {
@@ -128,7 +130,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /monitoring/warnings/:warningId/acknowledge
-	fastify.post<{ Params: { warningId: string } }>(
+	f.post<{ Params: { warningId: string } }>(
 		"/warnings/:warningId/acknowledge",
 		{
 			schema: {
@@ -155,7 +157,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// DELETE /monitoring/warnings
-	fastify.delete(
+	f.delete(
 		"/warnings",
 		{
 			schema: {
@@ -171,7 +173,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// DELETE /monitoring/warnings/old
-	fastify.delete(
+	f.delete(
 		"/warnings/old",
 		{
 			schema: {
@@ -189,7 +191,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/circuit-breakers
-	fastify.get(
+	f.get(
 		"/circuit-breakers",
 		{
 			schema: {
@@ -206,7 +208,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/circuit-breakers/:name/state
-	fastify.get<{ Params: { name: string } }>(
+	f.get<{ Params: { name: string } }>(
 		"/circuit-breakers/:name/state",
 		{
 			schema: {
@@ -229,7 +231,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /monitoring/circuit-breakers/:name/reset
-	fastify.post<{ Params: { name: string } }>(
+	f.post<{ Params: { name: string } }>(
 		"/circuit-breakers/:name/reset",
 		{
 			schema: {
@@ -257,7 +259,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /monitoring/circuit-breakers/reset-all
-	fastify.post(
+	f.post(
 		"/circuit-breakers/reset-all",
 		{
 			schema: {
@@ -273,7 +275,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/in-flight-messages
-	fastify.get(
+	f.get(
 		"/in-flight-messages",
 		{
 			schema: {
@@ -301,8 +303,67 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 		},
 	);
 
+	// GET /monitoring/in-flight-messages/check?messageId=…
+	// Single-id presence check. Designed for an external recovery system
+	// that wants a yes/no answer before re-enqueueing a suspected-stuck
+	// message. Always returns 200; `inPipeline=false` means the router
+	// does not have it (safe to resend).
+	f.get(
+		"/in-flight-messages/check",
+		{
+			schema: {
+				tags: ["Monitoring"],
+				summary: "Check whether one app message ID is in the pipeline",
+				querystring: Type.Object({
+					messageId: Type.String({ minLength: 1 }),
+				}),
+				response: {
+					200: Type.Object({
+						messageId: Type.String(),
+						inPipeline: Type.Boolean(),
+					}),
+				},
+			},
+		},
+		(request) => {
+			const { messageId } = request.query as { messageId: string };
+			return {
+				messageId,
+				inPipeline:
+					request.services.queueManager.isInFlightByAppId(messageId),
+			};
+		},
+	);
+
+	// POST /monitoring/in-flight-messages/check-batch
+	// Batch presence check. Body: { messageIds: ["evt_a", ...] }
+	// Response: { "evt_a": true, "evt_b": false, ... }
+	// Capped at 5000 ids per request — split larger batches.
+	f.post(
+		"/in-flight-messages/check-batch",
+		{
+			schema: {
+				tags: ["Monitoring"],
+				summary: "Batch-check whether app message IDs are in the pipeline",
+				body: Type.Object({
+					messageIds: Type.Array(Type.String({ minLength: 1 }), {
+						minItems: 1,
+						maxItems: 5000,
+					}),
+				}),
+				response: {
+					200: Type.Record(Type.String(), Type.Boolean()),
+				},
+			},
+		},
+		(request) => {
+			const { messageIds } = request.body as { messageIds: string[] };
+			return request.services.queueManager.areInFlightByAppIds(messageIds);
+		},
+	);
+
 	// GET /monitoring/standby-status
-	fastify.get(
+	f.get(
 		"/standby-status",
 		{
 			schema: {
@@ -330,7 +391,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/traffic-status
-	fastify.get(
+	f.get(
 		"/traffic-status",
 		{
 			schema: {
@@ -359,7 +420,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /monitoring/become-primary
-	fastify.post(
+	f.post(
 		"/become-primary",
 		{
 			schema: {
@@ -395,7 +456,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /monitoring/become-standby
-	fastify.post(
+	f.post(
 		"/become-standby",
 		{
 			schema: {
@@ -431,7 +492,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/consumer-health
-	fastify.get(
+	f.get(
 		"/consumer-health",
 		{
 			schema: {
@@ -446,7 +507,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/dashboard
-	fastify.get("/dashboard", async (_request, reply) => {
+	f.get("/dashboard", async (_request, reply) => {
 		try {
 			const fs = await import("node:fs/promises");
 			const path = await import("node:path");
@@ -481,7 +542,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	});
 
 	// GET /monitoring/oidc-diagnostics
-	fastify.get(
+	f.get(
 		"/oidc-diagnostics",
 		{
 			schema: {
@@ -553,7 +614,7 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /monitoring/infrastructure-health
-	fastify.get(
+	f.get(
 		"/infrastructure-health",
 		{
 			schema: {

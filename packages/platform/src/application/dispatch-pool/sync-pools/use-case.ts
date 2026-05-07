@@ -68,11 +68,15 @@ export function createSyncDispatchPoolsUseCase(
 						}),
 					);
 				}
-				if (item.rateLimit !== undefined && item.rateLimit < 1) {
+				if (
+					item.rateLimit !== undefined &&
+					item.rateLimit !== null &&
+					item.rateLimit < 1
+				) {
 					return Result.failure(
 						UseCaseError.validation(
 							"INVALID_RATE_LIMIT",
-							"Rate limit must be at least 1",
+							"Rate limit, when set, must be at least 1",
 							{
 								code: item.code,
 							},
@@ -135,7 +139,7 @@ export function createSyncDispatchPoolsUseCase(
 						const updatedPool = updateDispatchPool(existing, {
 							name: item.name,
 							description: item.description ?? null,
-							rateLimit: item.rateLimit ?? 100,
+							rateLimit: item.rateLimit ?? null,
 							concurrency: item.concurrency ?? 10,
 							status: "ACTIVE",
 						});
@@ -147,7 +151,7 @@ export function createSyncDispatchPoolsUseCase(
 							code: item.code,
 							name: item.name,
 							description: item.description ?? null,
-							rateLimit: item.rateLimit ?? 100,
+							rateLimit: item.rateLimit ?? null,
 							concurrency: item.concurrency ?? 10,
 						});
 						await dispatchPoolRepository.insert(pool, txCtx);

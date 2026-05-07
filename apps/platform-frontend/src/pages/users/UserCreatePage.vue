@@ -172,7 +172,7 @@ async function createUser() {
 
 		// Redirect to user detail/edit page
 		router.push(`/users/${user.id}`);
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;

@@ -1,4 +1,5 @@
 import type { FastifyPluginAsync } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import {
 	BenchmarkProcessResponseSchema,
 	BenchmarkProcessSlowResponseSchema,
@@ -11,8 +12,9 @@ let requestCount = 0;
 let startTime = 0;
 
 export const benchmarkRoutes: FastifyPluginAsync = async (fastify) => {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	// POST /benchmark/process
-	fastify.post(
+	f.post(
 		"/process",
 		{
 			schema: {
@@ -40,7 +42,7 @@ export const benchmarkRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /benchmark/process-slow
-	fastify.post(
+	f.post(
 		"/process-slow",
 		{
 			schema: {
@@ -65,7 +67,7 @@ export const benchmarkRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// GET /benchmark/stats
-	fastify.get(
+	f.get(
 		"/stats",
 		{
 			schema: {
@@ -87,7 +89,7 @@ export const benchmarkRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /benchmark/reset
-	fastify.post(
+	f.post(
 		"/reset",
 		{
 			schema: {

@@ -254,7 +254,7 @@ async function deleteMapping() {
 		await emailDomainMappingsApi.delete(mapping.value.id);
 		toast.success("Success", `Email domain mapping for "${mapping.value.emailDomain}" deleted`);
 		router.push("/authentication/email-domain-mappings");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		deleteLoading.value = false;

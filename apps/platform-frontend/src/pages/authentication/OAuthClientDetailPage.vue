@@ -218,7 +218,7 @@ async function rotateSecret() {
 		showRotateSecretDialog.value = false;
 		showNewSecretDialog.value = true;
 		toast.success("Success", "Client secret rotated successfully");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		rotateLoading.value = false;
@@ -252,7 +252,7 @@ async function toggleActive() {
 			client.value.active = true;
 			toast.success("Activated", "OAuth client has been activated");
 		}
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	}
 }

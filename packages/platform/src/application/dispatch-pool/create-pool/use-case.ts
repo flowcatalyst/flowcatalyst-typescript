@@ -62,15 +62,15 @@ export function createCreateDispatchPoolUseCase(
 				);
 			}
 
-			// Validate rate limit and concurrency
-			const rateLimit = command.rateLimit ?? 100;
+			// Rate limit is opt-in. `undefined` / `null` means concurrency-only.
+			const rateLimit = command.rateLimit ?? null;
 			const concurrency = command.concurrency ?? 10;
 
-			if (rateLimit < 1) {
+			if (rateLimit !== null && rateLimit < 1) {
 				return Result.failure(
 					UseCaseError.validation(
 						"INVALID_RATE_LIMIT",
-						"Rate limit must be at least 1",
+						"Rate limit, when set, must be at least 1",
 					),
 				);
 			}

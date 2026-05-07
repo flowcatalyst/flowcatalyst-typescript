@@ -6,6 +6,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -222,6 +223,7 @@ export async function registerEventTypesBffRoutes(
 	fastify: FastifyInstance,
 	deps: EventTypesBffDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		eventTypeRepository,
 		createEventTypeUseCase,
@@ -235,7 +237,7 @@ export async function registerEventTypesBffRoutes(
 	} = deps;
 
 	// GET /bff/event-types - List with filters
-	fastify.get(
+	f.get(
 		"/event-types",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),
@@ -270,7 +272,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// GET /bff/event-types/:id - Get by ID
-	fastify.get(
+	f.get(
 		"/event-types/:id",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),
@@ -295,7 +297,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// POST /bff/event-types - Create
-	fastify.post(
+	f.post(
 		"/event-types",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.CREATE),
@@ -341,7 +343,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// PATCH /bff/event-types/:id - Update
-	fastify.patch(
+	f.patch(
 		"/event-types/:id",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.UPDATE),
@@ -382,7 +384,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// DELETE /bff/event-types/:id
-	fastify.delete(
+	f.delete(
 		"/event-types/:id",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.DELETE),
@@ -412,7 +414,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// POST /bff/event-types/:id/archive
-	fastify.post(
+	f.post(
 		"/event-types/:id/archive",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.UPDATE),
@@ -446,7 +448,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// POST /bff/event-types/:id/schemas - Add schema
-	fastify.post(
+	f.post(
 		"/event-types/:id/schemas",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.MANAGE_SCHEMA),
@@ -488,7 +490,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// POST /bff/event-types/:id/schemas/:version/finalise
-	fastify.post(
+	f.post(
 		"/event-types/:id/schemas/:version/finalise",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.MANAGE_SCHEMA),
@@ -522,7 +524,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// POST /bff/event-types/:id/schemas/:version/deprecate
-	fastify.post(
+	f.post(
 		"/event-types/:id/schemas/:version/deprecate",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.MANAGE_SCHEMA),
@@ -556,7 +558,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// POST /bff/event-types/sync-platform — sync platform's own event types
-	fastify.post(
+	f.post(
 		"/event-types/sync-platform",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.CREATE),
@@ -611,7 +613,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// GET /bff/event-types/filters/applications
-	fastify.get(
+	f.get(
 		"/event-types/filters/applications",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),
@@ -628,7 +630,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// GET /bff/event-types/filters/subdomains
-	fastify.get(
+	f.get(
 		"/event-types/filters/subdomains",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),
@@ -652,7 +654,7 @@ export async function registerEventTypesBffRoutes(
 	);
 
 	// GET /bff/event-types/filters/aggregates
-	fastify.get(
+	f.get(
 		"/event-types/filters/aggregates",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),

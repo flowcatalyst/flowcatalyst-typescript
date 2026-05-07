@@ -112,7 +112,7 @@ async function loadData() {
 		allRoles.value = rolesResponse.items;
 		// Initialize role picker with all roles available, none selected
 		rolePickerModel.value = [[...rolesResponse.items], []];
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		dataLoading.value = false;

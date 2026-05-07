@@ -69,7 +69,7 @@ async function saveChanges() {
 		});
 		editing.value = false;
 		toast.success("Success", "Pool updated");
-	} catch (e) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
@@ -216,7 +216,8 @@ function getScopeLabel(p: DispatchPool) {
             <div class="form-row">
               <div class="form-field">
                 <label>Rate Limit (per minute)</label>
-                <InputNumber v-model="editRateLimit" :min="1" class="full-width" />
+                <InputNumber v-model="editRateLimit" :min="1" class="full-width" placeholder="Unlimited" />
+                <small class="hint">Leave blank to run on concurrency only.</small>
               </div>
               <div class="form-field">
                 <label>Concurrency</label>
@@ -245,7 +246,8 @@ function getScopeLabel(p: DispatchPool) {
               </div>
               <div class="detail-item">
                 <label>Rate Limit</label>
-                <span>{{ pool.rateLimit }} / minute</span>
+                <span v-if="pool.rateLimit != null">{{ pool.rateLimit }} / minute</span>
+                <span v-else>Unlimited (concurrency-only)</span>
               </div>
               <div class="detail-item">
                 <label>Concurrency</label>

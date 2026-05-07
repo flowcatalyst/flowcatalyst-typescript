@@ -133,6 +133,78 @@ export class OAuthClientSecretRegenerated extends BaseDomainEvent<OAuthClientSec
 }
 
 // -----------------------------------------------------------------------------
+// OAuthClientActivated / OAuthClientDeactivated
+// -----------------------------------------------------------------------------
+
+export interface OAuthClientActivatedData {
+	readonly oauthClientId: string;
+	readonly clientId: string;
+	readonly [key: string]: unknown;
+}
+
+export class OAuthClientActivated extends BaseDomainEvent<OAuthClientActivatedData> {
+	static readonly EVENT_TYPE = DomainEvent.eventType(
+		APP,
+		DOMAIN,
+		"oauth-client",
+		"activated",
+	);
+	static readonly SPEC_VERSION = "1.0";
+
+	constructor(ctx: ExecutionContext, data: OAuthClientActivatedData) {
+		super(
+			{
+				eventType: OAuthClientActivated.EVENT_TYPE,
+				specVersion: OAuthClientActivated.SPEC_VERSION,
+				source: SOURCE,
+				subject: DomainEvent.subject(APP, "oauth-client", data.oauthClientId),
+				messageGroup: DomainEvent.messageGroup(
+					APP,
+					"oauth-client",
+					data.oauthClientId,
+				),
+			},
+			ctx,
+			data,
+		);
+	}
+}
+
+export interface OAuthClientDeactivatedData {
+	readonly oauthClientId: string;
+	readonly clientId: string;
+	readonly [key: string]: unknown;
+}
+
+export class OAuthClientDeactivated extends BaseDomainEvent<OAuthClientDeactivatedData> {
+	static readonly EVENT_TYPE = DomainEvent.eventType(
+		APP,
+		DOMAIN,
+		"oauth-client",
+		"deactivated",
+	);
+	static readonly SPEC_VERSION = "1.0";
+
+	constructor(ctx: ExecutionContext, data: OAuthClientDeactivatedData) {
+		super(
+			{
+				eventType: OAuthClientDeactivated.EVENT_TYPE,
+				specVersion: OAuthClientDeactivated.SPEC_VERSION,
+				source: SOURCE,
+				subject: DomainEvent.subject(APP, "oauth-client", data.oauthClientId),
+				messageGroup: DomainEvent.messageGroup(
+					APP,
+					"oauth-client",
+					data.oauthClientId,
+				),
+			},
+			ctx,
+			data,
+		);
+	}
+}
+
+// -----------------------------------------------------------------------------
 // OAuthClientDeleted
 // -----------------------------------------------------------------------------
 

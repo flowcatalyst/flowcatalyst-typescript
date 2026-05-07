@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -109,7 +110,7 @@ const DispatchPoolResponseSchema = Type.Object({
 	code: Type.String(),
 	name: Type.String(),
 	description: Type.Union([Type.String(), Type.Null()]),
-	rateLimit: Type.Integer(),
+	rateLimit: Type.Union([Type.Integer(), Type.Null()]),
 	concurrency: Type.Integer(),
 	clientId: Type.Union([Type.String(), Type.Null()]),
 	clientIdentifier: Type.Union([Type.String(), Type.Null()]),
@@ -153,6 +154,7 @@ export async function registerDispatchPoolsRoutes(
 	fastify: FastifyInstance,
 	deps: DispatchPoolsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		dispatchPoolRepository,
 		createDispatchPoolUseCase,
@@ -162,7 +164,7 @@ export async function registerDispatchPoolsRoutes(
 	} = deps;
 
 	// GET /api/dispatch-pools - List with filters
-	fastify.get(
+	f.get(
 		"/dispatch-pools",
 		{
 			preHandler: requirePermission(DISPATCH_POOL_PERMISSIONS.READ),
@@ -197,7 +199,7 @@ export async function registerDispatchPoolsRoutes(
 	);
 
 	// GET /api/dispatch-pools/:id - Get by ID
-	fastify.get(
+	f.get(
 		"/dispatch-pools/:id",
 		{
 			preHandler: requirePermission(DISPATCH_POOL_PERMISSIONS.READ),
@@ -222,7 +224,7 @@ export async function registerDispatchPoolsRoutes(
 	);
 
 	// POST /api/dispatch-pools - Create
-	fastify.post(
+	f.post(
 		"/dispatch-pools",
 		{
 			preHandler: requirePermission(DISPATCH_POOL_PERMISSIONS.CREATE),
@@ -264,7 +266,7 @@ export async function registerDispatchPoolsRoutes(
 	);
 
 	// PUT /api/dispatch-pools/:id - Update
-	fastify.put(
+	f.put(
 		"/dispatch-pools/:id",
 		{
 			preHandler: requirePermission(DISPATCH_POOL_PERMISSIONS.UPDATE),
@@ -312,7 +314,7 @@ export async function registerDispatchPoolsRoutes(
 	);
 
 	// DELETE /api/dispatch-pools/:id - Delete (archive)
-	fastify.delete(
+	f.delete(
 		"/dispatch-pools/:id",
 		{
 			preHandler: requirePermission(DISPATCH_POOL_PERMISSIONS.DELETE),
@@ -340,7 +342,7 @@ export async function registerDispatchPoolsRoutes(
 	);
 
 	// POST /api/dispatch-pools/:id/suspend - Suspend
-	fastify.post(
+	f.post(
 		"/dispatch-pools/:id/suspend",
 		{
 			preHandler: requirePermission(DISPATCH_POOL_PERMISSIONS.UPDATE),
@@ -374,7 +376,7 @@ export async function registerDispatchPoolsRoutes(
 	);
 
 	// POST /api/dispatch-pools/:id/activate - Activate
-	fastify.post(
+	f.post(
 		"/dispatch-pools/:id/activate",
 		{
 			preHandler: requirePermission(DISPATCH_POOL_PERMISSIONS.UPDATE),
@@ -408,7 +410,7 @@ export async function registerDispatchPoolsRoutes(
 	);
 
 	// POST /api/dispatch-pools/sync - Sync from SDK
-	fastify.post(
+	f.post(
 		"/dispatch-pools/sync",
 		{
 			preHandler: requirePermission(DISPATCH_POOL_PERMISSIONS.SYNC),

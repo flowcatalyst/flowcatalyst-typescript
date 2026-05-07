@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import { desc } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -123,12 +124,17 @@ const PagedDispatchJobReadListResponseSchema = Type.Object({
 	totalPages: Type.Integer(),
 });
 
+const FilterOptionSchema = Type.Object({
+	value: Type.String(),
+	label: Type.String(),
+});
+
 const FilterOptionsResponseSchema = Type.Object({
-	applications: Type.Array(Type.String()),
-	subdomains: Type.Array(Type.String()),
-	aggregates: Type.Array(Type.String()),
-	codes: Type.Array(Type.String()),
-	statuses: Type.Array(Type.String()),
+	applications: Type.Array(FilterOptionSchema),
+	subdomains: Type.Array(FilterOptionSchema),
+	aggregates: Type.Array(FilterOptionSchema),
+	codes: Type.Array(FilterOptionSchema),
+	statuses: Type.Array(FilterOptionSchema),
 });
 
 const AttemptsResponseSchema = Type.Object({
@@ -228,10 +234,11 @@ export async function registerDispatchJobsRoutes(
 	fastify: FastifyInstance,
 	deps: DispatchJobsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { dispatchJobReadRepository } = deps;
 
 	// GET /api/dispatch-jobs - List dispatch jobs with filters
-	fastify.get(
+	f.get(
 		"/dispatch-jobs",
 		{
 			preHandler: requirePermission(DISPATCH_JOB_PERMISSIONS.READ),
@@ -300,7 +307,7 @@ export async function registerDispatchJobsRoutes(
 	);
 
 	// GET /api/dispatch-jobs/filter-options - Get cascading filter options
-	fastify.get(
+	f.get(
 		"/dispatch-jobs/filter-options",
 		{
 			preHandler: requirePermission(DISPATCH_JOB_PERMISSIONS.READ),
@@ -342,7 +349,7 @@ export async function registerDispatchJobsRoutes(
 	);
 
 	// GET /api/dispatch-jobs/:id - Get single dispatch job
-	fastify.get(
+	f.get(
 		"/dispatch-jobs/:id",
 		{
 			preHandler: requirePermission(DISPATCH_JOB_PERMISSIONS.READ),
@@ -367,7 +374,7 @@ export async function registerDispatchJobsRoutes(
 	);
 
 	// GET /api/dispatch-jobs/:id/attempts - Get attempts for a dispatch job
-	fastify.get(
+	f.get(
 		"/dispatch-jobs/:id/attempts",
 		{
 			preHandler: requirePermission(DISPATCH_JOB_PERMISSIONS.READ),
@@ -399,7 +406,7 @@ export async function registerDispatchJobsRoutes(
 	);
 
 	// GET /api/dispatch-jobs/raw - Raw jobs directly from msg_dispatch_jobs (no stream processor needed)
-	fastify.get(
+	f.get(
 		"/dispatch-jobs/raw",
 		{
 			preHandler: requirePermission(DISPATCH_JOB_PERMISSIONS.READ),

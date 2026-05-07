@@ -279,7 +279,7 @@ async function saveUser() {
 		user.value!.clientId = updated.clientId;
 		editMode.value = false;
 		toast.success("Success", "User updated successfully");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
@@ -300,7 +300,7 @@ async function toggleUserStatus() {
 			user.value.active = true;
 			toast.success("Success", "User activated");
 		}
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
@@ -314,7 +314,7 @@ async function deleteUser() {
 		showDeleteDialog.value = false;
 		toast.success("Success", `User "${user.value?.name}" deleted`);
 		router.push("/users");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		deleteLoading.value = false;
@@ -344,7 +344,7 @@ async function grantClientAccess() {
 		selectedClient.value = null;
 		clientSearchQuery.value = "";
 		toast.success("Success", "Client access granted");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
@@ -359,7 +359,7 @@ async function revokeClientAccess(clientId: string) {
 			(g) => g.clientId !== clientId,
 		);
 		toast.success("Success", "Client access revoked");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
@@ -425,7 +425,7 @@ async function saveRoles() {
 		}
 
 		toast.success("Success", detail);
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		savingRoles.value = false;
@@ -499,7 +499,7 @@ async function saveApps() {
 		}
 
 		toast.success("Success", detail);
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		savingApps.value = false;

@@ -102,7 +102,7 @@ async function createServiceAccount() {
 		showCredentialsDialog.value = true;
 
 		toast.success("Success", "Service account created successfully");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;

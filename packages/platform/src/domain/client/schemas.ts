@@ -37,3 +37,10 @@ export const ClientNoteAddedDataSchema = Type.Object({
 	text: Type.String(),
 	addedBy: Type.String(),
 });
+
+export const ClientApplicationsUpdatedDataSchema = Type.Object({
+	clientId: Type.String(),
+	enabledApplicationIds: Type.Array(Type.String()),
+	enabledAdded: Type.Array(Type.String()),
+	disabledRemoved: Type.Array(Type.String()),
+});

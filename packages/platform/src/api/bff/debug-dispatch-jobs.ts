@@ -8,6 +8,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import { jsonSuccess, notFound, ErrorResponseSchema } from "@flowcatalyst/http";
 import { desc, sql, eq } from "drizzle-orm";
@@ -86,10 +87,11 @@ export async function registerDebugDispatchJobsBffRoutes(
 	fastify: FastifyInstance,
 	deps: DebugDispatchJobsBffDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { db } = deps;
 
 	// GET /api/bff/debug/dispatch-jobs - List raw dispatch jobs
-	fastify.get(
+	f.get(
 		"/dispatch-jobs",
 		{
 			preHandler: requirePermission(DISPATCH_JOB_PERMISSIONS.VIEW_RAW),
@@ -130,7 +132,7 @@ export async function registerDebugDispatchJobsBffRoutes(
 	);
 
 	// GET /api/bff/debug/dispatch-jobs/:id - Get single raw dispatch job
-	fastify.get(
+	f.get(
 		"/dispatch-jobs/:id",
 		{
 			preHandler: requirePermission(DISPATCH_JOB_PERMISSIONS.VIEW_RAW),

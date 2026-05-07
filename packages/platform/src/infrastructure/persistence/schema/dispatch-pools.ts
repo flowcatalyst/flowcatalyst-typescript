@@ -23,7 +23,8 @@ export const dispatchPools = pgTable(
 		code: varchar("code", { length: 100 }).notNull(),
 		name: varchar("name", { length: 255 }).notNull(),
 		description: varchar("description", { length: 500 }),
-		rateLimit: integer("rate_limit").notNull().default(100),
+		// Nullable: NULL means concurrency-only (the message router supports it).
+		rateLimit: integer("rate_limit"),
 		concurrency: integer("concurrency").notNull().default(10),
 		clientId: tsidColumn("client_id"),
 		clientIdentifier: varchar("client_identifier", { length: 100 }),

@@ -7,11 +7,13 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	jsonSuccess,
 	badRequest,
 	BatchResponseSchema,
+	ErrorResponseSchema,
 } from "@flowcatalyst/http";
 import { generateRaw } from "@flowcatalyst/tsid";
 import {
@@ -27,7 +29,7 @@ import { BATCH_PERMISSIONS } from "../../authorization/permissions/platform-admi
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
-const MAX_BATCH_SIZE = 100;
+const MAX_BATCH_SIZE = 500;
 
 // ─── Request Schemas ────────────────────────────────────────────────────────
 
@@ -63,15 +65,20 @@ export async function registerEventsBatchRoutes(
 	fastify: FastifyInstance,
 	deps: EventsBatchDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { db } = deps;
 
-	fastify.post(
+	f.post(
 		"/events/batch",
 		{
+			bodyLimit: 32 * 1024 * 1024, // 32 MiB — accommodates 500 events with payloads
 			preHandler: requirePermission(BATCH_PERMISSIONS.EVENTS_WRITE),
 			schema: {
 				body: BatchEventsRequestSchema,
-				response: { 200: BatchResponseSchema },
+				response: {
+					200: BatchResponseSchema,
+					400: ErrorResponseSchema,
+				},
 			},
 		},
 		async (request, reply) => {

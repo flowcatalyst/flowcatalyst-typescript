@@ -82,17 +82,19 @@ export function sendResult<T, R = T>(
 	reply: FastifyReply,
 	result: Result<T>,
 	options: SendResultOptions<T, R> = {},
-): FastifyReply {
+): R | ErrorResponse {
 	const { successStatus = 200, transform } = options;
 
 	if (Result.isSuccess(result)) {
-		const value = transform ? transform(result.value) : result.value;
-		return reply.status(successStatus).send(value);
+		const value = (transform ? transform(result.value) : result.value) as R;
+		reply.status(successStatus).send(value);
+		return value;
 	}
 
 	const status = getErrorStatus(result.error);
 	const response = toErrorResponse(result.error);
-	return reply.status(status).send(response);
+	reply.status(status).send(response);
+	return response;
 }
 
 /**
@@ -123,12 +125,12 @@ export function sendResult<T, R = T>(
  * });
  * ```
  */
-export function matchResult<T>(
+export function matchResult<T, R = unknown>(
 	reply: FastifyReply,
 	result: Result<T>,
-	onSuccess: (value: T, reply: FastifyReply) => FastifyReply,
-	onFailure?: (error: UseCaseError, reply: FastifyReply) => FastifyReply,
-): FastifyReply {
+	onSuccess: (value: T, reply: FastifyReply) => R,
+	onFailure?: (error: UseCaseError, reply: FastifyReply) => R | ErrorResponse,
+): R | ErrorResponse {
 	if (Result.isSuccess(result)) {
 		return onSuccess(result.value, reply);
 	}
@@ -139,7 +141,8 @@ export function matchResult<T>(
 
 	const status = getErrorStatus(result.error);
 	const response = toErrorResponse(result.error);
-	return reply.status(status).send(response);
+	reply.status(status).send(response);
+	return response;
 }
 
 /**
@@ -154,8 +157,9 @@ export function jsonSuccess<T>(
 	reply: FastifyReply,
 	data: T,
 	status: number = 200,
-): FastifyReply {
-	return reply.status(status).send(data);
+): T {
+	reply.status(status).send(data);
+	return data;
 }
 
 /**
@@ -165,8 +169,9 @@ export function jsonSuccess<T>(
  * @param data - Response data
  * @returns HTTP response
  */
-export function jsonCreated<T>(reply: FastifyReply, data: T): FastifyReply {
-	return reply.status(201).send(data);
+export function jsonCreated<T>(reply: FastifyReply, data: T): T {
+	reply.status(201).send(data);
+	return data;
 }
 
 /**
@@ -175,8 +180,8 @@ export function jsonCreated<T>(reply: FastifyReply, data: T): FastifyReply {
  * @param reply - Fastify reply
  * @returns HTTP response
  */
-export function noContent(reply: FastifyReply): FastifyReply {
-	return reply.status(204).send();
+export function noContent(reply: FastifyReply): void {
+	reply.status(204).send();
 }
 
 /**
@@ -195,13 +200,14 @@ export function jsonError(
 	code: string,
 	message: string,
 	details?: Record<string, unknown>,
-): FastifyReply {
+): ErrorResponse {
 	const response: ErrorResponse = {
 		code,
 		message,
 		...(details ? { details } : {}),
 	};
-	return reply.status(status).send(response);
+	reply.status(status).send(response);
+	return response;
 }
 
 /**
@@ -214,7 +220,7 @@ export function jsonError(
 export function notFound(
 	reply: FastifyReply,
 	message: string = "Not found",
-): FastifyReply {
+): ErrorResponse {
 	return jsonError(reply, 404, "NOT_FOUND", message);
 }
 
@@ -228,7 +234,7 @@ export function notFound(
 export function unauthorized(
 	reply: FastifyReply,
 	message: string = "Authentication required",
-): FastifyReply {
+): ErrorResponse {
 	return jsonError(reply, 401, "UNAUTHORIZED", message);
 }
 
@@ -242,7 +248,7 @@ export function unauthorized(
 export function forbidden(
 	reply: FastifyReply,
 	message: string = "Access denied",
-): FastifyReply {
+): ErrorResponse {
 	return jsonError(reply, 403, "FORBIDDEN", message);
 }
 
@@ -258,6 +264,6 @@ export function badRequest(
 	reply: FastifyReply,
 	message: string,
 	details?: Record<string, unknown>,
-): FastifyReply {
+): ErrorResponse {
 	return jsonError(reply, 400, "BAD_REQUEST", message, details);
 }

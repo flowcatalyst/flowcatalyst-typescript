@@ -8,6 +8,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import { jsonSuccess, notFound, ErrorResponseSchema } from "@flowcatalyst/http";
 import { desc, sql, eq } from "drizzle-orm";
@@ -71,10 +72,11 @@ export async function registerDebugEventsBffRoutes(
 	fastify: FastifyInstance,
 	deps: DebugEventsBffDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { db } = deps;
 
 	// GET /api/bff/debug/events - List raw events
-	fastify.get(
+	f.get(
 		"/events",
 		{
 			preHandler: requirePermission(EVENT_PERMISSIONS.VIEW_RAW),
@@ -115,7 +117,7 @@ export async function registerDebugEventsBffRoutes(
 	);
 
 	// GET /api/bff/debug/events/:id - Get single raw event
-	fastify.get(
+	f.get(
 		"/events/:id",
 		{
 			preHandler: requirePermission(EVENT_PERMISSIONS.VIEW_RAW),

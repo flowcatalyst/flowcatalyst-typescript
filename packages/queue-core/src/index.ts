@@ -20,4 +20,3 @@ export * from "./mediation/circuit-breaker.js";
 
 // Utilities
 export * from "./utils/sleep.js";
-export * from "./utils/token-bucket.js";

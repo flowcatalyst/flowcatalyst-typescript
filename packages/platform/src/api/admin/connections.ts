@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -136,6 +137,7 @@ export async function registerConnectionsRoutes(
 	fastify: FastifyInstance,
 	deps: ConnectionsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		connectionRepository,
 		connectionCache,
@@ -145,7 +147,7 @@ export async function registerConnectionsRoutes(
 	} = deps;
 
 	// GET /api/connections - List with filters
-	fastify.get(
+	f.get(
 		"/connections",
 		{
 			preHandler: requirePermission(CONNECTION_PERMISSIONS.READ),
@@ -182,7 +184,7 @@ export async function registerConnectionsRoutes(
 	);
 
 	// GET /api/connections/:id - Get by ID
-	fastify.get(
+	f.get(
 		"/connections/:id",
 		{
 			preHandler: requirePermission(CONNECTION_PERMISSIONS.READ),
@@ -207,7 +209,7 @@ export async function registerConnectionsRoutes(
 	);
 
 	// POST /api/connections - Create
-	fastify.post(
+	f.post(
 		"/connections",
 		{
 			preHandler: requirePermission(CONNECTION_PERMISSIONS.CREATE),
@@ -250,7 +252,7 @@ export async function registerConnectionsRoutes(
 	);
 
 	// PUT /api/connections/:id - Update
-	fastify.put(
+	f.put(
 		"/connections/:id",
 		{
 			preHandler: requirePermission(CONNECTION_PERMISSIONS.UPDATE),
@@ -298,7 +300,7 @@ export async function registerConnectionsRoutes(
 	);
 
 	// DELETE /api/connections/:id - Delete
-	fastify.delete(
+	f.delete(
 		"/connections/:id",
 		{
 			preHandler: requirePermission(CONNECTION_PERMISSIONS.DELETE),
@@ -328,7 +330,7 @@ export async function registerConnectionsRoutes(
 	);
 
 	// POST /api/connections/:id/pause - Pause
-	fastify.post(
+	f.post(
 		"/connections/:id/pause",
 		{
 			preHandler: requirePermission(CONNECTION_PERMISSIONS.UPDATE),
@@ -363,7 +365,7 @@ export async function registerConnectionsRoutes(
 	);
 
 	// POST /api/connections/:id/activate - Activate
-	fastify.post(
+	f.post(
 		"/connections/:id/activate",
 		{
 			preHandler: requirePermission(CONNECTION_PERMISSIONS.UPDATE),

@@ -287,3 +287,46 @@ export class ApplicationDisabledForClient extends BaseDomainEvent<ApplicationDis
 		);
 	}
 }
+
+// -----------------------------------------------------------------------------
+// ApplicationServiceAccountProvisioned
+// -----------------------------------------------------------------------------
+
+export interface ApplicationServiceAccountProvisionedData {
+	readonly applicationId: string;
+	readonly applicationCode: string;
+	readonly serviceAccountId: string;
+	readonly serviceAccountCode: string;
+	readonly [key: string]: unknown;
+}
+
+export class ApplicationServiceAccountProvisioned extends BaseDomainEvent<ApplicationServiceAccountProvisionedData> {
+	static readonly EVENT_TYPE = DomainEvent.eventType(
+		APP,
+		DOMAIN,
+		"application",
+		"service-account-provisioned",
+	);
+	static readonly SPEC_VERSION = "1.0";
+
+	constructor(
+		ctx: ExecutionContext,
+		data: ApplicationServiceAccountProvisionedData,
+	) {
+		super(
+			{
+				eventType: ApplicationServiceAccountProvisioned.EVENT_TYPE,
+				specVersion: ApplicationServiceAccountProvisioned.SPEC_VERSION,
+				source: SOURCE,
+				subject: DomainEvent.subject(APP, "application", data.applicationId),
+				messageGroup: DomainEvent.messageGroup(
+					APP,
+					"application",
+					data.applicationId,
+				),
+			},
+			ctx,
+			data,
+		);
+	}
+}

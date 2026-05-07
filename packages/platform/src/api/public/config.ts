@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import { jsonSuccess } from "@flowcatalyst/http";
 import type { PlatformConfigService } from "../../domain/index.js";
@@ -49,6 +50,7 @@ export async function registerPublicConfigRoutes(
 	fastify: FastifyInstance,
 	deps: PublicConfigRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { platformConfigService } = deps;
 
 	const THEME_PROPERTIES = [
@@ -66,7 +68,7 @@ export async function registerPublicConfigRoutes(
 	] as const;
 
 	// GET /api/public/login-theme - Get login page theme
-	fastify.get(
+	f.get(
 		"/login-theme",
 		{
 			schema: {
@@ -123,12 +125,15 @@ export async function registerPublicConfigRoutes(
 				}
 			}
 
-			return jsonSuccess(reply, theme);
+			return jsonSuccess(
+				reply,
+				theme as Static<typeof LoginThemeResponseSchema>,
+			);
 		},
 	);
 
 	// GET /api/config/platform - Get platform feature flags
-	fastify.get(
+	f.get(
 		"/platform",
 		{
 			schema: {

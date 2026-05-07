@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import { desc } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -80,11 +81,16 @@ const PagedEventReadListResponseSchema = Type.Object({
 	totalPages: Type.Integer(),
 });
 
+const FilterOptionSchema = Type.Object({
+	value: Type.String(),
+	label: Type.String(),
+});
+
 const FilterOptionsResponseSchema = Type.Object({
-	applications: Type.Array(Type.String()),
-	subdomains: Type.Array(Type.String()),
-	aggregates: Type.Array(Type.String()),
-	types: Type.Array(Type.String()),
+	applications: Type.Array(FilterOptionSchema),
+	subdomains: Type.Array(FilterOptionSchema),
+	aggregates: Type.Array(FilterOptionSchema),
+	types: Type.Array(FilterOptionSchema),
 });
 
 type EventReadResponse = Static<typeof EventReadResponseSchema>;
@@ -136,10 +142,11 @@ export async function registerEventsRoutes(
 	fastify: FastifyInstance,
 	deps: EventsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { eventReadRepository } = deps;
 
 	// GET /api/events - List events with filters
-	fastify.get(
+	f.get(
 		"/events",
 		{
 			preHandler: requirePermission(EVENT_PERMISSIONS.READ),
@@ -203,7 +210,7 @@ export async function registerEventsRoutes(
 	);
 
 	// GET /api/events/filter-options - Get cascading filter options
-	fastify.get(
+	f.get(
 		"/events/filter-options",
 		{
 			preHandler: requirePermission(EVENT_PERMISSIONS.READ),
@@ -245,7 +252,7 @@ export async function registerEventsRoutes(
 	);
 
 	// GET /api/events/:id - Get single event
-	fastify.get(
+	f.get(
 		"/events/:id",
 		{
 			preHandler: requirePermission(EVENT_PERMISSIONS.READ),
@@ -270,7 +277,7 @@ export async function registerEventsRoutes(
 	);
 
 	// GET /api/events/raw - Raw events directly from msg_events (no stream processor needed)
-	fastify.get(
+	f.get(
 		"/events/raw",
 		{
 			preHandler: requirePermission(EVENT_PERMISSIONS.READ),

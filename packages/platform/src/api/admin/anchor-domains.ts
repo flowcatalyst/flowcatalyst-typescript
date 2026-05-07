@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -84,6 +85,7 @@ export async function registerAnchorDomainsRoutes(
 	fastify: FastifyInstance,
 	deps: AnchorDomainsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		anchorDomainRepository,
 		createAnchorDomainUseCase,
@@ -92,7 +94,7 @@ export async function registerAnchorDomainsRoutes(
 	} = deps;
 
 	// POST /api/anchor-domains - Create anchor domain
-	fastify.post(
+	f.post(
 		"/anchor-domains",
 		{
 			preHandler: requirePermission(ANCHOR_DOMAIN_PERMISSIONS.CREATE),
@@ -129,7 +131,7 @@ export async function registerAnchorDomainsRoutes(
 	);
 
 	// GET /api/anchor-domains - List anchor domains
-	fastify.get(
+	f.get(
 		"/anchor-domains",
 		{
 			preHandler: requirePermission(ANCHOR_DOMAIN_PERMISSIONS.READ),
@@ -151,7 +153,7 @@ export async function registerAnchorDomainsRoutes(
 	);
 
 	// GET /api/anchor-domains/:id - Get anchor domain by ID
-	fastify.get(
+	f.get(
 		"/anchor-domains/:id",
 		{
 			preHandler: requirePermission(ANCHOR_DOMAIN_PERMISSIONS.READ),
@@ -176,7 +178,7 @@ export async function registerAnchorDomainsRoutes(
 	);
 
 	// PUT /api/anchor-domains/:id - Update anchor domain
-	fastify.put(
+	f.put(
 		"/anchor-domains/:id",
 		{
 			preHandler: requirePermission(ANCHOR_DOMAIN_PERMISSIONS.UPDATE),
@@ -214,7 +216,7 @@ export async function registerAnchorDomainsRoutes(
 	);
 
 	// DELETE /api/anchor-domains/:id - Delete anchor domain
-	fastify.delete(
+	f.delete(
 		"/anchor-domains/:id",
 		{
 			preHandler: requirePermission(ANCHOR_DOMAIN_PERMISSIONS.DELETE),

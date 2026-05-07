@@ -23,7 +23,7 @@ export interface DispatchPoolCreatedData {
 	readonly code: string;
 	readonly name: string;
 	readonly description: string | null;
-	readonly rateLimit: number;
+	readonly rateLimit: number | null;
 	readonly concurrency: number;
 	readonly clientId: string | null;
 	readonly clientIdentifier: string | null;
@@ -68,7 +68,7 @@ export interface DispatchPoolUpdatedData {
 	readonly code: string;
 	readonly name: string;
 	readonly description: string | null;
-	readonly rateLimit: number;
+	readonly rateLimit: number | null;
 	readonly concurrency: number;
 	readonly status: string;
 	readonly [key: string]: unknown;

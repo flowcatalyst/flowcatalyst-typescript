@@ -7,6 +7,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	jsonSuccess,
@@ -77,6 +78,7 @@ export async function registerMeRoutes(
 	fastify: FastifyInstance,
 	deps: MeRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		clientRepository,
 		applicationRepository,
@@ -84,7 +86,7 @@ export async function registerMeRoutes(
 	} = deps;
 
 	// GET /api/me/clients - List accessible clients
-	fastify.get(
+	f.get(
 		"/clients",
 		{
 			preHandler: requireAuthentication(),
@@ -145,7 +147,7 @@ export async function registerMeRoutes(
 	);
 
 	// GET /api/me/clients/:clientId - Get specific accessible client
-	fastify.get(
+	f.get(
 		"/clients/:clientId",
 		{
 			preHandler: requireAuthentication(),
@@ -178,7 +180,7 @@ export async function registerMeRoutes(
 	);
 
 	// GET /api/me/clients/:clientId/applications - Get applications for an accessible client
-	fastify.get(
+	f.get(
 		"/clients/:clientId/applications",
 		{
 			preHandler: requireAuthentication(),

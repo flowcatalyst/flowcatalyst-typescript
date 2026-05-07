@@ -6,6 +6,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -149,6 +150,7 @@ export async function registerRolesBffRoutes(
 	fastify: FastifyInstance,
 	deps: RolesBffDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		roleRepository,
 		permissionRepository,
@@ -159,7 +161,7 @@ export async function registerRolesBffRoutes(
 	} = deps;
 
 	// GET /bff/roles - List roles with optional filters
-	fastify.get(
+	f.get(
 		"/roles",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.READ),
@@ -198,7 +200,7 @@ export async function registerRolesBffRoutes(
 	);
 
 	// GET /bff/roles/filters/applications - Application options for role filter
-	fastify.get(
+	f.get(
 		"/roles/filters/applications",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.READ),
@@ -221,7 +223,7 @@ export async function registerRolesBffRoutes(
 	);
 
 	// GET /bff/roles/permissions - List all permissions
-	fastify.get(
+	f.get(
 		"/roles/permissions",
 		{
 			preHandler: requirePermission(PERMISSION_PERMISSIONS.READ),
@@ -242,7 +244,7 @@ export async function registerRolesBffRoutes(
 	);
 
 	// GET /bff/roles/permissions/:permission - Get permission by code
-	fastify.get(
+	f.get(
 		"/roles/permissions/:permission",
 		{
 			preHandler: requirePermission(PERMISSION_PERMISSIONS.READ),
@@ -268,7 +270,7 @@ export async function registerRolesBffRoutes(
 	);
 
 	// GET /bff/roles/:roleName - Get role by name
-	fastify.get(
+	f.get(
 		"/roles/:roleName",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.READ),
@@ -293,7 +295,7 @@ export async function registerRolesBffRoutes(
 	);
 
 	// POST /bff/roles - Create role
-	fastify.post(
+	f.post(
 		"/roles",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.CREATE),
@@ -339,7 +341,7 @@ export async function registerRolesBffRoutes(
 	);
 
 	// PUT /bff/roles/:roleName - Update role
-	fastify.put(
+	f.put(
 		"/roles/:roleName",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.UPDATE),
@@ -391,7 +393,7 @@ export async function registerRolesBffRoutes(
 	);
 
 	// DELETE /bff/roles/:roleName - Delete role
-	fastify.delete(
+	f.delete(
 		"/roles/:roleName",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.DELETE),

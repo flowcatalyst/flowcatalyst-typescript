@@ -10,7 +10,7 @@
  * - projected_at timestamp for tracking projection lag
  */
 
-import { pgTable, varchar, text, index } from "drizzle-orm/pg-core";
+import { pgTable, varchar, text, index, primaryKey } from "drizzle-orm/pg-core";
 import { tsidColumn, rawTsidColumn, timestampColumn } from "./common.js";
 
 /**
@@ -19,8 +19,8 @@ import { tsidColumn, rawTsidColumn, timestampColumn } from "./common.js";
 export const eventsRead = pgTable(
 	"msg_events_read",
 	{
-		// Primary key (id IS the event id - 1:1 projection, unprefixed for performance)
-		id: rawTsidColumn("id").primaryKey(),
+		// Primary key part 1 — same as source event id (1:1 projection).
+		id: rawTsidColumn("id").notNull(),
 
 		// CloudEvents fields
 		specVersion: varchar("spec_version", { length: 20 }),
@@ -46,10 +46,15 @@ export const eventsRead = pgTable(
 		subdomain: varchar("subdomain", { length: 100 }),
 		aggregate: varchar("aggregate", { length: 100 }),
 
+		// Mirrored from the source event so partition pruning lines up between
+		// write and read tables.
+		createdAt: timestampColumn("created_at").notNull().defaultNow(),
+
 		// Projection tracking
 		projectedAt: timestampColumn("projected_at").notNull().defaultNow(),
 	},
 	(table) => [
+		primaryKey({ columns: [table.id, table.createdAt] }),
 		index("idx_msg_events_read_type").on(table.type),
 		index("idx_msg_events_read_client_id").on(table.clientId),
 		index("idx_msg_events_read_time").on(table.time),

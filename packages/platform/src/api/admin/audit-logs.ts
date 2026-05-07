@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import { jsonSuccess, notFound, ErrorResponseSchema } from "@flowcatalyst/http";
 
@@ -149,13 +150,14 @@ export async function registerAuditLogsRoutes(
 	fastify: FastifyInstance,
 	deps: AuditLogsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { auditLogRepository, principalRepository } = deps;
 
 	const DEFAULT_LIMIT = 100;
 	const MAX_LIMIT = 500;
 
 	// GET /api/audit-logs - List audit logs with filters
-	fastify.get(
+	f.get(
 		"/audit-logs",
 		{
 			preHandler: requirePermission(AUDIT_LOG_PERMISSIONS.READ),
@@ -217,7 +219,7 @@ export async function registerAuditLogsRoutes(
 	);
 
 	// GET /api/audit-logs/:id - Get single audit log
-	fastify.get(
+	f.get(
 		"/audit-logs/:id",
 		{
 			preHandler: requirePermission(AUDIT_LOG_PERMISSIONS.READ),
@@ -247,7 +249,7 @@ export async function registerAuditLogsRoutes(
 	);
 
 	// GET /api/audit-logs/entity/:entityType/:entityId - Get logs for specific entity
-	fastify.get(
+	f.get(
 		"/audit-logs/entity/:entityType/:entityId",
 		{
 			preHandler: requirePermission(AUDIT_LOG_PERMISSIONS.READ),
@@ -298,7 +300,7 @@ export async function registerAuditLogsRoutes(
 	);
 
 	// GET /api/audit-logs/entity-types - Get distinct entity types
-	fastify.get(
+	f.get(
 		"/audit-logs/entity-types",
 		{
 			preHandler: requirePermission(AUDIT_LOG_PERMISSIONS.READ),
@@ -318,7 +320,7 @@ export async function registerAuditLogsRoutes(
 	);
 
 	// GET /api/audit-logs/operations - Get distinct operations
-	fastify.get(
+	f.get(
 		"/audit-logs/operations",
 		{
 			preHandler: requirePermission(AUDIT_LOG_PERMISSIONS.READ),
@@ -338,7 +340,7 @@ export async function registerAuditLogsRoutes(
 	);
 
 	// GET /api/audit-logs/application-ids - Get distinct application IDs present in audit logs
-	fastify.get(
+	f.get(
 		"/audit-logs/application-ids",
 		{
 			preHandler: requirePermission(AUDIT_LOG_PERMISSIONS.READ),
@@ -357,7 +359,7 @@ export async function registerAuditLogsRoutes(
 	);
 
 	// GET /api/audit-logs/client-ids - Get distinct client IDs present in audit logs
-	fastify.get(
+	f.get(
 		"/audit-logs/client-ids",
 		{
 			preHandler: requirePermission(AUDIT_LOG_PERMISSIONS.READ),

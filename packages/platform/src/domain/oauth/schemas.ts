@@ -27,3 +27,13 @@ export const OAuthClientDeletedDataSchema = Type.Object({
 	oauthClientId: Type.String(),
 	clientId: Type.String(),
 });
+
+export const OAuthClientActivatedDataSchema = Type.Object({
+	oauthClientId: Type.String(),
+	clientId: Type.String(),
+});
+
+export const OAuthClientDeactivatedDataSchema = Type.Object({
+	oauthClientId: Type.String(),
+	clientId: Type.String(),
+});

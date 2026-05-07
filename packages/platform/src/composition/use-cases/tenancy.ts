@@ -13,6 +13,7 @@ import {
 	createChangeClientStatusUseCase,
 	createDeleteClientUseCase,
 	createAddClientNoteUseCase,
+	createUpdateClientApplicationsUseCase,
 	createCreateAnchorDomainUseCase,
 	createUpdateAnchorDomainUseCase,
 	createDeleteAnchorDomainUseCase,
@@ -59,6 +60,17 @@ export function createTenancyUseCases(deps: CreateUseCasesDeps) {
 		clientAccessGuard((cmd) => cmd.clientId),
 	);
 
+	const updateClientApplicationsUseCase = createGuardedUseCase(
+		createUpdateClientApplicationsUseCase({
+			applicationRepository: repos.applicationRepository,
+			clientRepository: repos.clientRepository,
+			applicationClientConfigRepository:
+				repos.applicationClientConfigRepository,
+			unitOfWork,
+		}),
+		clientAccessGuard((cmd) => cmd.clientId),
+	);
+
 	// --- Anchor domain use cases ---
 	const createAnchorDomainUseCase = createCreateAnchorDomainUseCase({
 		anchorDomainRepository: repos.anchorDomainRepository,
@@ -81,6 +93,7 @@ export function createTenancyUseCases(deps: CreateUseCasesDeps) {
 		changeClientStatusUseCase,
 		deleteClientUseCase,
 		addClientNoteUseCase,
+		updateClientApplicationsUseCase,
 		createAnchorDomainUseCase,
 		updateAnchorDomainUseCase,
 		deleteAnchorDomainUseCase,

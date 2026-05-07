@@ -12,7 +12,8 @@ export interface DispatchPool {
 	readonly code: string;
 	readonly name: string;
 	readonly description: string | null;
-	readonly rateLimit: number;
+	/** `null` means concurrency-only (no rate limiter applied by the router). */
+	readonly rateLimit: number | null;
 	readonly concurrency: number;
 	readonly clientId: string | null;
 	readonly clientIdentifier: string | null;
@@ -33,7 +34,8 @@ export function createDispatchPool(params: {
 	code: string;
 	name: string;
 	description?: string | null;
-	rateLimit?: number;
+	/** Optional. `undefined` / `null` = concurrency-only (no rate limiter). */
+	rateLimit?: number | null;
 	concurrency?: number;
 	clientId?: string | null;
 	clientIdentifier?: string | null;
@@ -43,7 +45,7 @@ export function createDispatchPool(params: {
 		code: params.code,
 		name: params.name,
 		description: params.description ?? null,
-		rateLimit: params.rateLimit ?? 100,
+		rateLimit: params.rateLimit ?? null,
 		concurrency: params.concurrency ?? 10,
 		clientId: params.clientId ?? null,
 		clientIdentifier: params.clientIdentifier ?? null,
@@ -59,7 +61,8 @@ export function updateDispatchPool(
 	updates: {
 		name?: string;
 		description?: string | null;
-		rateLimit?: number;
+		/** Pass `null` to clear the rate limit; `undefined` to leave unchanged. */
+		rateLimit?: number | null;
 		concurrency?: number;
 		status?: DispatchPoolStatus;
 	},

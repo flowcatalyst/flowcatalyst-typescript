@@ -69,7 +69,7 @@ async function saveChanges() {
 		});
 		editing.value = false;
 		toast.success("Success", "Connection updated");
-	} catch (e) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;

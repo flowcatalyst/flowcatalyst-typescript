@@ -13,6 +13,7 @@ import {
 	bigint,
 	uniqueIndex,
 	index,
+	primaryKey,
 } from "drizzle-orm/pg-core";
 import { rawTsidColumn, timestampColumn } from "./common.js";
 
@@ -32,10 +33,8 @@ export type DispatchErrorType =
 export const dispatchJobAttempts = pgTable(
 	"msg_dispatch_job_attempts",
 	{
-		// Primary key — unprefixed 13-char TSID. Matches what recordAttempt()
-		// actually writes (generateRaw()) and what the Rust DB constrains
-		// after migration 012.
-		id: rawTsidColumn("id").primaryKey(),
+		// Primary key part 1 — unprefixed 13-char TSID.
+		id: rawTsidColumn("id").notNull(),
 
 		// Reference to parent dispatch job (unprefixed - dispatch_jobs use raw TSIDs)
 		dispatchJobId: rawTsidColumn("dispatch_job_id").notNull(),
@@ -55,13 +54,17 @@ export const dispatchJobAttempts = pgTable(
 		durationMillis: bigint("duration_millis", { mode: "number" }),
 		attemptedAt: timestampColumn("attempted_at"),
 		completedAt: timestampColumn("completed_at"),
-		createdAt: timestampColumn("created_at"),
+		// Primary-key part 2 — also the partition key. NOT NULL DEFAULT NOW()
+		// so callers don't have to set it explicitly.
+		createdAt: timestampColumn("created_at").notNull().defaultNow(),
 	},
 	(table) => [
-		// Unique constraint for job + attempt number
+		primaryKey({ columns: [table.id, table.createdAt] }),
+		// Unique constraint must include the partition key.
 		uniqueIndex("idx_msg_dispatch_job_attempts_job_number").on(
 			table.dispatchJobId,
 			table.attemptNumber,
+			table.createdAt,
 		),
 		// Index for finding attempts by job
 		index("idx_msg_dispatch_job_attempts_job").on(table.dispatchJobId),

@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -12,6 +13,7 @@ import {
 	jsonSuccess,
 	noContent,
 	notFound,
+	badRequest,
 	ErrorResponseSchema,
 	SyncResponseSchema,
 } from "@flowcatalyst/http";
@@ -243,6 +245,7 @@ export async function registerEventTypesRoutes(
 	fastify: FastifyInstance,
 	deps: EventTypesRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		eventTypeRepository,
 		createEventTypeUseCase,
@@ -256,7 +259,7 @@ export async function registerEventTypesRoutes(
 	} = deps;
 
 	// GET /api/event-types - List with filters
-	fastify.get(
+	f.get(
 		"/event-types",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),
@@ -291,7 +294,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// GET /api/event-types/:id - Get by ID
-	fastify.get(
+	f.get(
 		"/event-types/:id",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),
@@ -316,7 +319,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// POST /api/event-types/:id/codegen - Generate code from schema
-	fastify.post(
+	f.post(
 		"/event-types/:id/codegen",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),
@@ -345,19 +348,16 @@ export async function registerEventTypesRoutes(
 				: eventType.specVersions.find((sv) => sv.status === "CURRENT");
 
 			if (!specVersion) {
-				return reply.status(400).send({
-					error: "Bad Request",
-					message: body.version
+				return badRequest(
+					reply,
+					body.version
 						? `Schema version not found: ${body.version}`
 						: "No CURRENT schema version available",
-				});
+				);
 			}
 
 			if (!specVersion.schemaContent) {
-				return reply.status(400).send({
-					error: "Bad Request",
-					message: "Schema version has no content",
-				});
+				return badRequest(reply, "Schema version has no content");
 			}
 
 			const parsed =
@@ -379,7 +379,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// POST /api/event-types - Create
-	fastify.post(
+	f.post(
 		"/event-types",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.CREATE),
@@ -422,7 +422,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// PATCH /api/event-types/:id - Update metadata
-	fastify.patch(
+	f.patch(
 		"/event-types/:id",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.UPDATE),
@@ -463,7 +463,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// DELETE /api/event-types/:id - Delete
-	fastify.delete(
+	f.delete(
 		"/event-types/:id",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.DELETE),
@@ -491,7 +491,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// POST /api/event-types/:id/archive - Archive
-	fastify.post(
+	f.post(
 		"/event-types/:id/archive",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.ARCHIVE),
@@ -522,7 +522,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// POST /api/event-types/:id/schemas - Add schema
-	fastify.post(
+	f.post(
 		"/event-types/:id/schemas",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.MANAGE_SCHEMA),
@@ -563,7 +563,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// POST /api/event-types/:id/schemas/:version/finalise - Finalise schema
-	fastify.post(
+	f.post(
 		"/event-types/:id/schemas/:version/finalise",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.MANAGE_SCHEMA),
@@ -598,7 +598,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// POST /api/event-types/:id/schemas/:version/deprecate - Deprecate schema
-	fastify.post(
+	f.post(
 		"/event-types/:id/schemas/:version/deprecate",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.MANAGE_SCHEMA),
@@ -633,7 +633,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// POST /api/event-types/sync - Sync event types from SDK
-	fastify.post(
+	f.post(
 		"/event-types/sync",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.SYNC),
@@ -673,7 +673,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// GET /api/event-types/filters/applications - Distinct applications
-	fastify.get(
+	f.get(
 		"/event-types/filters/applications",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),
@@ -690,7 +690,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// GET /api/event-types/filters/subdomains - Distinct subdomains
-	fastify.get(
+	f.get(
 		"/event-types/filters/subdomains",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),
@@ -712,7 +712,7 @@ export async function registerEventTypesRoutes(
 	);
 
 	// GET /api/event-types/filters/aggregates - Distinct aggregates
-	fastify.get(
+	f.get(
 		"/event-types/filters/aggregates",
 		{
 			preHandler: requirePermission(EVENT_TYPE_PERMISSIONS.READ),

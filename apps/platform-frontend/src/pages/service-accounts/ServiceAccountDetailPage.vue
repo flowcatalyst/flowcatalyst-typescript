@@ -177,7 +177,7 @@ async function pauseConnection(id: string) {
 		await connectionsApi.pause(id);
 		toast.success("Success", "Connection paused");
 		await loadConnections();
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	}
 }
@@ -187,7 +187,7 @@ async function activateConnection(id: string) {
 		await connectionsApi.activate(id);
 		toast.success("Success", "Connection activated");
 		await loadConnections();
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	}
 }
@@ -228,7 +228,7 @@ async function saveServiceAccount() {
 		serviceAccount.value!.clientIds = editClientIds.value;
 		editMode.value = false;
 		toast.success("Success", "Service account updated successfully");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
@@ -242,7 +242,7 @@ async function regenerateToken() {
 		newToken.value = response.authToken;
 		showRegenerateTokenDialog.value = true;
 		toast.success("Success", "Auth token regenerated");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
@@ -257,7 +257,7 @@ async function regenerateSecret() {
 		newSecret.value = response.signingSecret;
 		showRegenerateSecretDialog.value = true;
 		toast.success("Success", "Signing secret regenerated");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		saving.value = false;
@@ -315,7 +315,7 @@ async function saveRoles() {
 		}
 
 		toast.success("Success", detail);
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		savingRoles.value = false;
@@ -356,7 +356,7 @@ async function deleteServiceAccount() {
 		await serviceAccountsApi.delete(serviceAccountId);
 		toast.success("Success", "Service account deleted successfully");
 		router.push("/identity/service-accounts");
-	} catch (e: unknown) {
+	} catch {
 		// Global banner shown by bffFetch
 	} finally {
 		deleting.value = false;

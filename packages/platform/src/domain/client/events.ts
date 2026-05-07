@@ -158,6 +158,45 @@ export class ClientDeleted extends BaseDomainEvent<ClientDeletedData> {
 }
 
 // -----------------------------------------------------------------------------
+// ClientApplicationsUpdated
+// -----------------------------------------------------------------------------
+
+export interface ClientApplicationsUpdatedData {
+	readonly clientId: string;
+	/** Final, authoritative set of enabled applications after the update. */
+	readonly enabledApplicationIds: string[];
+	/** Applications that became enabled in this operation. */
+	readonly enabledAdded: string[];
+	/** Applications that became disabled in this operation. */
+	readonly disabledRemoved: string[];
+	readonly [key: string]: unknown;
+}
+
+export class ClientApplicationsUpdated extends BaseDomainEvent<ClientApplicationsUpdatedData> {
+	static readonly EVENT_TYPE = DomainEvent.eventType(
+		APP,
+		DOMAIN,
+		"client",
+		"applications-updated",
+	);
+	static readonly SPEC_VERSION = "1.0";
+
+	constructor(ctx: ExecutionContext, data: ClientApplicationsUpdatedData) {
+		super(
+			{
+				eventType: ClientApplicationsUpdated.EVENT_TYPE,
+				specVersion: ClientApplicationsUpdated.SPEC_VERSION,
+				source: SOURCE,
+				subject: DomainEvent.subject(APP, "client", data.clientId),
+				messageGroup: DomainEvent.messageGroup(APP, "client", data.clientId),
+			},
+			ctx,
+			data,
+		);
+	}
+}
+
+// -----------------------------------------------------------------------------
 // ClientNoteAdded
 // -----------------------------------------------------------------------------
 

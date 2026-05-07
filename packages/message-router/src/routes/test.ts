@@ -1,4 +1,5 @@
 import type { FastifyPluginAsync } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import {
 	TestEndpointResponseSchema,
 	MediationResponseSchema,
@@ -14,8 +15,9 @@ function sleep(ms: number): Promise<void> {
 let requestCounter = 0;
 
 export const testRoutes: FastifyPluginAsync = async (fastify) => {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	// POST /api/test/fast
-	fastify.post(
+	f.post(
 		"/fast",
 		{
 			schema: {
@@ -32,7 +34,7 @@ export const testRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /api/test/slow
-	fastify.post(
+	f.post(
 		"/slow",
 		{
 			schema: {
@@ -49,7 +51,7 @@ export const testRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /api/test/faulty
-	fastify.post(
+	f.post(
 		"/faulty",
 		{
 			schema: {
@@ -91,7 +93,7 @@ export const testRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /api/test/fail
-	fastify.post(
+	f.post(
 		"/fail",
 		{
 			schema: {
@@ -102,17 +104,18 @@ export const testRoutes: FastifyPluginAsync = async (fastify) => {
 		},
 		(_request, reply) => {
 			const requestId = ++requestCounter;
-			return reply.code(500).send({
+			reply.code(500);
+			return {
 				status: "error",
 				endpoint: "fail",
 				requestId,
 				error: "Always fails",
-			});
+			};
 		},
 	);
 
 	// POST /api/test/success
-	fastify.post(
+	f.post(
 		"/success",
 		{
 			schema: {
@@ -128,7 +131,7 @@ export const testRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /api/test/pending
-	fastify.post(
+	f.post(
 		"/pending",
 		{
 			schema: {
@@ -144,7 +147,7 @@ export const testRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /api/test/client-error
-	fastify.post(
+	f.post(
 		"/client-error",
 		{
 			schema: {
@@ -155,17 +158,18 @@ export const testRoutes: FastifyPluginAsync = async (fastify) => {
 		},
 		(_request, reply) => {
 			const requestId = ++requestCounter;
-			return reply.code(400).send({
+			reply.code(400);
+			return {
 				status: "error",
 				endpoint: "client-error",
 				requestId,
 				error: "Record not found",
-			});
+			};
 		},
 	);
 
 	// POST /api/test/server-error
-	fastify.post(
+	f.post(
 		"/server-error",
 		{
 			schema: {
@@ -176,16 +180,17 @@ export const testRoutes: FastifyPluginAsync = async (fastify) => {
 		},
 		(_request, reply) => {
 			const requestId = ++requestCounter;
-			return reply.code(500).send({
+			reply.code(500);
+			return {
 				status: "error",
 				endpoint: "server-error",
 				requestId,
-			});
+			};
 		},
 	);
 
 	// GET /api/test/stats
-	fastify.get(
+	f.get(
 		"/stats",
 		{
 			schema: {
@@ -200,7 +205,7 @@ export const testRoutes: FastifyPluginAsync = async (fastify) => {
 	);
 
 	// POST /api/test/stats/reset
-	fastify.post(
+	f.post(
 		"/stats/reset",
 		{
 			schema: {

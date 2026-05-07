@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	jsonCreated,
@@ -107,6 +108,7 @@ export async function registerConfigRoutes(
 	fastify: FastifyInstance,
 	deps: ConfigRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const { platformConfigService } = deps;
 
 	function parseScope(query: Static<typeof ScopeQuery>): {
@@ -119,7 +121,7 @@ export async function registerConfigRoutes(
 	}
 
 	// GET /api/config/:appCode - List configs for application
-	fastify.get(
+	f.get(
 		"/config/:appCode",
 		{
 			schema: {
@@ -159,7 +161,7 @@ export async function registerConfigRoutes(
 	);
 
 	// GET /api/config/:appCode/:section - List section as property map
-	fastify.get(
+	f.get(
 		"/config/:appCode/:section",
 		{
 			schema: {
@@ -206,7 +208,7 @@ export async function registerConfigRoutes(
 	);
 
 	// GET /api/config/:appCode/:section/:property - Get single value
-	fastify.get(
+	f.get(
 		"/config/:appCode/:section/:property",
 		{
 			schema: {
@@ -262,7 +264,7 @@ export async function registerConfigRoutes(
 	);
 
 	// PUT /api/config/:appCode/:section/:property - Set config value
-	fastify.put(
+	f.put(
 		"/config/:appCode/:section/:property",
 		{
 			schema: {
@@ -337,7 +339,7 @@ export async function registerConfigRoutes(
 	);
 
 	// DELETE /api/config/:appCode/:section/:property - Delete config
-	fastify.delete(
+	f.delete(
 		"/config/:appCode/:section/:property",
 		{
 			schema: {

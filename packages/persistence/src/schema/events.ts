@@ -11,7 +11,9 @@ import {
 	jsonb,
 	index,
 	uniqueIndex,
+	primaryKey,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { tsidColumn, rawTsidColumn, timestampColumn } from "./common.js";
 
 /**
@@ -28,8 +30,10 @@ export interface EventContextData {
 export const events = pgTable(
 	"msg_events",
 	{
-		// Primary key (unprefixed TSID for high-volume performance)
-		id: rawTsidColumn("id").primaryKey(),
+		// Primary key part 1 — unprefixed TSID for high-volume performance.
+		// Combined with createdAt, the PK is composite to support range
+		// partitioning by created_at in production.
+		id: rawTsidColumn("id").notNull(),
 
 		// CloudEvents required fields
 		specVersion: varchar("spec_version", { length: 20 })
@@ -57,7 +61,8 @@ export const events = pgTable(
 		// Additional context for filtering
 		contextData: jsonb("context_data").$type<EventContextData[]>(),
 
-		// Metadata
+		// Primary-key part 2 — also the partition key. NOT NULL is required
+		// because partitioned tables disallow NULL in the partition column.
 		createdAt: timestampColumn("created_at").notNull().defaultNow(),
 
 		// Stamped by the stream processor once the row has been projected into
@@ -66,18 +71,36 @@ export const events = pgTable(
 		// and drives off msg_event_projection_feed instead. Kept nullable so
 		// either projector can fill it without a schema change.
 		projectedAt: timestampColumn("projected_at"),
+
+		// Stamped by the fan-out poller once subscriptions have been matched
+		// and dispatch jobs created. Drives the partial index that the poller
+		// reads from.
+		fannedOutAt: timestampColumn("fanned_out_at"),
 	},
 	(table) => [
-		// Index for event type queries
-		index("idx_msg_events_type").on(table.type),
+		// Composite primary key — required when the table is partitioned by
+		// created_at; harmless when it isn't.
+		primaryKey({ columns: [table.id, table.createdAt] }),
 		// Index for client-scoped queries
-		index("idx_msg_events_client_type").on(table.clientId, table.type),
+		index("idx_msg_events_client_id").on(table.clientId),
 		// Index for chronological queries
-		index("idx_msg_events_time").on(table.time),
-		// Index for correlation tracing
-		index("idx_msg_events_correlation").on(table.correlationId),
-		// Unique index for idempotency
-		uniqueIndex("idx_msg_events_deduplication").on(table.deduplicationId),
+		index("idx_msg_events_created_at").on(table.createdAt),
+		// Partial index for the projector's poll path
+		index("idx_msg_events_unprojected")
+			.on(table.createdAt)
+			.where(sql`projected_at IS NULL`),
+		// Partial index for the fan-out poller
+		index("idx_msg_events_unfanned")
+			.on(table.createdAt)
+			.where(sql`fanned_out_at IS NULL`),
+		// Unique index for idempotency. Includes createdAt because partitioned
+		// uniques must include the partition key. Two events with the same
+		// deduplicationId in *different* months are not rejected by the DB —
+		// app-level dedup compensates if needed.
+		uniqueIndex("idx_msg_events_deduplication").on(
+			table.deduplicationId,
+			table.createdAt,
+		),
 	],
 );
 

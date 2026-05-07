@@ -5,6 +5,7 @@
  */
 
 import type { FastifyInstance } from "fastify";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type, type Static } from "@sinclair/typebox";
 import {
 	sendResult,
@@ -125,6 +126,7 @@ export async function registerEmailDomainMappingsRoutes(
 	fastify: FastifyInstance,
 	deps: EmailDomainMappingsRoutesDeps,
 ): Promise<void> {
+	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
 	const {
 		emailDomainMappingRepository,
 		identityProviderRepository,
@@ -135,7 +137,7 @@ export async function registerEmailDomainMappingsRoutes(
 	} = deps;
 
 	// GET /email-domain-mappings - List all
-	fastify.get(
+	f.get(
 		"/email-domain-mappings",
 		{
 			preHandler: requirePermission(EMAIL_DOMAIN_MAPPING_PERMISSIONS.READ),
@@ -184,7 +186,7 @@ export async function registerEmailDomainMappingsRoutes(
 	);
 
 	// GET /email-domain-mappings/:id - Get by ID
-	fastify.get(
+	f.get(
 		"/email-domain-mappings/:id",
 		{
 			preHandler: requirePermission(EMAIL_DOMAIN_MAPPING_PERMISSIONS.READ),
@@ -220,7 +222,7 @@ export async function registerEmailDomainMappingsRoutes(
 	);
 
 	// GET /email-domain-mappings/lookup/:domain - Lookup by domain
-	fastify.get(
+	f.get(
 		"/email-domain-mappings/lookup/:domain",
 		{
 			preHandler: requirePermission(EMAIL_DOMAIN_MAPPING_PERMISSIONS.READ),
@@ -257,7 +259,7 @@ export async function registerEmailDomainMappingsRoutes(
 	);
 
 	// POST /email-domain-mappings - Create
-	fastify.post(
+	f.post(
 		"/email-domain-mappings",
 		{
 			preHandler: requirePermission(EMAIL_DOMAIN_MAPPING_PERMISSIONS.CREATE),
@@ -320,7 +322,7 @@ export async function registerEmailDomainMappingsRoutes(
 	);
 
 	// PUT /email-domain-mappings/:id - Update
-	fastify.put(
+	f.put(
 		"/email-domain-mappings/:id",
 		{
 			preHandler: requirePermission(EMAIL_DOMAIN_MAPPING_PERMISSIONS.UPDATE),
@@ -398,7 +400,7 @@ export async function registerEmailDomainMappingsRoutes(
 	);
 
 	// DELETE /email-domain-mappings/:id - Delete
-	fastify.delete(
+	f.delete(
 		"/email-domain-mappings/:id",
 		{
 			preHandler: requirePermission(EMAIL_DOMAIN_MAPPING_PERMISSIONS.DELETE),
