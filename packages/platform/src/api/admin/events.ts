@@ -77,8 +77,7 @@ const PagedEventReadListResponseSchema = Type.Object({
 	items: Type.Array(EventReadResponseSchema),
 	page: Type.Integer(),
 	size: Type.Integer(),
-	totalItems: Type.Integer(),
-	totalPages: Type.Integer(),
+	hasMore: Type.Boolean(),
 });
 
 const FilterOptionSchema = Type.Object({
@@ -203,8 +202,7 @@ export async function registerEventsRoutes(
 				items: result.items.map(toResponse),
 				page: result.page,
 				size: result.size,
-				totalItems: result.totalItems,
-				totalPages: result.totalPages,
+				hasMore: result.hasMore,
 			});
 		},
 	);

@@ -37,7 +37,6 @@ import type {
 	WebhookAuthType,
 	Principal,
 } from "../../domain/index.js";
-import { updatePrincipal } from "../../domain/index.js";
 import type {
 	PrincipalRepository,
 	OAuthClientRepository,
@@ -470,45 +469,20 @@ export async function registerServiceAccountsRoutes(
 		async (request, reply) => {
 			const { id } = request.params as Static<typeof IdParam>;
 			const body = request.body as Static<typeof UpdateAuthTokenSchema>;
+			const ctx = request.executionContext;
 
-			const principal = await principalRepository.findById(id);
-			if (
-				!principal ||
-				principal.type !== "SERVICE" ||
-				!principal.serviceAccount
-			) {
-				return notFound(reply, `Service account not found: ${id}`);
-			}
-
-			// Encrypt the provided auth token
-			const encryptResult = encryptionService.encrypt(body.authToken);
-			if (encryptResult.isErr()) {
-				return reply.status(400).send({
-					code: "ENCRYPTION_FAILED",
-					message: "Failed to encrypt auth token",
-				});
-			}
-
-			// Update principal with new auth token ref
-			const updatedPrincipal = updatePrincipal(principal, {
-				serviceAccount: {
-					...principal.serviceAccount,
-					whAuthTokenRef: encryptResult.value,
-					whCredentialsRegeneratedAt: new Date(),
-				},
-			});
-
-			await principalRepository.persist(updatedPrincipal);
+			const command: RegenerateAuthTokenCommand = {
+				serviceAccountId: id,
+				customToken: body.authToken,
+			};
+			const result = await regenerateAuthTokenUseCase.execute(command, ctx);
+			if (Result.isFailure(result)) return sendResult(reply, result);
 
 			const refreshed = await principalRepository.findById(id);
 			if (refreshed?.serviceAccount) {
 				return jsonSuccess(reply, toServiceAccountResponse(refreshed));
 			}
-
-			return jsonSuccess(
-				reply,
-				toServiceAccountResponse(updatedPrincipal as Principal),
-			);
+			return notFound(reply, `Service account not found: ${id}`);
 		},
 	);
 

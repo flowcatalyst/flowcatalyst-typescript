@@ -30,6 +30,8 @@ import {
 	createPlatformConfigAccessRepository,
 	createLoginAttemptRepository,
 	createPasswordResetTokenRepository,
+	createWebauthnCredentialRepository,
+	createWebauthnCeremonyRepository,
 } from "../infrastructure/persistence/index.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,6 +65,8 @@ export function createRepositories(db: any, schemaDb: any) {
 		platformConfigAccessRepository: createPlatformConfigAccessRepository(db),
 		loginAttemptRepository: createLoginAttemptRepository(db),
 		passwordResetTokenRepository: createPasswordResetTokenRepository(db),
+		webauthnCredentialRepository: createWebauthnCredentialRepository(db),
+		webauthnCeremonyRepository: createWebauthnCeremonyRepository(db),
 	};
 }
 

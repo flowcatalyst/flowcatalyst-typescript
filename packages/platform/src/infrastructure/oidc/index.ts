@@ -87,3 +87,24 @@ export {
 	syncIdpRoles,
 	extractIdpRoles,
 } from "./oidc-sync-service.js";
+
+// Login rate limiting (layered model: per-(email, ip) backoff + per-email lockout)
+export {
+	LoginRateLimitService,
+	defaultLoginRateLimitConfig,
+	type LoginRateLimitConfig,
+	type LoginRateLimitDecision,
+	type LoginRateLimitReason,
+} from "./login-rate-limit-service.js";
+
+// Per-IP rate limiting for /auth/* and /oauth/token endpoints
+export {
+	AuthRateLimiters,
+	defaultAuthRateLimitConfig,
+	registerAuthIpRateLimit,
+	registerTokenIpRateLimit,
+	type AuthRateLimitConfig,
+} from "./auth-rate-limit-plugin.js";
+
+// Safe client-IP extractor (X-Forwarded-For aware, spoof-resistant)
+export { getClientIp, type ClientIpOptions } from "./client-ip.js";

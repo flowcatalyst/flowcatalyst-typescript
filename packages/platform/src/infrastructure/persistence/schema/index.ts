@@ -261,6 +261,14 @@ export {
 	type NewPasswordResetTokenRecord,
 } from "./password-reset-tokens.js";
 
+// WebAuthn credentials
+export {
+	webauthnCredentials,
+	type WebauthnCredentialRecord,
+	type NewWebauthnCredentialRecord,
+	type WebauthnCredentialData,
+} from "./webauthn-credentials.js";
+
 // Projection feed tables (CQRS read model projection)
 export {
 	dispatchJobProjectionFeed,

@@ -107,6 +107,13 @@ import {
 	CorsOriginDeletedDataSchema,
 } from "./cors/schemas.js";
 
+// ─── Platform Config Access (Admin) ─────────────────────────────────────────
+import {
+	PlatformConfigAccessGrantedDataSchema,
+	PlatformConfigAccessUpdatedDataSchema,
+	PlatformConfigAccessRevokedDataSchema,
+} from "./config/schemas.js";
+
 // ─── Event Type (Admin) ─────────────────────────────────────────────────────
 import {
 	EventTypeCreatedDataSchema,
@@ -229,6 +236,11 @@ export const PLATFORM_EVENT_SCHEMAS: ReadonlyMap<string, AnySchema> = new Map<st
 	// ─── Admin > CORS Origin ─────────────────────────────────────────────
 	["platform:admin:cors-origin:added", CorsOriginAddedDataSchema],
 	["platform:admin:cors-origin:deleted", CorsOriginDeletedDataSchema],
+
+	// ─── Admin > Platform Config Access ──────────────────────────────────
+	["platform:admin:config-access:granted", PlatformConfigAccessGrantedDataSchema],
+	["platform:admin:config-access:updated", PlatformConfigAccessUpdatedDataSchema],
+	["platform:admin:config-access:revoked", PlatformConfigAccessRevokedDataSchema],
 
 	// ─── Admin > Event Type ──────────────────────────────────────────────
 	["platform:admin:event-type:created", EventTypeCreatedDataSchema],

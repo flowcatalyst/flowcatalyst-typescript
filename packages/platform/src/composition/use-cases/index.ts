@@ -16,6 +16,7 @@ import { createMessagingUseCases } from "./messaging.js";
 import { createIdentityProviderUseCases } from "./identity-provider.js";
 import { createEmailDomainUseCases } from "./email-domain.js";
 import { createCorsUseCases } from "./cors.js";
+import { createConfigAccessUseCases } from "./config-access.js";
 
 export interface CreateUseCasesDeps {
 	repos: Repositories;
@@ -36,6 +37,7 @@ export function createUseCases(deps: CreateUseCasesDeps) {
 		...createIdentityProviderUseCases(deps),
 		...createEmailDomainUseCases(deps),
 		...createCorsUseCases(deps),
+		...createConfigAccessUseCases(deps),
 	};
 }
 

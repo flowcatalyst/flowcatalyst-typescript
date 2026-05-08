@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useListState } from "@/composables/useListState";
 import {
 	getApiAdminDispatchJobs,
@@ -62,7 +62,15 @@ const selectedStatuses = filters.statuses;
 
 const dispatchJobs = ref<DispatchJob[]>([]);
 const loading = ref(true);
-const totalRecords = ref(0);
+const hasMore = ref(false);
+// dispatch_jobs is unbounded; the API returns hasMore instead of an exact
+// total. We feed PrimeVue a synthetic lower-bound so Next works while
+// hasMore=true. See EventListPage.vue for the full rationale.
+const totalRecords = computed(() =>
+	hasMore.value
+		? (page.value + 1) * pageSize.value + 1
+		: page.value * pageSize.value + dispatchJobs.value.length,
+);
 
 // Filter options
 const clientOptions = ref<FilterOption[]>([]);
@@ -161,11 +169,11 @@ async function loadDispatchJobs() {
 		});
 		const data = response.data as {
 			items?: DispatchJob[];
-			totalItems?: number;
+			hasMore?: boolean;
 		};
 		if (data) {
 			dispatchJobs.value = (data.items || []) as DispatchJob[];
-			totalRecords.value = data.totalItems || 0;
+			hasMore.value = data.hasMore ?? false;
 		}
 	} catch (error) {
 		console.error("Failed to load dispatch jobs:", error);

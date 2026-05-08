@@ -35,9 +35,18 @@ import {
 	registerAuthRoutes,
 	registerOidcFederationRoutes,
 	registerClientSelectionRoutes,
+	LoginRateLimitService,
+	AuthRateLimiters,
+	registerAuthIpRateLimit,
+	registerTokenIpRateLimit,
 	type OidcProvider,
 	type JwtKeyService,
 } from "../infrastructure/oidc/index.js";
+import {
+	WebauthnService,
+	registerWebauthnRoutes,
+	generateEnumerationDefenseKey,
+} from "../infrastructure/webauthn/index.js";
 import { registerInteractionRoutes } from "../infrastructure/oidc/interaction-routes.js";
 import { isOriginAllowed } from "../domain/index.js";
 import { isDevelopment } from "../env.js";
@@ -227,6 +236,46 @@ export async function registerPlatformPlugins(
 	// This handler verifies the JWT directly with our JWKS and returns the claims.
 	registerCustomUserInfoRoute(fastify, jwtKeyService, "/oidc");
 
+	// Login + token rate limiting (layered model — see login-rate-limit-service.ts).
+	// Constructed once and shared across the auth route registrations and the
+	// onRequest hook on the token endpoints.
+	const loginRateLimitService = new LoginRateLimitService(
+		repos.loginAttemptRepository,
+		{
+			enabled: !env.LOGIN_RATE_LIMIT_DISABLED,
+			perEmailIpFreeAttempts: env.LOGIN_BACKOFF_FREE_ATTEMPTS,
+			perEmailIpBaseDelayMs: env.LOGIN_BACKOFF_BASE_DELAY_MS,
+			perEmailIpFactor: env.LOGIN_BACKOFF_FACTOR,
+			perEmailIpMaxDelayMs: env.LOGIN_BACKOFF_MAX_DELAY_MS,
+			perEmailMaxFailuresInWindow: env.LOGIN_LOCKOUT_MAX_FAILURES,
+			perEmailWindowMinutes: env.LOGIN_LOCKOUT_WINDOW_MINUTES,
+			perEmailLockoutMinutes: env.LOGIN_LOCKOUT_DURATION_MINUTES,
+		},
+	);
+	const authRateLimiters = new AuthRateLimiters({
+		enabled: !env.LOGIN_RATE_LIMIT_DISABLED,
+		authIpRequestsPerMinute: env.AUTH_IP_REQUESTS_PER_MINUTE,
+		tokenIpRequestsPerMinute: env.TOKEN_IP_REQUESTS_PER_MINUTE,
+		trustedProxyHops: env.TRUSTED_PROXY_HOPS,
+	});
+
+	// Per-IP rate limit on the entire /auth/* subtree (login, oidc-login,
+	// password-reset, check-domain, client-selection, …). Path-prefix hook
+	// catches future routes too without needing per-route wiring.
+	registerAuthIpRateLimit(fastify, authRateLimiters, "/auth/");
+
+	// Per-IP rate limit on the OAuth/OIDC token endpoints. Registered before
+	// the OIDC provider mount so the hook fires for forwarded requests too.
+	registerTokenIpRateLimit(fastify, authRateLimiters, [
+		"/oidc/token",
+		"/oidc/token/introspection",
+		"/oidc/token/revocation",
+		"/oauth/token",
+		"/oauth/introspect",
+		"/oauth/revoke",
+		"/token", // root-level forwarder
+	]);
+
 	// Mount OIDC provider at /oidc
 	await mountOidcProvider(fastify, oidcProvider, "/oidc");
 
@@ -279,6 +328,9 @@ export async function registerPlatformPlugins(
 		clientRepository: repos.clientRepository,
 		passwordService,
 		loginAttemptRepository: repos.loginAttemptRepository,
+		loginRateLimitService,
+		authRateLimiters,
+		trustedProxyHops: env.TRUSTED_PROXY_HOPS,
 		passwordResetTokenRepository: repos.passwordResetTokenRepository,
 		sendPasswordResetEmail,
 		baseUrl: externalBaseUrl,
@@ -300,6 +352,57 @@ export async function registerPlatformPlugins(
 			secure: !isDevelopment(),
 			sameSite: "lax",
 			maxAge: env.OIDC_SESSION_TTL ?? 86400,
+		},
+	});
+
+	// Register WebAuthn / passkey routes (/auth/webauthn/*).
+	// Only available for non-federated users; the gate is enforced inside
+	// the handlers using the email_domain_mapping repository.
+	const webauthnRpId =
+		env.WEBAUTHN_RP_ID ?? new URL(externalBaseUrl).hostname;
+	const webauthnOrigins =
+		env.WEBAUTHN_ORIGINS ?? [externalBaseUrl];
+	const enumerationDefenseKey = env.WEBAUTHN_ENUMERATION_KEY
+		? Buffer.from(env.WEBAUTHN_ENUMERATION_KEY, "base64")
+		: generateEnumerationDefenseKey();
+	const webauthnService = new WebauthnService({
+		rpId: webauthnRpId,
+		origins: webauthnOrigins,
+		rpName: env.WEBAUTHN_RP_NAME,
+		enumerationDefenseKey,
+	});
+	const sessionCookieMaxAge = env.OIDC_SESSION_TTL ?? 86400;
+	await fastify.register(registerWebauthnRoutes, {
+		principalRepository: repos.principalRepository,
+		emailDomainMappingRepository: repos.emailDomainMappingRepository,
+		loginAttemptRepository: repos.loginAttemptRepository,
+		webauthnCredentialRepository: repos.webauthnCredentialRepository,
+		webauthnCeremonyRepository: repos.webauthnCeremonyRepository,
+		webauthnService,
+		loginRateLimitService,
+		issueSessionToken: (principalId, email, roles, clients) =>
+			jwtKeyService.issueSessionToken(principalId, email, roles, clients),
+		cookieConfig: {
+			name: "fc_session",
+			secure: !isDevelopment(),
+			sameSite: "lax",
+			maxAge: sessionCookieMaxAge,
+		},
+		trustedProxyHops: env.TRUSTED_PROXY_HOPS,
+		logger: fastify.log,
+		resolvePrincipalFromRequest: async (request) => {
+			const cookies = request.cookies as Record<string, string | undefined>;
+			const token = cookies?.["fc_session"];
+			if (!token) return null;
+			const principalId = await jwtKeyService.validateAndGetPrincipalId(token);
+			if (!principalId) return null;
+			const p = await repos.principalRepository.findById(principalId);
+			if (!p || !p.active) return null;
+			return {
+				id: p.id,
+				name: p.name,
+				email: p.userIdentity?.email ?? null,
+			};
 		},
 	});
 

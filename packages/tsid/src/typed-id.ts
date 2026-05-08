@@ -71,6 +71,7 @@ export const EntityType = {
 
 	// Auth
 	PASSWORD_RESET_TOKEN: "prt",
+	WEBAUTHN_CREDENTIAL: "pkc",
 } as const;
 
 /**

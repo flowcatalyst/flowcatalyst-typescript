@@ -19,6 +19,9 @@ import type { IdentityProviderRepository } from "../persistence/repositories/ide
 import type { ClientRepository } from "../persistence/repositories/client-repository.js";
 import type { LoginAttemptRepository } from "../persistence/repositories/login-attempt-repository.js";
 import type { PasswordResetTokenRepository } from "../persistence/repositories/password-reset-token-repository.js";
+import type { LoginRateLimitService } from "./login-rate-limit-service.js";
+import type { AuthRateLimiters } from "./auth-rate-limit-plugin.js";
+import { getClientIp } from "./client-ip.js";
 import type { PasswordService } from "@flowcatalyst/platform-crypto";
 import { ExecutionContext, type UnitOfWork } from "@flowcatalyst/domain";
 import { getMappingAccessibleClientIds } from "../../domain/email-domain-mapping/email-domain-mapping.js";
@@ -54,6 +57,15 @@ export interface AuthRoutesDeps {
 	clientRepository: ClientRepository;
 	passwordService: PasswordService;
 	loginAttemptRepository?: LoginAttemptRepository;
+	/** Optional. When set, gates POST /auth/login with backoff + lockout. */
+	loginRateLimitService?: LoginRateLimitService;
+	/** Optional. When set, exposes its trustedProxyHops for safe client-IP extraction. */
+	authRateLimiters?: AuthRateLimiters;
+	/**
+	 * Trusted appending-proxy hops for client-IP extraction. MUST match
+	 * deployment topology — see client-ip.ts. Default 0 = use socket addr.
+	 */
+	trustedProxyHops?: number;
 	passwordResetTokenRepository: PasswordResetTokenRepository;
 	/** Called to deliver a reset link to the user. null = SMTP not configured (silent no-op). */
 	sendPasswordResetEmail: ((to: string, resetUrl: string) => Promise<void>) | null;
@@ -113,10 +125,13 @@ export async function registerAuthRoutes(
 		principalRepository,
 		passwordService,
 		loginAttemptRepository,
+		loginRateLimitService,
 		issueSessionToken,
 		validateSessionToken,
 		cookieConfig,
 	} = deps;
+
+	const trustedProxyHops = deps.trustedProxyHops ?? 0;
 
 	/**
 	 * Record a login attempt asynchronously (fire-and-forget — never blocks the response).
@@ -150,12 +165,14 @@ export async function registerAuthRoutes(
 	 * POST /auth/login
 	 * Login with email and password, returns session cookie.
 	 */
+	// Note: per-IP burst limit is applied at the /auth/* prefix level via
+	// registerAuthIpRateLimit() — no per-route preHandler needed here.
 	fastify.post<{ Body: LoginRequest }>(
 		"/auth/login",
 		async (request, reply) => {
 			const { email, password } = request.body ?? {};
 
-			const ipAddress = request.ip ?? null;
+			const ipAddress = getClientIp(request, { trustedHops: trustedProxyHops });
 			const userAgent =
 				(request.headers["user-agent"] as string | undefined) ?? null;
 
@@ -165,10 +182,43 @@ export async function registerAuthRoutes(
 					.send({ error: "Email and password are required" });
 			}
 
+			const emailLower = email.toLowerCase();
+
+			// Layers A + C: per-(email, ip) backoff and per-email lockout.
+			// Pre-flight before any password verification — keeps the response
+			// uniform whether the email exists or not, and keeps an attacker
+			// from learning which emails are real by timing.
+			if (loginRateLimitService) {
+				// We cannot know `isFederated` until we look up the principal.
+				// Pass `false` for the pre-flight; the layer C lockout applies
+				// uniformly here. Federated accounts simply won't accumulate
+				// failures via this path because their flow redirects elsewhere.
+				const decision = await loginRateLimitService.check(
+					emailLower,
+					ipAddress,
+					/*isFederated*/ false,
+				);
+				if (!decision.allowed) {
+					reply.header("Retry-After", String(decision.retryAfterSeconds));
+					recordLoginAttempt({
+						outcome: "FAILURE",
+						failureReason:
+							decision.reason === "LOCKED"
+								? "ACCOUNT_LOCKED"
+								: "RATE_LIMITED",
+						identifier: emailLower,
+						ipAddress,
+						userAgent,
+					});
+					// Generic message — never reveal lockout/backoff state in body.
+					return reply
+						.status(429)
+						.send({ error: "Too many attempts. Try again later." });
+				}
+			}
+
 			// Find user by email
-			const principal = await principalRepository.findByEmail(
-				email.toLowerCase(),
-			);
+			const principal = await principalRepository.findByEmail(emailLower);
 
 			if (!principal) {
 				fastify.log.info({ email }, "Login failed: user not found");

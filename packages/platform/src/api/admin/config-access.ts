@@ -16,11 +16,22 @@ import {
 	ErrorResponseSchema,
 } from "@flowcatalyst/http";
 
+import { Result } from "@flowcatalyst/application";
+import type { UseCase } from "@flowcatalyst/application";
+
 import type { PlatformConfigAccessRepository } from "../../infrastructure/persistence/index.js";
-import {
-	createPlatformConfigAccess,
-	type PlatformConfigAccess,
+import { type PlatformConfigAccess } from "../../domain/index.js";
+import type {
+	GrantPlatformConfigAccessCommand,
+	UpdatePlatformConfigAccessCommand,
+	RevokePlatformConfigAccessCommand,
+} from "../../application/index.js";
+import type {
+	PlatformConfigAccessGranted,
+	PlatformConfigAccessUpdated,
+	PlatformConfigAccessRevoked,
 } from "../../domain/index.js";
+import { sendResult } from "@flowcatalyst/http";
 
 // ─── Request Schemas ────────────────────────────────────────────────────────
 
@@ -63,6 +74,18 @@ type AccessGrantResponse = Static<typeof AccessGrantResponseSchema>;
  */
 export interface ConfigAccessRoutesDeps {
 	readonly platformConfigAccessRepository: PlatformConfigAccessRepository;
+	readonly grantPlatformConfigAccessUseCase: UseCase<
+		GrantPlatformConfigAccessCommand,
+		PlatformConfigAccessGranted
+	>;
+	readonly updatePlatformConfigAccessUseCase: UseCase<
+		UpdatePlatformConfigAccessCommand,
+		PlatformConfigAccessUpdated
+	>;
+	readonly revokePlatformConfigAccessUseCase: UseCase<
+		RevokePlatformConfigAccessCommand,
+		PlatformConfigAccessRevoked
+	>;
 }
 
 /**
@@ -73,7 +96,12 @@ export async function registerConfigAccessRoutes(
 	deps: ConfigAccessRoutesDeps,
 ): Promise<void> {
 	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
-	const { platformConfigAccessRepository } = deps;
+	const {
+		platformConfigAccessRepository,
+		grantPlatformConfigAccessUseCase,
+		updatePlatformConfigAccessUseCase,
+		revokePlatformConfigAccessUseCase,
+	} = deps;
 
 	// GET /api/config-access/:appCode - List access grants
 	f.get(
@@ -113,30 +141,33 @@ export async function registerConfigAccessRoutes(
 		async (request, reply) => {
 			const { appCode } = request.params as Static<typeof AppCodeParam>;
 			const body = request.body as Static<typeof GrantAccessSchema>;
+			const ctx = request.executionContext;
 
-			// Check if grant already exists
-			const existing =
+			const command: GrantPlatformConfigAccessCommand = {
+				applicationCode: appCode,
+				roleCode: body.roleCode,
+				...(body.canRead !== undefined && { canRead: body.canRead }),
+				...(body.canWrite !== undefined && { canWrite: body.canWrite }),
+			};
+			const result = await grantPlatformConfigAccessUseCase.execute(
+				command,
+				ctx,
+			);
+			if (Result.isFailure(result)) return sendResult(reply, result);
+
+			const grant =
 				await platformConfigAccessRepository.findByApplicationAndRole(
 					appCode,
 					body.roleCode,
 				);
-			if (existing) {
+			if (!grant) {
 				return jsonError(
 					reply,
-					409,
-					"GRANT_EXISTS",
-					`Access grant already exists for role: ${body.roleCode}`,
+					500,
+					"GRANT_DISAPPEARED",
+					"Grant not found after creation",
 				);
 			}
-
-			const entity = createPlatformConfigAccess({
-				applicationCode: appCode,
-				roleCode: body.roleCode,
-				canRead: body.canRead ?? true,
-				canWrite: body.canWrite ?? false,
-			});
-
-			const grant = await platformConfigAccessRepository.insert(entity);
 			return jsonCreated(reply, toAccessGrantResponse(grant));
 		},
 	);
@@ -157,23 +188,27 @@ export async function registerConfigAccessRoutes(
 		async (request, reply) => {
 			const { appCode, roleCode } = request.params as Static<typeof RoleParam>;
 			const body = request.body as Static<typeof UpdateAccessSchema>;
+			const ctx = request.executionContext;
 
-			const existing =
+			const command: UpdatePlatformConfigAccessCommand = {
+				applicationCode: appCode,
+				roleCode,
+				...(body.canRead !== undefined && { canRead: body.canRead }),
+				...(body.canWrite !== undefined && { canWrite: body.canWrite }),
+			};
+			const result = await updatePlatformConfigAccessUseCase.execute(
+				command,
+				ctx,
+			);
+			if (Result.isFailure(result)) return sendResult(reply, result);
+
+			const grant =
 				await platformConfigAccessRepository.findByApplicationAndRole(
 					appCode,
 					roleCode,
 				);
-			if (!existing) {
-				return notFound(reply, `Access grant not found for role: ${roleCode}`);
-			}
-
-			const updated = await platformConfigAccessRepository.update({
-				...existing,
-				canRead: body.canRead ?? existing.canRead,
-				canWrite: body.canWrite ?? existing.canWrite,
-			});
-
-			return jsonSuccess(reply, toAccessGrantResponse(updated));
+			if (!grant) return notFound(reply, `Access grant not found for role: ${roleCode}`);
+			return jsonSuccess(reply, toAccessGrantResponse(grant));
 		},
 	);
 
@@ -191,16 +226,17 @@ export async function registerConfigAccessRoutes(
 		},
 		async (request, reply) => {
 			const { appCode, roleCode } = request.params as Static<typeof RoleParam>;
+			const ctx = request.executionContext;
 
-			const deleted =
-				await platformConfigAccessRepository.deleteByApplicationAndRole(
-					appCode,
-					roleCode,
-				);
-			if (!deleted) {
-				return notFound(reply, `Access grant not found for role: ${roleCode}`);
-			}
-
+			const command: RevokePlatformConfigAccessCommand = {
+				applicationCode: appCode,
+				roleCode,
+			};
+			const result = await revokePlatformConfigAccessUseCase.execute(
+				command,
+				ctx,
+			);
+			if (Result.isFailure(result)) return sendResult(reply, result);
 			return noContent(reply);
 		},
 	);

@@ -31,6 +31,7 @@ import type {
 	GrantClientAccessCommand,
 	RevokeClientAccessCommand,
 	AssignApplicationAccessCommand,
+	ResetUserPasswordCommand,
 } from "../../application/index.js";
 import type {
 	UserCreated,
@@ -41,6 +42,7 @@ import type {
 	RolesAssigned,
 	ApplicationAccessAssigned,
 	ClientAccessRevoked,
+	PasswordReset,
 	Principal,
 } from "../../domain/index.js";
 import { ClientAccessGranted } from "../../domain/index.js";
@@ -292,6 +294,10 @@ export interface PrincipalsRoutesDeps {
 		RevokeClientAccessCommand,
 		ClientAccessRevoked
 	>;
+	readonly resetUserPasswordUseCase: UseCase<
+		ResetUserPasswordCommand,
+		PasswordReset
+	>;
 }
 
 /**
@@ -312,7 +318,6 @@ export async function registerPrincipalsRoutes(
 		applicationClientConfigRepository,
 		emailDomainMappingRepository,
 		identityProviderRepository,
-		passwordService,
 		createUserUseCase,
 		updateUserUseCase,
 		activateUserUseCase,
@@ -322,6 +327,7 @@ export async function registerPrincipalsRoutes(
 		assignApplicationAccessUseCase,
 		grantClientAccessUseCase,
 		revokeClientAccessUseCase,
+		resetUserPasswordUseCase,
 	} = deps;
 
 	// GET /api/principals - List principals with filters
@@ -649,47 +655,15 @@ export async function registerPrincipalsRoutes(
 		async (request, reply) => {
 			const { id } = request.params as Static<typeof IdParam>;
 			const body = request.body as Static<typeof ResetPasswordSchema>;
+			const ctx = request.executionContext;
 
-			const principal = await principalRepository.findById(id);
-			if (!principal || principal.type !== "USER") {
-				return notFound(reply, `User not found: ${id}`);
-			}
-
-			if (
-				!principal.userIdentity ||
-				principal.userIdentity.idpType !== "INTERNAL"
-			) {
-				return badRequest(
-					reply,
-					"Password reset is only supported for internal authentication users",
-				);
-			}
-
-			const enforceComplexity = body.enforcePasswordComplexity ?? true;
-			const hashResult = await passwordService.validateAndHash(
-				body.newPassword,
-				{ enforceComplexity },
-			);
-			let hash: string;
-			if (hashResult.isOk()) {
-				hash = hashResult.value;
-			} else {
-				return badRequest(
-					reply,
-					"Password does not meet complexity requirements",
-				);
-			}
-
-			// Update the principal's password hash directly
-			const updated: Principal = {
-				...principal,
-				userIdentity: {
-					...principal.userIdentity,
-					passwordHash: hash,
-				},
+			const command: ResetUserPasswordCommand = {
+				userId: id,
+				newPassword: body.newPassword,
+				enforcePasswordComplexity: body.enforcePasswordComplexity ?? true,
 			};
-			await principalRepository.update(updated);
-
+			const result = await resetUserPasswordUseCase.execute(command, ctx);
+			if (Result.isFailure(result)) return sendResult(reply, result);
 			return jsonSuccess(reply, { message: "Password reset successfully" });
 		},
 	);

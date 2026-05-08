@@ -74,3 +74,10 @@ export {
 	createSyncPrincipalsUseCase,
 	type SyncPrincipalsUseCaseDeps,
 } from "./sync-principals/index.js";
+
+// Reset User Password
+export {
+	type ResetUserPasswordCommand,
+	createResetUserPasswordUseCase,
+	type ResetUserPasswordUseCaseDeps,
+} from "./reset-user-password/index.js";

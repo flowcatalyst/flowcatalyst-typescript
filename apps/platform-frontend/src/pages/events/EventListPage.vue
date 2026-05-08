@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {
 	getApiAdminEvents,
 	getApiAdminEventsById,
@@ -56,7 +56,18 @@ const currentPage = page;
 // Table state
 const events = ref<EventRead[]>([]);
 const loading = ref(true);
-const totalRecords = ref(0);
+const hasMore = ref(false);
+// PrimeVue's lazy DataTable needs `totalRecords` to render its paginator,
+// but events_read is unbounded so the API does NOT return an exact total
+// (count(*) on a partitioned, append-only table gets expensive). We feed
+// the paginator a synthetic lower-bound: enough to enable Next when more
+// rows exist, exact when this is the last page. The "Last" button is
+// effectively disabled because it can't compute a correct target page.
+const totalRecords = computed(() =>
+	hasMore.value
+		? (page.value + 1) * pageSize.value + 1
+		: page.value * pageSize.value + events.value.length,
+);
 
 // Filter options (from server)
 const clientOptions = ref<FilterOption[]>([]);
@@ -183,10 +194,10 @@ async function loadEvents() {
 				source: searchQuery.value || undefined,
 			},
 		});
-		const data = response.data as { items?: EventRead[]; totalItems?: number };
+		const data = response.data as { items?: EventRead[]; hasMore?: boolean };
 		if (data) {
 			events.value = (data.items || []) as EventRead[];
-			totalRecords.value = data.totalItems || 0;
+			hasMore.value = data.hasMore ?? false;
 		}
 	} catch (error) {
 		console.error("Failed to load events:", error);

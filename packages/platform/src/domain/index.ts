@@ -60,3 +60,6 @@ export * from "./audit/index.js";
 
 // Auth event domain
 export * from "./auth/index.js";
+
+// WebAuthn domain
+export * from "./webauthn/index.js";

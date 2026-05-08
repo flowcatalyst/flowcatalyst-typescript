@@ -156,3 +156,16 @@ export {
 	type PasswordResetTokenRepository,
 	createPasswordResetTokenRepository,
 } from "./password-reset-token-repository.js";
+
+export {
+	type WebauthnCredentialRepository,
+	type NewWebauthnCredentialInput,
+	createWebauthnCredentialRepository,
+} from "./webauthn-credential-repository.js";
+
+export {
+	type WebauthnCeremonyRepository,
+	type ConsumedRegistrationCeremony,
+	type ConsumedAuthenticationCeremony,
+	createWebauthnCeremonyRepository,
+} from "./webauthn-ceremony-repository.js";

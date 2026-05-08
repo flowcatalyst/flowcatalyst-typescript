@@ -8,7 +8,10 @@
 /**
  * The kind of authentication attempt.
  */
-export type LoginAttemptType = "USER_LOGIN" | "SERVICE_ACCOUNT_TOKEN";
+export type LoginAttemptType =
+	| "USER_LOGIN"
+	| "SERVICE_ACCOUNT_TOKEN"
+	| "WEBAUTHN_LOGIN";
 
 /**
  * The outcome of the authentication attempt.
@@ -24,7 +27,9 @@ export type LoginFailureReason =
 	| "USER_INACTIVE"
 	| "NO_PASSWORD_SET"
 	| "INVALID_CLIENT_SECRET"
-	| "CLIENT_NOT_FOUND";
+	| "CLIENT_NOT_FOUND"
+	| "RATE_LIMITED"
+	| "ACCOUNT_LOCKED";
 
 /**
  * A login attempt record.

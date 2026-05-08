@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {
 	fetchAuditLogs,
 	fetchAuditLogById,
@@ -38,7 +38,14 @@ const selectedApplicationIds = filters.selectedApplicationIds;
 const selectedClientIds = filters.selectedClientIds;
 
 const auditLogs = ref<AuditLog[]>([]);
-const totalRecords = ref(0);
+const hasMore = ref(false);
+// aud_logs is unbounded; the API returns hasMore instead of an exact total.
+// Synthetic lower-bound for PrimeVue's paginator. See EventListPage.vue.
+const totalRecords = computed(() =>
+	hasMore.value
+		? (page.value + 1) * pageSize.value + 1
+		: page.value * pageSize.value + auditLogs.value.length,
+);
 const loading = ref(false);
 const initialLoading = ref(true);
 
@@ -103,7 +110,7 @@ async function loadAuditLogs() {
 			sortOrder: sortOrder.value,
 		});
 		auditLogs.value = response.auditLogs;
-		totalRecords.value = response.total;
+		hasMore.value = response.hasMore ?? false;
 	} catch (error) {
 		console.error("Failed to load audit logs:", error);
 	} finally {
@@ -280,7 +287,7 @@ onMounted(async () => {
         :rowsPerPageOptions="[50, 100, 250, 500]"
         :lazy="true"
         :showCurrentPageReport="true"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        currentPageReportTemplate="Showing {first} to {last}"
         size="small"
         @page="onPage"
         @sort="onSort"

@@ -5,9 +5,11 @@ import { useRoute } from "vue-router";
 import { useForm, useField } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
+import { browserSupportsWebAuthn } from "@simplewebauthn/browser";
 import { useAuthStore } from "@/stores/auth";
 import { useLoginThemeStore } from "@/stores/loginTheme";
 import { checkEmailDomain, login } from "@/api/auth";
+import { authenticateWithPasskey } from "@/api/webauthn";
 import { getErrorMessage } from "@/utils/errors";
 
 type LoginStep = "email" | "password" | "redirecting";
@@ -138,6 +140,33 @@ async function onSubmitPassword() {
 		// Error is handled by AuthStore
 	} finally {
 		isSubmitting.value = false;
+	}
+}
+
+const passkeySupported = computed(() => browserSupportsWebAuthn());
+const passkeyAttempting = ref(false);
+
+async function onSignInWithPasskey() {
+	if (!currentEmail.value || passkeyAttempting.value) return;
+	passkeyAttempting.value = true;
+	try {
+		await authenticateWithPasskey(currentEmail.value);
+		// Cookie set by the server. Hard-navigate so the route guard
+		// bootstraps the store from /auth/me on next load — same path
+		// the OIDC federation callback uses; avoids needing a separate
+		// hydrate API on the auth store.
+		const returnTo = (route.query["returnTo"] as string | undefined) ?? "/";
+		window.location.assign(returnTo);
+	} catch (err) {
+		toast.error(
+			"Passkey sign-in failed",
+			getErrorMessage(
+				err,
+				"We couldn't verify that passkey. Try your password instead.",
+			),
+		);
+	} finally {
+		passkeyAttempting.value = false;
 	}
 }
 </script>
@@ -273,6 +302,25 @@ async function onSubmitPassword() {
             :disabled="!isPasswordValid"
             class="w-full"
           />
+
+          <!-- Passkey alternative: shown when the browser supports WebAuthn.
+               If the user has no passkey on this device the assertion will
+               fail and we fall back to password (with a toast). The server
+               applies the same enumeration-defense response shape regardless
+               of whether the email exists or has credentials. -->
+          <div v-if="passkeySupported" class="passkey-section">
+            <div class="passkey-divider"><span>or</span></div>
+            <Button
+              type="button"
+              label="Sign in with passkey"
+              icon="pi pi-key"
+              outlined
+              :loading="passkeyAttempting"
+              :disabled="isSubmitting"
+              class="w-full"
+              @click="onSignInWithPasskey"
+            />
+          </div>
         </form>
       </div>
 
@@ -511,6 +559,28 @@ async function onSubmitPassword() {
   color: #627d98;
   font-size: 14px;
   margin: 24px 0 0;
+}
+
+.passkey-section {
+  margin-top: 16px;
+}
+
+.passkey-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 12px;
+  color: #829ab1;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.passkey-divider::before,
+.passkey-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #d9e2ec;
 }
 
 /* Override PrimeVue Password component width */

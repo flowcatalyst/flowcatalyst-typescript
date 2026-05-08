@@ -18,7 +18,7 @@ export interface LoginAttempt {
 
 export interface LoginAttemptListResponse {
 	items: LoginAttempt[];
-	total: number;
+	hasMore: boolean;
 	page: number;
 	pageSize: number;
 }

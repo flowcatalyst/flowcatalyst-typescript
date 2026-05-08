@@ -27,6 +27,7 @@ import {
 	createAssignServiceAccountRolesUseCase,
 	createSyncRolesUseCase,
 	createSyncPrincipalsUseCase,
+	createResetUserPasswordUseCase,
 } from "../../application/index.js";
 
 export function createIamUseCases(deps: CreateUseCasesDeps) {
@@ -62,6 +63,12 @@ export function createIamUseCases(deps: CreateUseCasesDeps) {
 
 	const deleteUserUseCase = createDeleteUserUseCase({
 		principalRepository: repos.principalRepository,
+		unitOfWork,
+	});
+
+	const resetUserPasswordUseCase = createResetUserPasswordUseCase({
+		principalRepository: repos.principalRepository,
+		passwordService,
 		unitOfWork,
 	});
 
@@ -168,6 +175,7 @@ export function createIamUseCases(deps: CreateUseCasesDeps) {
 		activateUserUseCase,
 		deactivateUserUseCase,
 		deleteUserUseCase,
+		resetUserPasswordUseCase,
 		createRoleUseCase,
 		updateRoleUseCase,
 		deleteRoleUseCase,

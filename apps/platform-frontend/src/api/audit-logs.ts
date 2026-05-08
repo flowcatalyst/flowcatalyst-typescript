@@ -22,7 +22,7 @@ export interface AuditLogDetail extends AuditLog {
 
 export interface AuditLogListResponse {
 	auditLogs: AuditLog[];
-	total: number;
+	hasMore: boolean;
 	page: number;
 	pageSize: number;
 }

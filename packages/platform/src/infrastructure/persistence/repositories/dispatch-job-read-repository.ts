@@ -54,8 +54,7 @@ export interface PagedDispatchJobReadResult {
 	readonly items: DispatchJobReadRecord[];
 	readonly page: number;
 	readonly size: number;
-	readonly totalItems: number;
-	readonly totalPages: number;
+	readonly hasMore: boolean;
 }
 
 /**
@@ -118,7 +117,6 @@ export interface DispatchJobReadRepository {
 		dispatchJobId: string,
 		tx?: TransactionContext,
 	): Promise<DispatchJobAttemptRecord[]>;
-	count(tx?: TransactionContext): Promise<number>;
 }
 
 /**
@@ -228,33 +226,28 @@ export function createDispatchJobReadRepository(
 						? dispatchJobsRead.source
 						: dispatchJobsRead.createdAt;
 
+			// Fetch size + 1 rows. If we get the extra, there's another page.
+			// Avoids count(*) against the unbounded dispatch_jobs table.
 			const baseSelect = db(tx).select().from(dispatchJobsRead);
-			const baseCount = db(tx)
-				.select({ count: sql<number>`count(*)` })
-				.from(dispatchJobsRead);
+			const records = await (whereClause
+				? baseSelect
+						.where(whereClause)
+						.orderBy(sortFn(sortCol))
+						.limit(size + 1)
+						.offset(offset)
+				: baseSelect
+						.orderBy(sortFn(sortCol))
+						.limit(size + 1)
+						.offset(offset));
 
-			const [records, countResult] = await Promise.all([
-				whereClause
-					? baseSelect
-							.where(whereClause)
-							.orderBy(sortFn(sortCol))
-							.limit(size)
-							.offset(offset)
-					: baseSelect
-							.orderBy(sortFn(sortCol))
-							.limit(size)
-							.offset(offset),
-				whereClause ? baseCount.where(whereClause) : baseCount,
-			]);
-
-			const totalItems = Number(countResult[0]?.count ?? 0);
+			const hasMore = records.length > size;
+			const items = hasMore ? records.slice(0, size) : records;
 
 			return {
-				items: records,
+				items,
 				page,
 				size,
-				totalItems,
-				totalPages: Math.ceil(totalItems / size),
+				hasMore,
 			};
 		},
 
@@ -329,11 +322,5 @@ export function createDispatchJobReadRepository(
 				.orderBy(dispatchJobAttempts.attemptNumber);
 		},
 
-		async count(tx?: TransactionContext): Promise<number> {
-			const [result] = await db(tx)
-				.select({ count: sql<number>`count(*)` })
-				.from(dispatchJobsRead);
-			return Number(result?.count ?? 0);
-		},
 	};
 }

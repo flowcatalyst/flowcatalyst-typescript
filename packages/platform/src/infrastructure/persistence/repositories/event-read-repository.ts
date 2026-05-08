@@ -5,7 +5,7 @@
  * Supports pagination, filtering, and cascading filter options.
  */
 
-import { eq, asc, desc, sql, and, inArray, gte, lte } from "drizzle-orm";
+import { eq, asc, desc, and, inArray, gte, lte } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type { TransactionContext } from "@flowcatalyst/persistence";
 import { eventsRead, type EventReadRecord } from "@flowcatalyst/persistence";
@@ -42,13 +42,18 @@ export interface EventReadPagination {
 
 /**
  * Paged result.
+ *
+ * No `totalItems`/`totalPages` — `events_read` grows unbounded and
+ * `count(*)` against it gets expensive even with indexes. We use the
+ * "fetch size + 1" pattern: ask for one more row than requested, drop
+ * the surplus, and return `hasMore` so the UI can render a next-page
+ * affordance without knowing the absolute total.
  */
 export interface PagedEventReadResult {
 	readonly items: EventReadRecord[];
 	readonly page: number;
 	readonly size: number;
-	readonly totalItems: number;
-	readonly totalPages: number;
+	readonly hasMore: boolean;
 }
 
 /**
@@ -106,7 +111,6 @@ export interface EventReadRepository {
 		request: EventFilterOptionsRequest,
 		tx?: TransactionContext,
 	): Promise<EventFilterOptions>;
-	count(tx?: TransactionContext): Promise<number>;
 }
 
 /**
@@ -190,33 +194,28 @@ export function createEventReadRepository(
 			const sortFn = pagination.sortOrder === "asc" ? asc : desc;
 			const sortCol = eventsRead.time;
 
+			// Fetch size + 1 rows. If we get the extra, there's another page.
+			// Avoids count(*) against the unbounded events_read table.
 			const baseSelect = db(tx).select().from(eventsRead);
-			const baseCount = db(tx)
-				.select({ count: sql<number>`count(*)` })
-				.from(eventsRead);
+			const records = await (whereClause
+				? baseSelect
+						.where(whereClause)
+						.orderBy(sortFn(sortCol))
+						.limit(size + 1)
+						.offset(offset)
+				: baseSelect
+						.orderBy(sortFn(sortCol))
+						.limit(size + 1)
+						.offset(offset));
 
-			const [records, countResult] = await Promise.all([
-				whereClause
-					? baseSelect
-							.where(whereClause)
-							.orderBy(sortFn(sortCol))
-							.limit(size)
-							.offset(offset)
-					: baseSelect
-							.orderBy(sortFn(sortCol))
-							.limit(size)
-							.offset(offset),
-				whereClause ? baseCount.where(whereClause) : baseCount,
-			]);
-
-			const totalItems = Number(countResult[0]?.count ?? 0);
+			const hasMore = records.length > size;
+			const items = hasMore ? records.slice(0, size) : records;
 
 			return {
-				items: records,
+				items,
 				page,
 				size,
-				totalItems,
-				totalPages: Math.ceil(totalItems / size),
+				hasMore,
 			};
 		},
 
@@ -272,11 +271,5 @@ export function createEventReadRepository(
 			};
 		},
 
-		async count(tx?: TransactionContext): Promise<number> {
-			const [result] = await db(tx)
-				.select({ count: sql<number>`count(*)` })
-				.from(eventsRead);
-			return Number(result?.count ?? 0);
-		},
 	};
 }

@@ -82,8 +82,8 @@ export function createRegenerateAuthTokenUseCase(
 				);
 			}
 
-			// Generate new auth token
-			const newToken = generateAuthToken();
+			// Use the caller-supplied token if present; otherwise generate one.
+			const newToken = command.customToken ?? generateAuthToken();
 
 			// Encrypt for storage
 			const encryptResult = encryptionService.encrypt(newToken);

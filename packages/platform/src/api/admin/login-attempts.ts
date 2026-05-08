@@ -44,7 +44,7 @@ const LoginAttemptResponseSchema = Type.Object({
 
 const LoginAttemptListResponseSchema = Type.Object({
 	items: Type.Array(LoginAttemptResponseSchema),
-	total: Type.Integer(),
+	hasMore: Type.Boolean(),
 	page: Type.Integer(),
 	pageSize: Type.Integer(),
 });
@@ -126,7 +126,7 @@ export async function registerLoginAttemptsRoutes(
 					userAgent: a.userAgent,
 					attemptedAt: a.attemptedAt.toISOString(),
 				})),
-				total: result.total,
+				hasMore: result.hasMore,
 				page: result.page,
 				pageSize: result.pageSize,
 			});

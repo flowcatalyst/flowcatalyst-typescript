@@ -44,12 +44,28 @@ export interface LoginAttemptFilters {
 
 /**
  * Paginated login attempt result.
+ *
+ * No `total` — `iam_login_attempts` grows unbounded and `count(*)`
+ * gets expensive. Uses the "fetch pageSize + 1" pattern: ask for one
+ * more row, drop the surplus, and return `hasMore` so the UI can
+ * render a next-page affordance without knowing the absolute total.
  */
 export interface PaginatedLoginAttempts {
 	readonly items: LoginAttempt[];
-	readonly total: number;
+	readonly hasMore: boolean;
 	readonly page: number;
 	readonly pageSize: number;
+}
+
+/**
+ * Per-(email, ip) failure context for exponential-backoff rate limiting.
+ * - failureCount counts FAILUREs since the most recent SUCCESS (or all-time
+ *   FAILUREs if never successful).
+ * - lastFailureAt is the timestamp of the most recent FAILURE (null if none).
+ */
+export interface EmailIpFailureContext {
+	readonly failureCount: number;
+	readonly lastFailureAt: Date | null;
 }
 
 /**
@@ -65,6 +81,26 @@ export interface LoginAttemptRepository {
 		pagination: LoginAttemptPaginationOptions,
 		tx?: TransactionContext,
 	): Promise<PaginatedLoginAttempts>;
+	/**
+	 * Count FAILURE attempts for an identifier since the given timestamp.
+	 * Used by the per-email global lockout (layer C).
+	 */
+	countFailuresByIdentifierSince(
+		identifier: string,
+		since: Date,
+		tx?: TransactionContext,
+	): Promise<number>;
+	/**
+	 * Get the failure context for an (identifier, ip) pair: number of
+	 * consecutive FAILUREs since the most recent SUCCESS, plus the
+	 * timestamp of the most recent FAILURE. Used by the per-(email, ip)
+	 * exponential backoff (layer A).
+	 */
+	getIdentifierIpFailureContext(
+		identifier: string,
+		ipAddress: string | null,
+		tx?: TransactionContext,
+	): Promise<EmailIpFailureContext>;
 }
 
 /**
@@ -98,6 +134,59 @@ export function createLoginAttemptRepository(
 				.returning();
 
 			return recordToLoginAttempt(record!);
+		},
+
+		async countFailuresByIdentifierSince(
+			identifier: string,
+			since: Date,
+			tx?: TransactionContext,
+		): Promise<number> {
+			const rows = await db(tx)
+				.select({ count: sql<number>`count(*)` })
+				.from(loginAttempts)
+				.where(
+					and(
+						eq(loginAttempts.identifier, identifier),
+						eq(loginAttempts.outcome, "FAILURE"),
+						gte(loginAttempts.attemptedAt, since),
+					),
+				);
+			return Number(rows[0]?.count ?? 0);
+		},
+
+		async getIdentifierIpFailureContext(
+			identifier: string,
+			ipAddress: string | null,
+			tx?: TransactionContext,
+		): Promise<EmailIpFailureContext> {
+			// Pull the recent attempts for (identifier, ip), most-recent-first,
+			// and walk forward stopping at the first SUCCESS. The 50-row LIMIT
+			// is a safety bound for absurd histories — far beyond any realistic
+			// backoff threshold.
+			const ipFilter =
+				ipAddress === null
+					? sql`${loginAttempts.ipAddress} IS NULL`
+					: eq(loginAttempts.ipAddress, ipAddress);
+			const rows = await db(tx)
+				.select({
+					outcome: loginAttempts.outcome,
+					attemptedAt: loginAttempts.attemptedAt,
+				})
+				.from(loginAttempts)
+				.where(and(eq(loginAttempts.identifier, identifier), ipFilter))
+				.orderBy(desc(loginAttempts.attemptedAt))
+				.limit(50);
+
+			let failureCount = 0;
+			let lastFailureAt: Date | null = null;
+			for (const row of rows) {
+				if (row.outcome === "SUCCESS") break;
+				if (row.outcome === "FAILURE") {
+					if (lastFailureAt === null) lastFailureAt = row.attemptedAt;
+					failureCount++;
+				}
+			}
+			return { failureCount, lastFailureAt };
 		},
 
 		async findPaged(
@@ -142,34 +231,29 @@ export function createLoginAttemptRepository(
 							? loginAttempts.identifier
 							: loginAttempts.attemptedAt;
 
-			const [records, countResult] = await Promise.all([
-				whereClause
-					? db(tx)
-							.select()
-							.from(loginAttempts)
-							.where(whereClause)
-							.orderBy(sortFn(sortCol))
-							.limit(limit)
-							.offset(offset)
-					: db(tx)
-							.select()
-							.from(loginAttempts)
-							.orderBy(sortFn(sortCol))
-							.limit(limit)
-							.offset(offset),
-				whereClause
-					? db(tx)
-							.select({ count: sql<number>`count(*)` })
-							.from(loginAttempts)
-							.where(whereClause)
-					: db(tx)
-							.select({ count: sql<number>`count(*)` })
-							.from(loginAttempts),
-			]);
+			// Fetch pageSize + 1 rows. If we get the extra, there's another page.
+			// Avoids count(*) against the unbounded iam_login_attempts table.
+			const records = await (whereClause
+				? db(tx)
+						.select()
+						.from(loginAttempts)
+						.where(whereClause)
+						.orderBy(sortFn(sortCol))
+						.limit(limit + 1)
+						.offset(offset)
+				: db(tx)
+						.select()
+						.from(loginAttempts)
+						.orderBy(sortFn(sortCol))
+						.limit(limit + 1)
+						.offset(offset));
+
+			const hasMore = records.length > limit;
+			const trimmed = hasMore ? records.slice(0, limit) : records;
 
 			return {
-				items: records.map(recordToLoginAttempt),
-				total: Number(countResult[0]?.count ?? 0),
+				items: trimmed.map(recordToLoginAttempt),
+				hasMore,
 				page: pagination.page,
 				pageSize: pagination.pageSize,
 			};

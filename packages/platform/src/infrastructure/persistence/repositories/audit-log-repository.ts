@@ -4,7 +4,7 @@
  * Data access for AuditLog entities.
  */
 
-import { eq, asc, desc, sql, and, inArray, isNotNull } from "drizzle-orm";
+import { eq, asc, desc, and, inArray, isNotNull } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type { TransactionContext } from "@flowcatalyst/persistence";
 
@@ -38,10 +38,16 @@ export interface AuditLogFilters {
 
 /**
  * Paginated audit log result.
+ *
+ * No `total` — `aud_logs` grows unbounded and `count(*)` against it gets
+ * expensive even with indexes. We use the "fetch limit + 1" pattern:
+ * ask for one more row than requested, drop the surplus, and return
+ * `hasMore` so the UI can render a next-page affordance without
+ * knowing the absolute total.
  */
 export interface PaginatedAuditLogs {
 	readonly logs: AuditLog[];
-	readonly total: number;
+	readonly hasMore: boolean;
 	readonly limit: number;
 	readonly offset: number;
 }
@@ -76,11 +82,6 @@ export interface AuditLogRepository {
 	findDistinctOperations(tx?: TransactionContext): Promise<string[]>;
 	findDistinctApplicationIds(tx?: TransactionContext): Promise<string[]>;
 	findDistinctClientIds(tx?: TransactionContext): Promise<string[]>;
-	count(tx?: TransactionContext): Promise<number>;
-	countByEntityType(
-		entityType: string,
-		tx?: TransactionContext,
-	): Promise<number>;
 }
 
 /**
@@ -111,31 +112,15 @@ export function createAuditLogRepository(defaultDb: AnyDb): AuditLogRepository {
 			pagination: PaginationOptions,
 			tx?: TransactionContext,
 		): Promise<PaginatedAuditLogs> {
-			const conditions = and(
-				eq(auditLogs.entityType, entityType),
-				eq(auditLogs.entityId, entityId),
+			return await fetchPaged(
+				db(tx),
+				and(
+					eq(auditLogs.entityType, entityType),
+					eq(auditLogs.entityId, entityId),
+				),
+				desc(auditLogs.performedAt),
+				pagination,
 			);
-
-			const [records, countResult] = await Promise.all([
-				db(tx)
-					.select()
-					.from(auditLogs)
-					.where(conditions)
-					.orderBy(desc(auditLogs.performedAt))
-					.limit(pagination.limit)
-					.offset(pagination.offset),
-				db(tx)
-					.select({ count: sql<number>`count(*)` })
-					.from(auditLogs)
-					.where(conditions),
-			]);
-
-			return {
-				logs: records.map(recordToAuditLog),
-				total: Number(countResult[0]?.count ?? 0),
-				limit: pagination.limit,
-				offset: pagination.offset,
-			};
 		},
 
 		async findByPrincipal(
@@ -143,28 +128,12 @@ export function createAuditLogRepository(defaultDb: AnyDb): AuditLogRepository {
 			pagination: PaginationOptions,
 			tx?: TransactionContext,
 		): Promise<PaginatedAuditLogs> {
-			const conditions = eq(auditLogs.principalId, principalId);
-
-			const [records, countResult] = await Promise.all([
-				db(tx)
-					.select()
-					.from(auditLogs)
-					.where(conditions)
-					.orderBy(desc(auditLogs.performedAt))
-					.limit(pagination.limit)
-					.offset(pagination.offset),
-				db(tx)
-					.select({ count: sql<number>`count(*)` })
-					.from(auditLogs)
-					.where(conditions),
-			]);
-
-			return {
-				logs: records.map(recordToAuditLog),
-				total: Number(countResult[0]?.count ?? 0),
-				limit: pagination.limit,
-				offset: pagination.offset,
-			};
+			return await fetchPaged(
+				db(tx),
+				eq(auditLogs.principalId, principalId),
+				desc(auditLogs.performedAt),
+				pagination,
+			);
 		},
 
 		async findByOperation(
@@ -172,28 +141,12 @@ export function createAuditLogRepository(defaultDb: AnyDb): AuditLogRepository {
 			pagination: PaginationOptions,
 			tx?: TransactionContext,
 		): Promise<PaginatedAuditLogs> {
-			const conditions = eq(auditLogs.operation, operation);
-
-			const [records, countResult] = await Promise.all([
-				db(tx)
-					.select()
-					.from(auditLogs)
-					.where(conditions)
-					.orderBy(desc(auditLogs.performedAt))
-					.limit(pagination.limit)
-					.offset(pagination.offset),
-				db(tx)
-					.select({ count: sql<number>`count(*)` })
-					.from(auditLogs)
-					.where(conditions),
-			]);
-
-			return {
-				logs: records.map(recordToAuditLog),
-				total: Number(countResult[0]?.count ?? 0),
-				limit: pagination.limit,
-				offset: pagination.offset,
-			};
+			return await fetchPaged(
+				db(tx),
+				eq(auditLogs.operation, operation),
+				desc(auditLogs.performedAt),
+				pagination,
+			);
 		},
 
 		async findPaged(
@@ -234,35 +187,7 @@ export function createAuditLogRepository(defaultDb: AnyDb): AuditLogRepository {
 						? auditLogs.operation
 						: auditLogs.performedAt;
 
-			const [records, countResult] = await Promise.all([
-				whereClause
-					? db(tx)
-							.select()
-							.from(auditLogs)
-							.where(whereClause)
-							.orderBy(sortFn(sortCol))
-							.limit(pagination.limit)
-							.offset(pagination.offset)
-					: db(tx)
-							.select()
-							.from(auditLogs)
-							.orderBy(sortFn(sortCol))
-							.limit(pagination.limit)
-							.offset(pagination.offset),
-				whereClause
-					? db(tx)
-							.select({ count: sql<number>`count(*)` })
-							.from(auditLogs)
-							.where(whereClause)
-					: db(tx).select({ count: sql<number>`count(*)` }).from(auditLogs),
-			]);
-
-			return {
-				logs: records.map(recordToAuditLog),
-				total: Number(countResult[0]?.count ?? 0),
-				limit: pagination.limit,
-				offset: pagination.offset,
-			};
+			return await fetchPaged(db(tx), whereClause, sortFn(sortCol), pagination);
 		},
 
 		async findDistinctEntityTypes(tx?: TransactionContext): Promise<string[]> {
@@ -303,23 +228,42 @@ export function createAuditLogRepository(defaultDb: AnyDb): AuditLogRepository {
 			return results.map((r) => r.clientId!);
 		},
 
-		async count(tx?: TransactionContext): Promise<number> {
-			const [result] = await db(tx)
-				.select({ count: sql<number>`count(*)` })
-				.from(auditLogs);
-			return Number(result?.count ?? 0);
-		},
+	};
+}
 
-		async countByEntityType(
-			entityType: string,
-			tx?: TransactionContext,
-		): Promise<number> {
-			const [result] = await db(tx)
-				.select({ count: sql<number>`count(*)` })
+/**
+ * Shared "fetch limit + 1" helper for the paginated audit-log queries.
+ * Avoids count(*) against the unbounded aud_logs table — the surplus
+ * row is dropped from items and surfaced as `hasMore`.
+ */
+async function fetchPaged(
+	db: AnyDb,
+	whereClause: ReturnType<typeof and> | undefined,
+	orderByExpr: ReturnType<typeof asc>,
+	pagination: PaginationOptions,
+): Promise<PaginatedAuditLogs> {
+	const limit = pagination.limit;
+	const records = await (whereClause
+		? db
+				.select()
 				.from(auditLogs)
-				.where(eq(auditLogs.entityType, entityType));
-			return Number(result?.count ?? 0);
-		},
+				.where(whereClause)
+				.orderBy(orderByExpr)
+				.limit(limit + 1)
+				.offset(pagination.offset)
+		: db
+				.select()
+				.from(auditLogs)
+				.orderBy(orderByExpr)
+				.limit(limit + 1)
+				.offset(pagination.offset));
+	const hasMore = records.length > limit;
+	const trimmed = hasMore ? records.slice(0, limit) : records;
+	return {
+		logs: trimmed.map(recordToAuditLog),
+		hasMore,
+		limit,
+		offset: pagination.offset,
 	};
 }
 

@@ -99,6 +99,53 @@ const envSchema = z.object({
 	DISPATCH_SCHEDULER_DEFAULT_POOL_CODE: z.string().default("DISPATCH-POOL"),
 	DISPATCH_SCHEDULER_STALE_THRESHOLD_MINUTES: z.coerce.number().default(15),
 	DISPATCH_SCHEDULER_STALE_POLL_INTERVAL_MS: z.coerce.number().default(60000),
+
+	// Login rate limiting (layered model — see login-rate-limit-service.ts)
+	LOGIN_RATE_LIMIT_DISABLED: z
+		.string()
+		.transform((v) => v === "true")
+		.prefault("false"),
+	/**
+	 * Number of trusted appending proxies between the client and the app.
+	 * MUST match deployment topology — see client-ip.ts for guidance.
+	 * Default 0 means "use socket address only" (no proxy).
+	 */
+	TRUSTED_PROXY_HOPS: z.coerce.number().default(0),
+	// Layer A — per-(email, IP) exponential backoff
+	LOGIN_BACKOFF_FREE_ATTEMPTS: z.coerce.number().default(3),
+	LOGIN_BACKOFF_BASE_DELAY_MS: z.coerce.number().default(2000),
+	LOGIN_BACKOFF_FACTOR: z.coerce.number().default(2),
+	LOGIN_BACKOFF_MAX_DELAY_MS: z.coerce.number().default(300_000), // 5 min
+	// Layer C — per-email global lockout
+	LOGIN_LOCKOUT_MAX_FAILURES: z.coerce.number().default(10),
+	LOGIN_LOCKOUT_WINDOW_MINUTES: z.coerce.number().default(15),
+	LOGIN_LOCKOUT_DURATION_MINUTES: z.coerce.number().default(15),
+	// Layer B — per-IP burst limit on auth + token endpoints
+	AUTH_IP_REQUESTS_PER_MINUTE: z.coerce.number().default(60),
+	TOKEN_IP_REQUESTS_PER_MINUTE: z.coerce.number().default(120),
+
+	// WebAuthn / passkeys (only available for non-federated users)
+	/**
+	 * RP ID — typically the registrable domain (e.g. "example.com").
+	 * Defaults to the hostname of EXTERNAL_BASE_URL if unset.
+	 */
+	WEBAUTHN_RP_ID: z.string().optional(),
+	/**
+	 * Allowed origin(s) the browser will report. Comma-separated.
+	 * Defaults to EXTERNAL_BASE_URL if unset.
+	 */
+	WEBAUTHN_ORIGINS: z
+		.string()
+		.optional()
+		.transform((v) => (v ? v.split(",").map((s) => s.trim()).filter(Boolean) : undefined)),
+	WEBAUTHN_RP_NAME: z.string().default("FlowCatalyst"),
+	/**
+	 * Base64 32-byte HMAC key for the deterministic-fake authentication
+	 * challenge (enumeration defense). Set this in production for stable
+	 * fake responses across instances. Defaults to a per-instance random
+	 * key — still defends, just non-deterministic across restarts.
+	 */
+	WEBAUTHN_ENUMERATION_KEY: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

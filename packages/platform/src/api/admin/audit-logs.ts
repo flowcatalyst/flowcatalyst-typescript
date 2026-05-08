@@ -60,7 +60,7 @@ const AuditLogResponseSchema = Type.Object({
 
 const AuditLogListResponseSchema = Type.Object({
 	auditLogs: Type.Array(AuditLogResponseSchema),
-	total: Type.Integer(),
+	hasMore: Type.Boolean(),
 	page: Type.Integer(),
 	pageSize: Type.Integer(),
 });
@@ -211,7 +211,7 @@ export async function registerAuditLogsRoutes(
 
 			return jsonSuccess(reply, {
 				auditLogs: logsWithPrincipals.map(toResponse),
-				total: result.total,
+				hasMore: result.hasMore,
 				page,
 				pageSize,
 			});
@@ -292,7 +292,7 @@ export async function registerAuditLogsRoutes(
 
 			return jsonSuccess(reply, {
 				auditLogs: logsWithPrincipals.map(toResponse),
-				total: result.total,
+				hasMore: result.hasMore,
 				page,
 				pageSize,
 			});

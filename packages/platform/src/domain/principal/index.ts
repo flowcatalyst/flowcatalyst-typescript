@@ -57,6 +57,7 @@ export {
 	ClientAccessGranted,
 	ClientAccessRevoked,
 	PrincipalsSynced,
+	PasswordReset,
 	type UserCreatedData,
 	type UserUpdatedData,
 	type UserActivatedData,
@@ -67,4 +68,5 @@ export {
 	type ClientAccessGrantedData,
 	type ClientAccessRevokedData,
 	type PrincipalsSyncedData,
+	type PasswordResetData,
 } from "./events.js";
