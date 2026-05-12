@@ -269,6 +269,13 @@ export {
 	type WebauthnCredentialData,
 } from "./webauthn-credentials.js";
 
+// Scheduled jobs (definition aggregate; instance/log tables are raw SQL)
+export {
+	scheduledJobs,
+	type ScheduledJobRecord,
+	type NewScheduledJobRecord,
+} from "./scheduled-jobs.js";
+
 // Projection feed tables (CQRS read model projection)
 export {
 	dispatchJobProjectionFeed,

@@ -100,6 +100,17 @@ const envSchema = z.object({
 	DISPATCH_SCHEDULER_STALE_THRESHOLD_MINUTES: z.coerce.number().default(15),
 	DISPATCH_SCHEDULER_STALE_POLL_INTERVAL_MS: z.coerce.number().default(60000),
 
+	// Scheduled-Job Scheduler (cron-driven webhook firing).
+	// Enabled by default; runs alongside the platform. Set to "false" to disable.
+	FC_SCHEDULED_JOB_SCHEDULER_ENABLED: z
+		.string()
+		.transform((v) => v !== "false")
+		.prefault("true"),
+	FC_SCHEDULED_JOB_POLL_SECONDS: z.coerce.number().default(30),
+	FC_SCHEDULED_JOB_DISPATCH_SECONDS: z.coerce.number().default(5),
+	FC_SCHEDULED_JOB_DISPATCH_BATCH: z.coerce.number().default(32),
+	FC_SCHEDULED_JOB_HTTP_TIMEOUT_SECONDS: z.coerce.number().default(10),
+
 	// Login rate limiting (layered model — see login-rate-limit-service.ts)
 	LOGIN_RATE_LIMIT_DISABLED: z
 		.string()

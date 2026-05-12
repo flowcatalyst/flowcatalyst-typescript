@@ -32,10 +32,13 @@ import {
 	createPasswordResetTokenRepository,
 	createWebauthnCredentialRepository,
 	createWebauthnCeremonyRepository,
+	createScheduledJobRepository,
+	createScheduledJobInstanceRepository,
 } from "../infrastructure/persistence/index.js";
+import type postgres from "postgres";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function createRepositories(db: any, schemaDb: any) {
+export function createRepositories(db: any, schemaDb: any, rawSql?: postgres.Sql) {
 	return {
 		principalRepository: createPrincipalRepository(db),
 		anchorDomainRepository: createAnchorDomainRepository(db),
@@ -67,6 +70,13 @@ export function createRepositories(db: any, schemaDb: any) {
 		passwordResetTokenRepository: createPasswordResetTokenRepository(db),
 		webauthnCredentialRepository: createWebauthnCredentialRepository(db),
 		webauthnCeremonyRepository: createWebauthnCeremonyRepository(db),
+		scheduledJobRepository: createScheduledJobRepository(schemaDb),
+		// Instance repo uses the raw postgres.js client because the
+		// instance/log tables are written via raw SQL (infrastructure path).
+		// Required: caller must pass the postgres.js client.
+		scheduledJobInstanceRepository: rawSql
+			? createScheduledJobInstanceRepository(rawSql)
+			: undefined,
 	};
 }
 

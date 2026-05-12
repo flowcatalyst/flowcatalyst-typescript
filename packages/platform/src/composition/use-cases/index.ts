@@ -17,6 +17,8 @@ import { createIdentityProviderUseCases } from "./identity-provider.js";
 import { createEmailDomainUseCases } from "./email-domain.js";
 import { createCorsUseCases } from "./cors.js";
 import { createConfigAccessUseCases } from "./config-access.js";
+import { createPlatformConfigUseCases } from "./platform-config.js";
+import { createScheduledJobUseCases } from "./scheduled-job.js";
 
 export interface CreateUseCasesDeps {
 	repos: Repositories;
@@ -38,6 +40,8 @@ export function createUseCases(deps: CreateUseCasesDeps) {
 		...createEmailDomainUseCases(deps),
 		...createCorsUseCases(deps),
 		...createConfigAccessUseCases(deps),
+		...createPlatformConfigUseCases(deps),
+		...createScheduledJobUseCases(deps),
 	};
 }
 

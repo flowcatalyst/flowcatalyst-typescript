@@ -31,6 +31,10 @@ import {
 	registerPlatformPlugins,
 	registerPlatformRoutes,
 } from "./composition/index.js";
+import {
+	startScheduledJobScheduler,
+	type ScheduledJobSchedulerHandle,
+} from "./scheduled-job-scheduler/index.js";
 
 /**
  * Platform configuration options for in-process embedding.
@@ -67,6 +71,12 @@ export interface PlatformResult {
 export { createPostCommitDispatcherFromPublisher } from "./composition/dispatch.js";
 export { startDispatchScheduler } from "./dispatch-scheduler/index.js";
 export type { DispatchSchedulerDeps, DispatchSchedulerHandle } from "./dispatch-scheduler/index.js";
+export { startScheduledJobScheduler } from "./scheduled-job-scheduler/index.js";
+export type {
+	ScheduledJobSchedulerDeps,
+	ScheduledJobSchedulerHandle,
+	ScheduledJobSchedulerConfig,
+} from "./scheduled-job-scheduler/index.js";
 
 /**
  * Start the FlowCatalyst Platform service.
@@ -119,7 +129,7 @@ export async function startPlatform(
 	} as any);
 
 	// 1. Repositories
-	const repos = createRepositories(db, schemaDb);
+	const repos = createRepositories(db, schemaDb, database.client);
 
 	// Platform config service (needed by dispatch infrastructure)
 	const platformConfigService = createPlatformConfigService({
@@ -276,9 +286,29 @@ export async function startPlatform(
 		});
 	}
 
+	// Scheduled-Job Scheduler (cron-driven webhook firing)
+	let scheduledJobSchedulerHandle: ScheduledJobSchedulerHandle | null = null;
+	if (
+		env.FC_SCHEDULED_JOB_SCHEDULER_ENABLED &&
+		repos.scheduledJobInstanceRepository
+	) {
+		scheduledJobSchedulerHandle = startScheduledJobScheduler({
+			repo: repos.scheduledJobRepository,
+			instanceRepo: repos.scheduledJobInstanceRepository,
+			logger: fastify.log,
+			config: {
+				pollIntervalMs: env.FC_SCHEDULED_JOB_POLL_SECONDS * 1000,
+				dispatchIntervalMs: env.FC_SCHEDULED_JOB_DISPATCH_SECONDS * 1000,
+				dispatchBatchSize: env.FC_SCHEDULED_JOB_DISPATCH_BATCH,
+				httpTimeoutMs: env.FC_SCHEDULED_JOB_HTTP_TIMEOUT_SECONDS * 1000,
+			},
+		});
+	}
+
 	// Register dispatch scheduler + connection cache shutdown hooks
 	fastify.addHook("onClose", async () => {
 		dispatchSchedulerHandle?.stop();
+		scheduledJobSchedulerHandle?.stop();
 		connectionCache.stop();
 	});
 

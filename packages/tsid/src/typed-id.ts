@@ -72,6 +72,11 @@ export const EntityType = {
 	// Auth
 	PASSWORD_RESET_TOKEN: "prt",
 	WEBAUTHN_CREDENTIAL: "pkc",
+
+	// Scheduled jobs
+	SCHEDULED_JOB: "sjb",
+	SCHEDULED_JOB_INSTANCE: "sji",
+	SCHEDULED_JOB_INSTANCE_LOG: "sjl",
 } as const;
 
 /**

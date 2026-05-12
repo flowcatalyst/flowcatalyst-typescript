@@ -575,6 +575,82 @@ export const CORS_ORIGIN_PERMISSIONS = {
 } as const;
 
 /**
+ * Scheduled job permissions.
+ */
+export const SCHEDULED_JOB_PERMISSIONS = {
+	CREATE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"scheduled-job",
+		"create",
+		"Create scheduled jobs",
+	),
+	READ: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"scheduled-job",
+		"read",
+		"Read scheduled jobs",
+	),
+	UPDATE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"scheduled-job",
+		"update",
+		"Update scheduled jobs",
+	),
+	DELETE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"scheduled-job",
+		"delete",
+		"Delete scheduled jobs",
+	),
+	PAUSE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"scheduled-job",
+		"pause",
+		"Pause / resume scheduled jobs",
+	),
+	FIRE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"scheduled-job",
+		"fire",
+		"Manually fire scheduled jobs",
+	),
+	SYNC: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"scheduled-job",
+		"sync",
+		"Sync scheduled job definitions (SDK)",
+	),
+	MANAGE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"scheduled-job",
+		"manage",
+		"Full scheduled job management",
+	),
+	INSTANCE_READ: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"scheduled-job-instance",
+		"read",
+		"Read scheduled job instances and logs",
+	),
+	INSTANCE_WRITE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"scheduled-job-instance",
+		"write",
+		"Write scheduled job instance logs and completions (SDK callback)",
+	),
+} as const;
+
+/**
  * Login attempt permissions.
  */
 export const LOGIN_ATTEMPT_PERMISSIONS = {
@@ -654,4 +730,5 @@ export const ADMIN_PERMISSIONS: readonly PermissionDefinition[] = [
 	...Object.values(AUDIT_LOG_PERMISSIONS),
 	...Object.values(LOGIN_ATTEMPT_PERMISSIONS),
 	...Object.values(BATCH_PERMISSIONS),
+	...Object.values(SCHEDULED_JOB_PERMISSIONS),
 ];

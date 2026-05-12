@@ -20,3 +20,5 @@ export * from "./email-domain-mapping/index.js";
 export * from "./service-account/index.js";
 export * from "./cors/index.js";
 export * from "./config-access/index.js";
+export * from "./platform-config/index.js";
+export * from "./scheduled-job/index.js";

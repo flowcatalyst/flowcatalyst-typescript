@@ -68,6 +68,7 @@ export { corsAllowedOrigins } from "./cors-allowed-origins.js";
 export { dispatchJobProjectionFeed, eventProjectionFeed } from "./outbox.js";
 export { loginAttempts } from "./login-attempts.js";
 export { webauthnCredentials } from "./webauthn-credentials.js";
+export { scheduledJobs } from "./scheduled-jobs.js";
 
 // Note: Core tables from @flowcatalyst/persistence (events, auditLogs, dispatchJobs, etc.)
 // are NOT included here. Those repositories use standard db.select() and don't need

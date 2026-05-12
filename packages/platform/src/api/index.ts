@@ -79,6 +79,10 @@ import {
 	type LoginAttemptsRoutesDeps,
 } from "./admin/login-attempts.js";
 import {
+	registerScheduledJobsRoutes,
+	type ScheduledJobsRoutesDeps,
+} from "./admin/scheduled-jobs.js";
+import {
 	registerEventTypesBffRoutes,
 	type EventTypesBffDeps,
 } from "./bff/event-types.js";
@@ -149,7 +153,8 @@ export interface AdminRoutesDeps
 		CorsRoutesDeps,
 		ConfigRoutesDeps,
 		ConfigAccessRoutesDeps,
-		LoginAttemptsRoutesDeps {}
+		LoginAttemptsRoutesDeps,
+		ScheduledJobsRoutesDeps {}
 
 /**
  * Register all API routes. Gated by permissions, not URL tier.
@@ -184,6 +189,7 @@ export async function registerAdminRoutes(
 			await registerConfigRoutes(apiRouter, deps);
 			await registerConfigAccessRoutes(apiRouter, deps);
 			await registerLoginAttemptsRoutes(apiRouter, deps);
+			await registerScheduledJobsRoutes(apiRouter, deps);
 		},
 		{ prefix: "/api" },
 	);

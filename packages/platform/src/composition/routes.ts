@@ -110,6 +110,7 @@ export async function registerPlatformRoutes(
 		corsAllowedOriginRepository: repos.corsAllowedOriginRepository,
 		// Platform config management
 		platformConfigService,
+		platformConfigRepository: repos.platformConfigRepository,
 		platformConfigAccessRepository: repos.platformConfigAccessRepository,
 		// Service Account management
 		encryptionService,
@@ -117,6 +118,9 @@ export async function registerPlatformRoutes(
 		db,
 		// Login attempt logging
 		loginAttemptRepository: repos.loginAttemptRepository,
+		// Scheduled job management
+		scheduledJobRepository: repos.scheduledJobRepository,
+		scheduledJobInstanceRepository: repos.scheduledJobInstanceRepository,
 	};
 
 	await registerAdminRoutes(fastify, adminDeps);

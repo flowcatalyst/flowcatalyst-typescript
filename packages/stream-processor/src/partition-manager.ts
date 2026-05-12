@@ -8,6 +8,8 @@
  *   - msg_dispatch_jobs
  *   - msg_dispatch_jobs_read
  *   - msg_dispatch_job_attempts
+ *   - msg_scheduled_job_instances
+ *   - msg_scheduled_job_instance_logs
  *
  * Each tick:
  *   1. Ensures monthly partitions exist for the next N months on each parent.
@@ -30,6 +32,8 @@ const PARTITIONED_PARENTS = [
 	"msg_dispatch_jobs",
 	"msg_dispatch_jobs_read",
 	"msg_dispatch_job_attempts",
+	"msg_scheduled_job_instances",
+	"msg_scheduled_job_instance_logs",
 ] as const;
 
 export interface PartitionManagerConfig {

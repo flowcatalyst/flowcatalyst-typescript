@@ -169,3 +169,17 @@ export {
 	type ConsumedAuthenticationCeremony,
 	createWebauthnCeremonyRepository,
 } from "./webauthn-ceremony-repository.js";
+
+export {
+	type ScheduledJobRepository,
+	type ScheduledJobFilters,
+	createScheduledJobRepository,
+} from "./scheduled-job-repository.js";
+
+export {
+	type ScheduledJobInstanceRepository,
+	type InstanceListFilters,
+	type NewInstance,
+	type NewInstanceLog,
+	createScheduledJobInstanceRepository,
+} from "./scheduled-job-instance-repository.js";

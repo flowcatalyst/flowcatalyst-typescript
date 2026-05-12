@@ -138,3 +138,93 @@ export class PlatformConfigAccessRevoked extends BaseDomainEvent<PlatformConfigA
 		);
 	}
 }
+
+// -----------------------------------------------------------------------------
+// PlatformConfigSet — emitted on PUT (covers create + update; service is upsert)
+// -----------------------------------------------------------------------------
+
+export interface PlatformConfigSetData {
+	readonly configId: string;
+	readonly applicationCode: string;
+	readonly section: string;
+	readonly property: string;
+	readonly scope: string;
+	readonly clientId: string | null;
+	readonly valueType: string;
+	/** True if a new row was created; false if an existing row was updated. */
+	readonly wasCreated: boolean;
+	readonly [key: string]: unknown;
+}
+
+export class PlatformConfigSet extends BaseDomainEvent<PlatformConfigSetData> {
+	static readonly EVENT_TYPE = DomainEvent.eventType(
+		APP,
+		DOMAIN,
+		"platform-config",
+		"set",
+	);
+	static readonly SPEC_VERSION = "1.0";
+
+	constructor(ctx: ExecutionContext, data: PlatformConfigSetData) {
+		super(
+			{
+				eventType: PlatformConfigSet.EVENT_TYPE,
+				specVersion: PlatformConfigSet.SPEC_VERSION,
+				source: SOURCE,
+				subject: DomainEvent.subject(APP, "platform-config", data.configId),
+				messageGroup: DomainEvent.messageGroup(
+					APP,
+					"platform-config",
+					data.applicationCode,
+				),
+			},
+			ctx,
+			data,
+		);
+	}
+}
+
+// -----------------------------------------------------------------------------
+// PlatformConfigDeleted — emitted on DELETE
+// -----------------------------------------------------------------------------
+
+export interface PlatformConfigDeletedData {
+	readonly applicationCode: string;
+	readonly section: string;
+	readonly property: string;
+	readonly scope: string;
+	readonly clientId: string | null;
+	readonly [key: string]: unknown;
+}
+
+export class PlatformConfigDeleted extends BaseDomainEvent<PlatformConfigDeletedData> {
+	static readonly EVENT_TYPE = DomainEvent.eventType(
+		APP,
+		DOMAIN,
+		"platform-config",
+		"deleted",
+	);
+	static readonly SPEC_VERSION = "1.0";
+
+	constructor(ctx: ExecutionContext, data: PlatformConfigDeletedData) {
+		super(
+			{
+				eventType: PlatformConfigDeleted.EVENT_TYPE,
+				specVersion: PlatformConfigDeleted.SPEC_VERSION,
+				source: SOURCE,
+				subject: DomainEvent.subject(
+					APP,
+					"platform-config",
+					`${data.applicationCode}:${data.section}:${data.property}`,
+				),
+				messageGroup: DomainEvent.messageGroup(
+					APP,
+					"platform-config",
+					data.applicationCode,
+				),
+			},
+			ctx,
+			data,
+		);
+	}
+}

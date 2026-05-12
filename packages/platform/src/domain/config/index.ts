@@ -12,4 +12,8 @@ export {
 	PlatformConfigAccessUpdated,
 	type PlatformConfigAccessRevokedData,
 	PlatformConfigAccessRevoked,
+	type PlatformConfigSetData,
+	PlatformConfigSet,
+	type PlatformConfigDeletedData,
+	PlatformConfigDeleted,
 } from "./events.js";

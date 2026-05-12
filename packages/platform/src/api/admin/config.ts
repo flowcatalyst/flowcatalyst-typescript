@@ -14,13 +14,23 @@ import {
 	notFound,
 	forbidden,
 	badRequest,
+	sendResult,
 	ErrorResponseSchema,
 } from "@flowcatalyst/http";
 import type {
 	PlatformConfigService,
 	ConfigScope,
 	ConfigValueType,
+	PlatformConfigSet,
+	PlatformConfigDeleted,
 } from "../../domain/index.js";
+import type { UseCase } from "@flowcatalyst/application";
+import { Result } from "@flowcatalyst/application";
+import type {
+	SetPlatformConfigCommand,
+	DeletePlatformConfigCommand,
+} from "../../application/index.js";
+import type { PlatformConfigRepository } from "../../infrastructure/persistence/index.js";
 
 // ─── Request Schemas ────────────────────────────────────────────────────────
 
@@ -89,9 +99,23 @@ const ValueResponseSchema = Type.Object({
 
 /**
  * Dependencies for the config admin API.
+ *
+ * The service is still used for read paths (which don't need a UoW or
+ * domain event). Writes go through use cases so the change is wrapped
+ * in a UnitOfWork and emits a PlatformConfigSet / PlatformConfigDeleted
+ * event for audit + downstream consumers.
  */
 export interface ConfigRoutesDeps {
 	readonly platformConfigService: PlatformConfigService;
+	readonly platformConfigRepository: PlatformConfigRepository;
+	readonly setPlatformConfigUseCase: UseCase<
+		SetPlatformConfigCommand,
+		PlatformConfigSet
+	>;
+	readonly deletePlatformConfigUseCase: UseCase<
+		DeletePlatformConfigCommand,
+		PlatformConfigDeleted
+	>;
 }
 
 /**
@@ -109,7 +133,12 @@ export async function registerConfigRoutes(
 	deps: ConfigRoutesDeps,
 ): Promise<void> {
 	const f = fastify.withTypeProvider<TypeBoxTypeProvider>();
-	const { platformConfigService } = deps;
+	const {
+		platformConfigService,
+		platformConfigRepository,
+		setPlatformConfigUseCase,
+		deletePlatformConfigUseCase,
+	} = deps;
 
 	function parseScope(query: Static<typeof ScopeQuery>): {
 		scope: ConfigScope;
@@ -287,6 +316,7 @@ export async function registerConfigRoutes(
 			const body = request.body as Static<typeof SetConfigSchema>;
 			const { scope, clientId } = parseScope(query);
 			const roles = getRoles(request);
+			const ctx = request.executionContext;
 
 			const hasAccess = await platformConfigService.canAccess(
 				appCode,
@@ -308,17 +338,7 @@ export async function registerConfigRoutes(
 				);
 			}
 
-			// Check if this is a create or update
-			const existing = await platformConfigService.getValue(
-				appCode,
-				section,
-				property,
-				scope,
-				clientId,
-			);
-			const isCreate = existing === undefined;
-
-			const config = await platformConfigService.setValue({
+			const command: SetPlatformConfigCommand = {
 				applicationCode: appCode,
 				section,
 				property,
@@ -327,8 +347,27 @@ export async function registerConfigRoutes(
 				value: body.value,
 				valueType: (body.valueType ?? "PLAIN") as ConfigValueType,
 				description: body.description ?? null,
-			});
+			};
 
+			const result = await setPlatformConfigUseCase.execute(command, ctx);
+			if (Result.isFailure(result)) {
+				return sendResult(reply, result);
+			}
+			const isCreate = result.value.getData().wasCreated;
+
+			// Re-read the materialized row — the use case emits an event but
+			// doesn't return the entity. Read after commit; UoW has closed.
+			const config = await platformConfigRepository.findByKey(
+				appCode,
+				section,
+				property,
+				scope,
+				clientId,
+			);
+			if (!config) {
+				// Vanishingly rare: row written then deleted by another process.
+				return notFound(reply, "config disappeared after write");
+			}
 			const response = toConfigResponse(config);
 
 			if (isCreate) {
@@ -359,6 +398,7 @@ export async function registerConfigRoutes(
 			const query = request.query as Static<typeof ScopeQuery>;
 			const { scope, clientId } = parseScope(query);
 			const roles = getRoles(request);
+			const ctx = request.executionContext;
 
 			const hasAccess = await platformConfigService.canAccess(
 				appCode,
@@ -369,20 +409,17 @@ export async function registerConfigRoutes(
 				return forbidden(reply, "Write access denied to configuration");
 			}
 
-			const deleted = await platformConfigService.deleteValue(
-				appCode,
+			const command: DeletePlatformConfigCommand = {
+				applicationCode: appCode,
 				section,
 				property,
 				scope,
 				clientId,
-			);
-			if (!deleted) {
-				return notFound(
-					reply,
-					`Config not found: ${appCode}.${section}.${property}`,
-				);
+			};
+			const result = await deletePlatformConfigUseCase.execute(command, ctx);
+			if (Result.isFailure(result)) {
+				return sendResult(reply, result);
 			}
-
 			return noContent(reply);
 		},
 	);
