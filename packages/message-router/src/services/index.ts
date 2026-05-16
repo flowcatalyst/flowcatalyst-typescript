@@ -49,6 +49,10 @@ export async function createServices(logger: Logger): Promise<Services> {
 		defaultCircuitBreakerConfig,
 		logger,
 	);
+	// Evict idle per-endpoint breakers so the manager doesn't accumulate one
+	// breaker per unique endpoint URL for the lifetime of the process.
+	// Matches Rust's lifecycle.set_circuit_breaker_registry(1h, 5min).
+	circuitBreakers.startIdleEviction(3_600_000, 300_000);
 
 	// Create traffic manager (for standby mode support)
 	const traffic = createTrafficManager(

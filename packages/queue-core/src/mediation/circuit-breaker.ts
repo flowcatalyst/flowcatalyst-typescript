@@ -85,6 +85,7 @@ export class CircuitBreaker {
 	private successCount = 0;
 	private failureCount = 0;
 	private rejectedCount = 0;
+	private lastActivityMs = Date.now();
 
 	// Lightweight sliding window for stats reporting
 	private readonly callResults: boolean[] = [];
@@ -137,6 +138,7 @@ export class CircuitBreaker {
 		policy.onSuccess(() => {
 			this.successCount++;
 			this.addToWindow(true);
+			this.lastActivityMs = Date.now();
 			if (this.metrics) {
 				this.metrics.circuitBreakerCalls.inc({
 					name: this.name,
@@ -148,6 +150,7 @@ export class CircuitBreaker {
 		policy.onFailure(() => {
 			this.failureCount++;
 			this.addToWindow(false);
+			this.lastActivityMs = Date.now();
 			if (this.metrics) {
 				this.metrics.circuitBreakerCalls.inc({
 					name: this.name,
@@ -178,6 +181,7 @@ export class CircuitBreaker {
 		} catch (error) {
 			if (isBrokenCircuitError(error)) {
 				this.rejectedCount++;
+				this.lastActivityMs = Date.now();
 				if (this.metrics) {
 					this.metrics.circuitBreakerCalls.inc({
 						name: this.name,
@@ -226,6 +230,7 @@ export class CircuitBreaker {
 		this.failureCount = 0;
 		this.rejectedCount = 0;
 		this.callResults.length = 0;
+		this.lastActivityMs = Date.now();
 		this.logger.info({ name: this.name }, "Circuit breaker reset");
 	}
 
@@ -234,6 +239,13 @@ export class CircuitBreaker {
 	 */
 	getName(): string {
 		return this.name;
+	}
+
+	/**
+	 * Get the timestamp of the most recent call (success, failure, or rejection)
+	 */
+	getLastActivityMs(): number {
+		return this.lastActivityMs;
 	}
 }
 
@@ -310,5 +322,42 @@ export class CircuitBreakerManager {
 		for (const breaker of this.breakers.values()) {
 			breaker.reset();
 		}
+	}
+
+	/**
+	 * Evict circuit breakers that have been idle (no calls) for longer than `maxIdleMs`.
+	 * Returns the number of breakers evicted. Without eviction, the manager
+	 * accumulates one breaker per unique endpoint URL for the lifetime of the
+	 * process. Mirrors Rust's `CircuitBreakerRegistry::evict_idle`.
+	 */
+	evictIdle(maxIdleMs: number): number {
+		const now = Date.now();
+		let evicted = 0;
+		for (const [name, breaker] of this.breakers) {
+			if (now - breaker.getLastActivityMs() > maxIdleMs) {
+				this.breakers.delete(name);
+				evicted++;
+			}
+		}
+		return evicted;
+	}
+
+	/**
+	 * Start a background interval that periodically evicts idle breakers.
+	 * Returns a `stop` function that clears the interval. The interval is
+	 * `unref`d so it does not block process exit.
+	 */
+	startIdleEviction(
+		maxIdleMs: number,
+		intervalMs: number,
+	): () => void {
+		const handle = setInterval(() => {
+			const evicted = this.evictIdle(maxIdleMs);
+			if (evicted > 0) {
+				this.logger.info({ evicted }, "Evicted idle circuit breakers");
+			}
+		}, intervalMs);
+		handle.unref?.();
+		return () => clearInterval(handle);
 	}
 }
