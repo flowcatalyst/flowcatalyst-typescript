@@ -66,3 +66,6 @@ export * from "./webauthn/index.js";
 
 // Scheduled Job domain
 export * from "./scheduled-job/index.js";
+
+// Process domain
+export * from "./process/index.js";

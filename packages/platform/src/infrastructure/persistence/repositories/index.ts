@@ -183,3 +183,9 @@ export {
 	type NewInstanceLog,
 	createScheduledJobInstanceRepository,
 } from "./scheduled-job-instance-repository.js";
+
+export {
+	type ProcessRepository,
+	type ProcessFilters,
+	createProcessRepository,
+} from "./process-repository.js";

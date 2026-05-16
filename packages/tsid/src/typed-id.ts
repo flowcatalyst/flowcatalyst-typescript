@@ -77,6 +77,9 @@ export const EntityType = {
 	SCHEDULED_JOB: "sjb",
 	SCHEDULED_JOB_INSTANCE: "sji",
 	SCHEDULED_JOB_INSTANCE_LOG: "sjl",
+
+	// Processes
+	PROCESS: "prc",
 } as const;
 
 /**

@@ -143,39 +143,6 @@ function registerTools(server: McpServer, api: ApiClient): void {
 		},
 	);
 
-	// Generate code
-	server.registerTool(
-		"generate_code",
-		{
-			title: "Generate Code",
-			description:
-				"Generate language-specific code (TypeScript interface, PHP DTO, Python dataclass, or Java record) from an event type's JSON Schema.",
-			inputSchema: z.object({
-				id: z.string().describe("Event type ID"),
-				language: z
-					.enum(["typescript", "php", "python", "java"])
-					.describe("Target language"),
-				version: z
-					.string()
-					.optional()
-					.describe(
-						"Schema version (e.g. '1.0'). If omitted, uses the CURRENT version.",
-					),
-			}),
-		},
-		async ({ id, language, version }) => {
-			const result = await api.generateCode(id, language, version);
-			return {
-				content: [
-					{
-						type: "text" as const,
-						text: result.code,
-					},
-				],
-			};
-		},
-	);
-
 	// List subscriptions
 	server.registerTool(
 		"list_subscriptions",

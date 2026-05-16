@@ -247,6 +247,61 @@ export const EVENT_TYPE_PERMISSIONS = {
 } as const;
 
 /**
+ * Process permissions.
+ */
+export const PROCESS_PERMISSIONS = {
+	CREATE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"process",
+		"create",
+		"Create processes",
+	),
+	READ: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"process",
+		"read",
+		"Read process details",
+	),
+	UPDATE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"process",
+		"update",
+		"Update process details",
+	),
+	DELETE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"process",
+		"delete",
+		"Delete processes",
+	),
+	ARCHIVE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"process",
+		"archive",
+		"Archive processes",
+	),
+	MANAGE: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"process",
+		"manage",
+		"Full process management",
+	),
+	SYNC: makePermission(
+		SUBDOMAIN,
+		CONTEXT,
+		"process",
+		"sync",
+		"Sync processes from SDK",
+	),
+} as const;
+
+/**
  * Dispatch pool permissions.
  */
 export const DISPATCH_POOL_PERMISSIONS = {
@@ -718,6 +773,7 @@ export const ADMIN_PERMISSIONS: readonly PermissionDefinition[] = [
 	...Object.values(ANCHOR_DOMAIN_PERMISSIONS),
 	...Object.values(APPLICATION_PERMISSIONS),
 	...Object.values(EVENT_TYPE_PERMISSIONS),
+	...Object.values(PROCESS_PERMISSIONS),
 	...Object.values(DISPATCH_POOL_PERMISSIONS),
 	...Object.values(CONNECTION_PERMISSIONS),
 	...Object.values(SUBSCRIPTION_PERMISSIONS),

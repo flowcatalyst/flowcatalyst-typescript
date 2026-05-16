@@ -27,6 +27,7 @@ export function createPlatformAggregateRegistry(repos: Repositories) {
 		edm: "EmailDomainMapping",
 		cor: "CorsAllowedOrigin",
 		sjb: "ScheduledJob",
+		prc: "Process",
 	});
 
 	aggregateRegistry.register(
@@ -97,6 +98,9 @@ export function createPlatformAggregateRegistry(repos: Repositories) {
 	);
 	aggregateRegistry.register(
 		createAggregateHandler("ScheduledJob", repos.scheduledJobRepository),
+	);
+	aggregateRegistry.register(
+		createAggregateHandler("Process", repos.processRepository),
 	);
 
 	return aggregateRegistry;

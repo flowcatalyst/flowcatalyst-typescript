@@ -34,6 +34,7 @@ import {
 	createWebauthnCeremonyRepository,
 	createScheduledJobRepository,
 	createScheduledJobInstanceRepository,
+	createProcessRepository,
 } from "../infrastructure/persistence/index.js";
 import type postgres from "postgres";
 
@@ -77,6 +78,7 @@ export function createRepositories(db: any, schemaDb: any, rawSql?: postgres.Sql
 		scheduledJobInstanceRepository: rawSql
 			? createScheduledJobInstanceRepository(rawSql)
 			: undefined,
+		processRepository: createProcessRepository(schemaDb),
 	};
 }
 

@@ -121,6 +121,8 @@ export async function registerPlatformRoutes(
 		// Scheduled job management
 		scheduledJobRepository: repos.scheduledJobRepository,
 		scheduledJobInstanceRepository: repos.scheduledJobInstanceRepository,
+		// Process management
+		processRepository: repos.processRepository,
 	};
 
 	await registerAdminRoutes(fastify, adminDeps);
@@ -161,6 +163,7 @@ export async function registerPlatformRoutes(
 		syncSubscriptionsUseCase: useCases.syncSubscriptionsUseCase,
 		syncDispatchPoolsUseCase: useCases.syncDispatchPoolsUseCase,
 		syncPrincipalsUseCase: useCases.syncPrincipalsUseCase,
+		syncProcessesUseCase: useCases.syncProcessesUseCase,
 	};
 
 	await registerApplicationSyncApiRoutes(fastify, applicationSyncDeps);

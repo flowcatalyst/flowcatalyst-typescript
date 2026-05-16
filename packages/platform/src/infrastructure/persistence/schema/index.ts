@@ -276,6 +276,20 @@ export {
 	type NewScheduledJobRecord,
 } from "./scheduled-jobs.js";
 
+// Application OpenAPI specs
+export {
+	applicationOpenapiSpecs,
+	type ApplicationOpenapiSpecRecord,
+	type NewApplicationOpenapiSpecRecord,
+} from "./application-openapi-specs.js";
+
+// Processes (workflow documentation)
+export {
+	processes,
+	type ProcessRecord,
+	type NewProcessRecord,
+} from "./processes.js";
+
 // Projection feed tables (CQRS read model projection)
 export {
 	dispatchJobProjectionFeed,

@@ -83,6 +83,10 @@ import {
 	type ScheduledJobsRoutesDeps,
 } from "./admin/scheduled-jobs.js";
 import {
+	registerProcessesRoutes,
+	type ProcessesRoutesDeps,
+} from "./admin/processes.js";
+import {
 	registerEventTypesBffRoutes,
 	type EventTypesBffDeps,
 } from "./bff/event-types.js";
@@ -154,7 +158,8 @@ export interface AdminRoutesDeps
 		ConfigRoutesDeps,
 		ConfigAccessRoutesDeps,
 		LoginAttemptsRoutesDeps,
-		ScheduledJobsRoutesDeps {}
+		ScheduledJobsRoutesDeps,
+		ProcessesRoutesDeps {}
 
 /**
  * Register all API routes. Gated by permissions, not URL tier.
@@ -190,6 +195,7 @@ export async function registerAdminRoutes(
 			await registerConfigAccessRoutes(apiRouter, deps);
 			await registerLoginAttemptsRoutes(apiRouter, deps);
 			await registerScheduledJobsRoutes(apiRouter, deps);
+			await registerProcessesRoutes(apiRouter, deps);
 		},
 		{ prefix: "/api" },
 	);
@@ -367,6 +373,7 @@ export { type CorsRoutesDeps } from "./admin/cors.js";
 export { type ConfigRoutesDeps } from "./admin/config.js";
 export { type ConfigAccessRoutesDeps } from "./admin/config-access.js";
 export { type LoginAttemptsRoutesDeps } from "./admin/login-attempts.js";
+export { type ProcessesRoutesDeps } from "./admin/processes.js";
 export { type EventTypesBffDeps } from "./bff/event-types.js";
 export { type RolesBffDeps } from "./bff/roles.js";
 export { type DebugEventsBffDeps } from "./bff/debug-events.js";

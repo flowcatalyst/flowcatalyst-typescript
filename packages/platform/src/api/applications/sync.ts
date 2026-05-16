@@ -31,6 +31,8 @@ import type {
 	SyncDispatchPoolsCommand,
 	SyncPrincipalsCommand,
 	SyncPrincipalItem,
+	SyncProcessesCommand,
+	SyncProcessItem,
 } from "../../application/index.js";
 import type {
 	RolesSynced,
@@ -38,6 +40,7 @@ import type {
 	SubscriptionsSynced,
 	DispatchPoolsSynced,
 	PrincipalsSynced,
+	ProcessesSynced,
 } from "../../domain/index.js";
 import { requirePermission } from "../../authorization/index.js";
 import {
@@ -48,6 +51,7 @@ import {
 	EVENT_TYPE_PERMISSIONS,
 	SUBSCRIPTION_PERMISSIONS,
 	DISPATCH_POOL_PERMISSIONS,
+	PROCESS_PERMISSIONS,
 } from "../../authorization/permissions/platform-admin.js";
 
 // ─── Request Schemas ────────────────────────────────────────────────────────
@@ -144,6 +148,20 @@ const SyncPrincipalsBodySchema = Type.Object({
 	),
 });
 
+// ProcessDefinition::toArray() → { code, name, description?, body?, diagramType?, tags? }
+const SyncProcessesBodySchema = Type.Object({
+	processes: Type.Array(
+		Type.Object({
+			code: Type.String({ minLength: 1 }),
+			name: Type.String({ minLength: 1 }),
+			description: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+			body: Type.Optional(Type.String()),
+			diagramType: Type.Optional(Type.String()),
+			tags: Type.Optional(Type.Array(Type.String())),
+		}),
+	),
+});
+
 // ─── Dependencies ───────────────────────────────────────────────────────────
 
 export interface ApplicationSyncRoutesDeps {
@@ -163,6 +181,10 @@ export interface ApplicationSyncRoutesDeps {
 	readonly syncPrincipalsUseCase: UseCase<
 		SyncPrincipalsCommand,
 		PrincipalsSynced
+	>;
+	readonly syncProcessesUseCase: UseCase<
+		SyncProcessesCommand,
+		ProcessesSynced
 	>;
 }
 
@@ -197,6 +219,7 @@ export async function registerApplicationSyncRoutes(
 		syncSubscriptionsUseCase,
 		syncDispatchPoolsUseCase,
 		syncPrincipalsUseCase,
+		syncProcessesUseCase,
 	} = deps;
 
 	// POST /api/applications/:appCode/roles/sync
@@ -473,6 +496,68 @@ export async function registerApplicationSyncRoutes(
 					updated: data.principalsUpdated,
 					deleted: data.principalsDeactivated,
 					syncedCodes: data.syncedEmails,
+				});
+			}
+
+			return sendResult(reply, result);
+		},
+	);
+
+	// POST /api/applications/:appCode/processes/sync
+	f.post(
+		"/:appCode/processes/sync",
+		{
+			preHandler: requirePermission(PROCESS_PERMISSIONS.SYNC),
+			schema: {
+				params: AppCodeParam,
+				querystring: RemoveUnlistedQuery,
+				body: SyncProcessesBodySchema,
+				response: {
+					200: SyncResponseSchema,
+					400: ErrorResponseSchema,
+				},
+			},
+		},
+		async (request, reply) => {
+			const { appCode } = request.params as Static<typeof AppCodeParam>;
+			const query = request.query as Static<typeof RemoveUnlistedQuery>;
+			const body = request.body as Static<typeof SyncProcessesBodySchema>;
+			const ctx = request.executionContext;
+
+			const processes: SyncProcessItem[] = body.processes.map((p) => {
+				const item: SyncProcessItem = {
+					code: p.code,
+					name: p.name,
+					description: p.description ?? null,
+				};
+				if (p.body !== undefined) {
+					(item as { body: string }).body = p.body;
+				}
+				if (p.diagramType !== undefined) {
+					(item as { diagramType: string }).diagramType = p.diagramType;
+				}
+				if (p.tags !== undefined) {
+					(item as { tags: string[] }).tags = p.tags;
+				}
+				return item;
+			});
+
+			const command: SyncProcessesCommand = {
+				applicationCode: appCode,
+				processes,
+				removeUnlisted: parseRemoveUnlisted(query),
+			};
+
+			const result = await syncProcessesUseCase.execute(command, ctx);
+
+			if (Result.isSuccess(result)) {
+				const data = result.value.getData();
+				return jsonSuccess(reply, {
+					applicationCode: data.applicationCode,
+					created: data.processesCreated,
+					updated: data.processesUpdated,
+					deleted: data.processesDeleted,
+					syncedCodes: data.syncedProcessCodes,
 				});
 			}
 

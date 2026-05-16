@@ -56,14 +56,6 @@ export interface SubscriptionsListResponse {
 	total: number;
 }
 
-export interface CodegenResponse {
-	code: string;
-	language: string;
-	eventTypeId: string;
-	eventCode: string;
-	schemaVersion: string;
-}
-
 export class ApiClient {
 	private readonly baseApiUrl: string;
 
@@ -97,20 +89,6 @@ export class ApiClient {
 		);
 	}
 
-	async generateCode(
-		eventTypeId: string,
-		language: string,
-		version?: string,
-	): Promise<CodegenResponse> {
-		const body: Record<string, string> = { language };
-		if (version) body["version"] = version;
-
-		return this.post<CodegenResponse>(
-			`${this.baseApiUrl}/event-types/${encodeURIComponent(eventTypeId)}/codegen`,
-			body,
-		);
-	}
-
 	async listSubscriptions(): Promise<SubscriptionsListResponse> {
 		return this.get<SubscriptionsListResponse>(
 			`${this.baseApiUrl}/subscriptions`,
@@ -130,25 +108,6 @@ export class ApiClient {
 				Authorization: `Bearer ${token}`,
 				Accept: "application/json",
 			},
-		});
-
-		if (!response.ok) {
-			throw new Error(`API request failed: ${response.status} ${url}`);
-		}
-
-		return (await response.json()) as T;
-	}
-
-	private async post<T>(url: string, body: unknown): Promise<T> {
-		const token = await this.tokenManager.getAccessToken();
-		const response = await fetch(url, {
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${token}`,
-				"Content-Type": "application/json",
-				Accept: "application/json",
-			},
-			body: JSON.stringify(body),
 		});
 
 		if (!response.ok) {

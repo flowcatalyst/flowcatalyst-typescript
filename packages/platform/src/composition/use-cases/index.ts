@@ -19,6 +19,7 @@ import { createCorsUseCases } from "./cors.js";
 import { createConfigAccessUseCases } from "./config-access.js";
 import { createPlatformConfigUseCases } from "./platform-config.js";
 import { createScheduledJobUseCases } from "./scheduled-job.js";
+import { createProcessUseCases } from "./process.js";
 
 export interface CreateUseCasesDeps {
 	repos: Repositories;
@@ -42,6 +43,7 @@ export function createUseCases(deps: CreateUseCasesDeps) {
 		...createConfigAccessUseCases(deps),
 		...createPlatformConfigUseCases(deps),
 		...createScheduledJobUseCases(deps),
+		...createProcessUseCases(deps),
 	};
 }
 
