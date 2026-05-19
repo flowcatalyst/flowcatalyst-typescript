@@ -17,6 +17,18 @@ import { createEventProjectionService } from "./event-projection-service.js";
 import { createDispatchJobProjectionService } from "./dispatch-job-projection-service.js";
 import { createPartitionManagerService } from "./partition-manager.js";
 import { createEventFanOutService } from "./event-fan-out-service.js";
+import {
+	aggregateHealth,
+	type StreamProcessorHealth,
+} from "./stream-health.js";
+
+export {
+	StreamHealth,
+	aggregateHealth,
+	type StreamHealthSnapshot,
+	type StreamProcessorHealth,
+	type StreamStatus,
+} from "./stream-health.js";
 
 /**
  * Stream processor configuration options for in-process embedding.
@@ -31,6 +43,14 @@ export interface StreamProcessorConfig {
  */
 export interface StreamProcessorHandle {
 	stop: () => Promise<void>;
+	/**
+	 * Aggregated health across all running services (event projection,
+	 * dispatch-job projection, partition manager, fan-out). The stream
+	 * processor runs in its own process with no HTTP server today;
+	 * embedders can serve this snapshot themselves if they want to
+	 * expose it.
+	 */
+	getHealth: () => StreamProcessorHealth;
 }
 
 /**
@@ -151,6 +171,13 @@ export async function startStreamProcessor(
 			await sql.end();
 			logger.info("Stream processor stopped");
 		},
+		getHealth: () =>
+			aggregateHealth([
+				eventProjection.health,
+				dispatchJobProjection.health,
+				partitionManager.health,
+				fanOutService.health,
+			]),
 	};
 }
 

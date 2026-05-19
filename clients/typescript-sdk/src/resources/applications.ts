@@ -9,19 +9,19 @@ import type { SdkError } from "../errors";
 import type { FlowCatalystClient } from "../client";
 import * as sdk from "../generated/sdk.gen";
 import type {
-	GetApiAdminApplicationsResponse,
-	GetApiAdminApplicationsByIdResponse,
-	PostApiAdminApplicationsData,
-	PutApiAdminApplicationsByIdData,
-	PostApiAdminApplicationsByIdProvisionServiceAccountResponse,
+	GetApiApplicationsResponse,
+	GetApiApplicationsByIdResponse,
+	PostApiApplicationsData,
+	PutApiApplicationsByIdData,
+	PostApiApplicationsByIdProvisionServiceAccountResponse,
 } from "../generated/types.gen";
 
-export type ApplicationListResponse = GetApiAdminApplicationsResponse;
-export type ApplicationResponse = GetApiAdminApplicationsByIdResponse;
-export type CreateApplicationRequest = PostApiAdminApplicationsData["body"];
-export type UpdateApplicationRequest = PutApiAdminApplicationsByIdData["body"];
+export type ApplicationListResponse = GetApiApplicationsResponse;
+export type ApplicationResponse = GetApiApplicationsByIdResponse;
+export type CreateApplicationRequest = PostApiApplicationsData["body"];
+export type UpdateApplicationRequest = PutApiApplicationsByIdData["body"];
 export type CreateServiceAccountResponse =
-	PostApiAdminApplicationsByIdProvisionServiceAccountResponse;
+	PostApiApplicationsByIdProvisionServiceAccountResponse;
 
 /**
  * Applications resource for managing platform applications.
@@ -38,7 +38,7 @@ export class ApplicationsResource {
 	 */
 	list(): ResultAsync<ApplicationListResponse, SdkError> {
 		return this.client.request<ApplicationListResponse>((httpClient, headers) =>
-			sdk.getApiAdminApplications({
+			sdk.getApiApplications({
 				client: httpClient,
 				headers,
 			}),
@@ -50,7 +50,7 @@ export class ApplicationsResource {
 	 */
 	get(id: string): ResultAsync<ApplicationResponse, SdkError> {
 		return this.client.request<ApplicationResponse>((httpClient, headers) =>
-			sdk.getApiAdminApplicationsById({
+			sdk.getApiApplicationsById({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -63,7 +63,7 @@ export class ApplicationsResource {
 	 */
 	getByCode(code: string): ResultAsync<ApplicationResponse, SdkError> {
 		return this.client.request<ApplicationResponse>((httpClient, headers) =>
-			sdk.getApiAdminApplicationsByCodeByCode({
+			sdk.getApiApplicationsByCodeByCode({
 				client: httpClient,
 				headers,
 				path: { code },
@@ -78,7 +78,7 @@ export class ApplicationsResource {
 		data: CreateApplicationRequest,
 	): ResultAsync<ApplicationResponse, SdkError> {
 		return this.client.request<ApplicationResponse>((httpClient, headers) =>
-			sdk.postApiAdminApplications({
+			sdk.postApiApplications({
 				client: httpClient,
 				headers,
 				body: data,
@@ -94,7 +94,7 @@ export class ApplicationsResource {
 		data: UpdateApplicationRequest,
 	): ResultAsync<ApplicationResponse, SdkError> {
 		return this.client.request<ApplicationResponse>((httpClient, headers) =>
-			sdk.putApiAdminApplicationsById({
+			sdk.putApiApplicationsById({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -108,7 +108,7 @@ export class ApplicationsResource {
 	 */
 	delete(id: string): ResultAsync<unknown, SdkError> {
 		return this.client.request<unknown>((httpClient, headers) =>
-			sdk.deleteApiAdminApplicationsById({
+			sdk.deleteApiApplicationsById({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -121,7 +121,7 @@ export class ApplicationsResource {
 	 */
 	activate(id: string): ResultAsync<ApplicationResponse, SdkError> {
 		return this.client.request<ApplicationResponse>((httpClient, headers) =>
-			sdk.postApiAdminApplicationsByIdActivate({
+			sdk.postApiApplicationsByIdActivate({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -134,7 +134,7 @@ export class ApplicationsResource {
 	 */
 	deactivate(id: string): ResultAsync<ApplicationResponse, SdkError> {
 		return this.client.request<ApplicationResponse>((httpClient, headers) =>
-			sdk.postApiAdminApplicationsByIdDeactivate({
+			sdk.postApiApplicationsByIdDeactivate({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -150,7 +150,7 @@ export class ApplicationsResource {
 	): ResultAsync<CreateServiceAccountResponse, SdkError> {
 		return this.client.request<CreateServiceAccountResponse>(
 			(httpClient, headers) =>
-				sdk.postApiAdminApplicationsByIdProvisionServiceAccount({
+				sdk.postApiApplicationsByIdProvisionServiceAccount({
 					client: httpClient,
 					headers,
 					path: { id },

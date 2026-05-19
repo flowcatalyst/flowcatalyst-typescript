@@ -1,24 +1,26 @@
 /**
  * Event Projection Service
  *
- * Projects events from msg_event_projection_feed to msg_events_read using pure SQL.
+ * Projects events from `msg_events` directly into `msg_events_read`
+ * using a single atomic CTE. Reads rows where `projected_at IS NULL`,
+ * inserts them into the read model (parsing `application:subdomain:
+ * aggregate` from `type`), and stamps `projected_at` to mark them
+ * projected. Mirrors Rust `crates/fc-stream/src/event_projection.rs`.
  *
- * Uses a single writable CTE per poll cycle: one atomic statement that
- * selects the batch, inserts into msg_events_read, and marks feed entries
- * as processed. Zero application-layer data transfer - everything stays
- * in PostgreSQL.
+ * Previously this service drained `msg_event_projection_feed`; the
+ * feed table has been retired — projection reads the write model
+ * directly.
  *
- * Algorithm:
- *   1. Single CTE: batch SELECT -> INSERT msg_events_read -> UPDATE feed
- *   2. Sleep: 0ms if full batch, 100ms if partial, 1000ms if zero results
- *
- * Type hierarchy parsing:
- *   type: "orders:fulfillment:shipment:shipped"
- *   -> application: "orders", subdomain: "fulfillment", aggregate: "shipment"
+ * Adaptive sleep:
+ *   - Full batch: poll again immediately
+ *   - Partial batch: 100ms
+ *   - Empty: 1000ms
+ *   - Error: 5000ms
  */
 
 import type postgres from "postgres";
 import type { Logger } from "@flowcatalyst/logging";
+import { StreamHealth, type StreamHealthSnapshot } from "./stream-health.js";
 
 export interface EventProjectionConfig {
 	readonly enabled: boolean;
@@ -29,6 +31,8 @@ export interface EventProjectionService {
 	start(): void;
 	stop(): void;
 	isRunning(): boolean;
+	getHealth(): StreamHealthSnapshot;
+	readonly health: StreamHealth;
 }
 
 export function createEventProjectionService(
@@ -37,59 +41,54 @@ export function createEventProjectionService(
 	logger: Logger,
 ): EventProjectionService {
 	let running = false;
+	const health = new StreamHealth("event-projection");
 
-	/**
-	 * Single-statement batch projection using writable CTE.
-	 *
-	 * 1. `batch` CTE: selects unprocessed feed entries (LIMIT batchSize)
-	 * 2. `projected` CTE: UPSERTs into msg_events_read from batch payloads
-	 * 3. Main UPDATE: marks batch entries as processed
-	 *
-	 * All three operations execute atomically in one round-trip.
-	 * Data never leaves PostgreSQL - JSONB extraction happens in-engine.
-	 */
 	async function pollAndProject(): Promise<number> {
 		const result = await sql`
 			WITH batch AS (
-				SELECT id, event_id, payload
-				FROM msg_event_projection_feed
-				WHERE processed = 0
-				ORDER BY id
+				SELECT id, created_at
+				FROM msg_events
+				WHERE projected_at IS NULL
+				ORDER BY created_at
 				LIMIT ${config.batchSize}
 			),
 			projected AS (
 				INSERT INTO msg_events_read (
 					id, spec_version, type, source, subject, time, data,
 					correlation_id, causation_id, deduplication_id, message_group,
-					client_id, application, subdomain, aggregate, projected_at
+					client_id, application, subdomain, aggregate, created_at, projected_at
 				)
 				SELECT
-					b.event_id,
-					b.payload->>'specVersion',
-					b.payload->>'type',
-					b.payload->>'source',
-					b.payload->>'subject',
-					(b.payload->>'time')::timestamptz,
-					b.payload->>'data',
-					b.payload->>'correlationId',
-					b.payload->>'causationId',
-					b.payload->>'deduplicationId',
-					b.payload->>'messageGroup',
-					b.payload->>'clientId',
-					split_part(b.payload->>'type', ':', 1),
-					NULLIF(split_part(b.payload->>'type', ':', 2), ''),
-					NULLIF(split_part(b.payload->>'type', ':', 3), ''),
+					e.id,
+					e.spec_version,
+					e.type,
+					e.source,
+					e.subject,
+					e.time,
+					e.data::text,
+					e.correlation_id,
+					e.causation_id,
+					e.deduplication_id,
+					e.message_group,
+					e.client_id,
+					split_part(e.type, ':', 1),
+					NULLIF(split_part(e.type, ':', 2), ''),
+					NULLIF(split_part(e.type, ':', 3), ''),
+					e.created_at,
 					NOW()
-				FROM batch b
-				ON CONFLICT (id) DO NOTHING
+				FROM msg_events e
+				JOIN batch b ON b.id = e.id AND b.created_at = e.created_at
+				ON CONFLICT (id, created_at) DO NOTHING
 			)
-			UPDATE msg_event_projection_feed
-			SET processed = 1, processed_at = NOW()
-			WHERE id IN (SELECT id FROM batch)
+			UPDATE msg_events m
+			SET projected_at = NOW()
+			FROM batch b
+			WHERE m.id = b.id AND m.created_at = b.created_at
 		`;
 
 		const count = result.count;
 		if (count > 0) {
+			health.addProcessed(count);
 			logger.debug({ count }, "Projected events");
 		}
 		return count;
@@ -99,17 +98,16 @@ export function createEventProjectionService(
 		while (running) {
 			try {
 				const processed = await pollAndProject();
-
 				if (processed === 0) {
-					await sleep(1000); // No work, sleep 1 second
+					await sleep(1000);
 				} else if (processed < config.batchSize) {
-					await sleep(100); // Partial batch, sleep 100ms
+					await sleep(100);
 				}
-				// Full batch: no sleep, immediately poll again
 			} catch (err) {
 				if (!running) break;
+				health.recordError();
 				logger.error({ err }, "Error in event projection poll loop");
-				await sleep(5000); // Back off on error
+				await sleep(5000);
 			}
 		}
 	}
@@ -119,11 +117,12 @@ export function createEventProjectionService(
 			logger.warn("Event projection service already running");
 			return;
 		}
-
 		running = true;
+		health.setRunning(true);
 		pollLoop().catch((err) => {
 			logger.error({ err }, "Event projection poll loop exited unexpectedly");
 			running = false;
+			health.setRunning(false);
 		});
 		logger.info(
 			{ batchSize: config.batchSize },
@@ -135,10 +134,17 @@ export function createEventProjectionService(
 		if (!running) return;
 		logger.info("Stopping event projection service...");
 		running = false;
+		health.setRunning(false);
 		logger.info("Event projection service stopped");
 	}
 
-	return { start, stop, isRunning: () => running };
+	return {
+		start,
+		stop,
+		isRunning: () => running,
+		getHealth: () => health.snapshot(),
+		health,
+	};
 }
 
 function sleep(ms: number): Promise<void> {

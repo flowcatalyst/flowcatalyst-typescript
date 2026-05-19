@@ -25,6 +25,7 @@
 
 import type postgres from "postgres";
 import type { Logger } from "@flowcatalyst/logging";
+import { StreamHealth } from "./stream-health.js";
 
 const PARTITIONED_PARENTS = [
 	"msg_events",
@@ -50,6 +51,7 @@ export interface PartitionManagerService {
 	start(): void;
 	stop(): void;
 	isRunning(): boolean;
+	readonly health: import("./stream-health.js").StreamHealth;
 }
 
 export const DEFAULT_PARTITION_MANAGER_CONFIG: PartitionManagerConfig = {
@@ -66,6 +68,7 @@ export function createPartitionManagerService(
 ): PartitionManagerService {
 	let running = false;
 	let timer: NodeJS.Timeout | null = null;
+	const health = new StreamHealth("partition-manager");
 
 	async function isPartitioned(table: string): Promise<boolean> {
 		const rows = await sql<{ exists: boolean }[]>`
@@ -182,12 +185,14 @@ export function createPartitionManagerService(
 		if (!running) return;
 		try {
 			const { created, dropped } = await tick();
+			health.addProcessed(created + dropped);
 			if (created > 0 || dropped > 0) {
 				logger.info({ created, dropped }, "Partition manager tick");
 			} else {
 				logger.debug("Partition manager tick: nothing to do");
 			}
 		} catch (err) {
+			health.recordError();
 			logger.error({ err }, "Partition manager tick failed");
 		}
 	}
@@ -198,15 +203,18 @@ export function createPartitionManagerService(
 			return;
 		}
 		running = true;
+		health.setRunning(true);
 		startInternal().catch((err) => {
 			logger.error({ err }, "Partition manager start failed");
 			running = false;
+			health.setRunning(false);
 		});
 	}
 
 	function stop(): void {
 		if (!running) return;
 		running = false;
+		health.setRunning(false);
 		if (timer) {
 			clearInterval(timer);
 			timer = null;
@@ -214,7 +222,7 @@ export function createPartitionManagerService(
 		logger.info("Partition manager stopped");
 	}
 
-	return { start, stop, isRunning: () => running };
+	return { start, stop, isRunning: () => running, health };
 }
 
 /**

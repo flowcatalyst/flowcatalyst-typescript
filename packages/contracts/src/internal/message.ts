@@ -20,6 +20,14 @@ export type MessagePointer = {
 	payload?: unknown;
 	/** Optional auth token for downstream calls */
 	authToken?: string | undefined;
+	/**
+	 * Optional shared secret for HMAC-SHA256 webhook signing. When
+	 * present, the mediator computes `HMAC(secret, timestamp + body)` and
+	 * sends the result as `X-FLOWCATALYST-SIGNATURE` alongside
+	 * `X-FLOWCATALYST-TIMESTAMP`. Receivers verify by reconstructing the
+	 * same signature payload.
+	 */
+	signingSecret?: string | undefined;
 	/** Optional callback URL override */
 	callbackUrl?: string | undefined;
 	/** Timestamp when message was created */

@@ -4,7 +4,7 @@ export type ClientOptions = {
     baseUrl: `${string}://${string}` | (string & {});
 };
 
-export type GetApiAdminPrincipalsData = {
+export type GetApiPrincipalsData = {
     body?: never;
     path?: never;
     query?: {
@@ -13,6 +13,7 @@ export type GetApiAdminPrincipalsData = {
         active?: string;
         email?: string;
         q?: string;
+        roles?: string;
         page?: string;
         pageSize?: string;
         sortField?: string;
@@ -21,7 +22,7 @@ export type GetApiAdminPrincipalsData = {
     url: '/api/principals';
 };
 
-export type GetApiAdminPrincipalsResponses = {
+export type GetApiPrincipalsResponses = {
     /**
      * Default Response
      */
@@ -45,9 +46,9 @@ export type GetApiAdminPrincipalsResponses = {
     };
 };
 
-export type GetApiAdminPrincipalsResponse = GetApiAdminPrincipalsResponses[keyof GetApiAdminPrincipalsResponses];
+export type GetApiPrincipalsResponse = GetApiPrincipalsResponses[keyof GetApiPrincipalsResponses];
 
-export type DeleteApiAdminPrincipalsByIdData = {
+export type DeleteApiPrincipalsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -56,7 +57,7 @@ export type DeleteApiAdminPrincipalsByIdData = {
     url: '/api/principals/{id}';
 };
 
-export type DeleteApiAdminPrincipalsByIdErrors = {
+export type DeleteApiPrincipalsByIdErrors = {
     /**
      * Default Response
      */
@@ -78,18 +79,18 @@ export type DeleteApiAdminPrincipalsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminPrincipalsByIdError = DeleteApiAdminPrincipalsByIdErrors[keyof DeleteApiAdminPrincipalsByIdErrors];
+export type DeleteApiPrincipalsByIdError = DeleteApiPrincipalsByIdErrors[keyof DeleteApiPrincipalsByIdErrors];
 
-export type DeleteApiAdminPrincipalsByIdResponses = {
+export type DeleteApiPrincipalsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminPrincipalsByIdResponse = DeleteApiAdminPrincipalsByIdResponses[keyof DeleteApiAdminPrincipalsByIdResponses];
+export type DeleteApiPrincipalsByIdResponse = DeleteApiPrincipalsByIdResponses[keyof DeleteApiPrincipalsByIdResponses];
 
-export type GetApiAdminPrincipalsByIdData = {
+export type GetApiPrincipalsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -98,7 +99,7 @@ export type GetApiAdminPrincipalsByIdData = {
     url: '/api/principals/{id}';
 };
 
-export type GetApiAdminPrincipalsByIdErrors = {
+export type GetApiPrincipalsByIdErrors = {
     /**
      * Default Response
      */
@@ -120,9 +121,9 @@ export type GetApiAdminPrincipalsByIdErrors = {
     };
 };
 
-export type GetApiAdminPrincipalsByIdError = GetApiAdminPrincipalsByIdErrors[keyof GetApiAdminPrincipalsByIdErrors];
+export type GetApiPrincipalsByIdError = GetApiPrincipalsByIdErrors[keyof GetApiPrincipalsByIdErrors];
 
-export type GetApiAdminPrincipalsByIdResponses = {
+export type GetApiPrincipalsByIdResponses = {
     /**
      * Default Response
      */
@@ -144,9 +145,9 @@ export type GetApiAdminPrincipalsByIdResponses = {
     };
 };
 
-export type GetApiAdminPrincipalsByIdResponse = GetApiAdminPrincipalsByIdResponses[keyof GetApiAdminPrincipalsByIdResponses];
+export type GetApiPrincipalsByIdResponse = GetApiPrincipalsByIdResponses[keyof GetApiPrincipalsByIdResponses];
 
-export type PutApiAdminPrincipalsByIdData = {
+export type PutApiPrincipalsByIdData = {
     body: {
         name: string;
         scope?: 'ANCHOR' | 'PARTNER' | 'CLIENT';
@@ -159,7 +160,7 @@ export type PutApiAdminPrincipalsByIdData = {
     url: '/api/principals/{id}';
 };
 
-export type PutApiAdminPrincipalsByIdErrors = {
+export type PutApiPrincipalsByIdErrors = {
     /**
      * Default Response
      */
@@ -200,9 +201,9 @@ export type PutApiAdminPrincipalsByIdErrors = {
     };
 };
 
-export type PutApiAdminPrincipalsByIdError = PutApiAdminPrincipalsByIdErrors[keyof PutApiAdminPrincipalsByIdErrors];
+export type PutApiPrincipalsByIdError = PutApiPrincipalsByIdErrors[keyof PutApiPrincipalsByIdErrors];
 
-export type PutApiAdminPrincipalsByIdResponses = {
+export type PutApiPrincipalsByIdResponses = {
     /**
      * Default Response
      */
@@ -223,17 +224,14 @@ export type PutApiAdminPrincipalsByIdResponses = {
     };
 };
 
-export type PutApiAdminPrincipalsByIdResponse = PutApiAdminPrincipalsByIdResponses[keyof PutApiAdminPrincipalsByIdResponses];
+export type PutApiPrincipalsByIdResponse = PutApiPrincipalsByIdResponses[keyof PutApiPrincipalsByIdResponses];
 
-export type PostApiAdminPrincipalsUsersData = {
+export type PostApiPrincipalsUsersData = {
     body: {
         email: string;
         password?: string | null;
         name: string;
         clientId?: string | null;
-        /**
-         * When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true.
-         */
         enforcePasswordComplexity?: boolean | null;
     };
     path?: never;
@@ -241,7 +239,7 @@ export type PostApiAdminPrincipalsUsersData = {
     url: '/api/principals/users';
 };
 
-export type PostApiAdminPrincipalsUsersErrors = {
+export type PostApiPrincipalsUsersErrors = {
     /**
      * Default Response
      */
@@ -282,9 +280,9 @@ export type PostApiAdminPrincipalsUsersErrors = {
     };
 };
 
-export type PostApiAdminPrincipalsUsersError = PostApiAdminPrincipalsUsersErrors[keyof PostApiAdminPrincipalsUsersErrors];
+export type PostApiPrincipalsUsersError = PostApiPrincipalsUsersErrors[keyof PostApiPrincipalsUsersErrors];
 
-export type PostApiAdminPrincipalsUsersResponses = {
+export type PostApiPrincipalsUsersResponses = {
     /**
      * Default Response
      */
@@ -305,9 +303,9 @@ export type PostApiAdminPrincipalsUsersResponses = {
     };
 };
 
-export type PostApiAdminPrincipalsUsersResponse = PostApiAdminPrincipalsUsersResponses[keyof PostApiAdminPrincipalsUsersResponses];
+export type PostApiPrincipalsUsersResponse = PostApiPrincipalsUsersResponses[keyof PostApiPrincipalsUsersResponses];
 
-export type PostApiAdminPrincipalsByIdActivateData = {
+export type PostApiPrincipalsByIdActivateData = {
     body?: never;
     path: {
         id: string;
@@ -316,7 +314,7 @@ export type PostApiAdminPrincipalsByIdActivateData = {
     url: '/api/principals/{id}/activate';
 };
 
-export type PostApiAdminPrincipalsByIdActivateErrors = {
+export type PostApiPrincipalsByIdActivateErrors = {
     /**
      * Default Response
      */
@@ -338,9 +336,9 @@ export type PostApiAdminPrincipalsByIdActivateErrors = {
     };
 };
 
-export type PostApiAdminPrincipalsByIdActivateError = PostApiAdminPrincipalsByIdActivateErrors[keyof PostApiAdminPrincipalsByIdActivateErrors];
+export type PostApiPrincipalsByIdActivateError = PostApiPrincipalsByIdActivateErrors[keyof PostApiPrincipalsByIdActivateErrors];
 
-export type PostApiAdminPrincipalsByIdActivateResponses = {
+export type PostApiPrincipalsByIdActivateResponses = {
     /**
      * Default Response
      */
@@ -349,9 +347,9 @@ export type PostApiAdminPrincipalsByIdActivateResponses = {
     };
 };
 
-export type PostApiAdminPrincipalsByIdActivateResponse = PostApiAdminPrincipalsByIdActivateResponses[keyof PostApiAdminPrincipalsByIdActivateResponses];
+export type PostApiPrincipalsByIdActivateResponse = PostApiPrincipalsByIdActivateResponses[keyof PostApiPrincipalsByIdActivateResponses];
 
-export type PostApiAdminPrincipalsByIdDeactivateData = {
+export type PostApiPrincipalsByIdDeactivateData = {
     body?: never;
     path: {
         id: string;
@@ -360,7 +358,7 @@ export type PostApiAdminPrincipalsByIdDeactivateData = {
     url: '/api/principals/{id}/deactivate';
 };
 
-export type PostApiAdminPrincipalsByIdDeactivateErrors = {
+export type PostApiPrincipalsByIdDeactivateErrors = {
     /**
      * Default Response
      */
@@ -382,9 +380,9 @@ export type PostApiAdminPrincipalsByIdDeactivateErrors = {
     };
 };
 
-export type PostApiAdminPrincipalsByIdDeactivateError = PostApiAdminPrincipalsByIdDeactivateErrors[keyof PostApiAdminPrincipalsByIdDeactivateErrors];
+export type PostApiPrincipalsByIdDeactivateError = PostApiPrincipalsByIdDeactivateErrors[keyof PostApiPrincipalsByIdDeactivateErrors];
 
-export type PostApiAdminPrincipalsByIdDeactivateResponses = {
+export type PostApiPrincipalsByIdDeactivateResponses = {
     /**
      * Default Response
      */
@@ -393,14 +391,11 @@ export type PostApiAdminPrincipalsByIdDeactivateResponses = {
     };
 };
 
-export type PostApiAdminPrincipalsByIdDeactivateResponse = PostApiAdminPrincipalsByIdDeactivateResponses[keyof PostApiAdminPrincipalsByIdDeactivateResponses];
+export type PostApiPrincipalsByIdDeactivateResponse = PostApiPrincipalsByIdDeactivateResponses[keyof PostApiPrincipalsByIdDeactivateResponses];
 
-export type PostApiAdminPrincipalsByIdResetPasswordData = {
+export type PostApiPrincipalsByIdResetPasswordData = {
     body: {
         newPassword: string;
-        /**
-         * When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true.
-         */
         enforcePasswordComplexity?: boolean | null;
     };
     path: {
@@ -410,7 +405,7 @@ export type PostApiAdminPrincipalsByIdResetPasswordData = {
     url: '/api/principals/{id}/reset-password';
 };
 
-export type PostApiAdminPrincipalsByIdResetPasswordErrors = {
+export type PostApiPrincipalsByIdResetPasswordErrors = {
     /**
      * Default Response
      */
@@ -451,9 +446,9 @@ export type PostApiAdminPrincipalsByIdResetPasswordErrors = {
     };
 };
 
-export type PostApiAdminPrincipalsByIdResetPasswordError = PostApiAdminPrincipalsByIdResetPasswordErrors[keyof PostApiAdminPrincipalsByIdResetPasswordErrors];
+export type PostApiPrincipalsByIdResetPasswordError = PostApiPrincipalsByIdResetPasswordErrors[keyof PostApiPrincipalsByIdResetPasswordErrors];
 
-export type PostApiAdminPrincipalsByIdResetPasswordResponses = {
+export type PostApiPrincipalsByIdResetPasswordResponses = {
     /**
      * Default Response
      */
@@ -462,9 +457,9 @@ export type PostApiAdminPrincipalsByIdResetPasswordResponses = {
     };
 };
 
-export type PostApiAdminPrincipalsByIdResetPasswordResponse = PostApiAdminPrincipalsByIdResetPasswordResponses[keyof PostApiAdminPrincipalsByIdResetPasswordResponses];
+export type PostApiPrincipalsByIdResetPasswordResponse = PostApiPrincipalsByIdResetPasswordResponses[keyof PostApiPrincipalsByIdResetPasswordResponses];
 
-export type GetApiAdminPrincipalsByIdRolesData = {
+export type GetApiPrincipalsByIdRolesData = {
     body?: never;
     path: {
         id: string;
@@ -473,7 +468,7 @@ export type GetApiAdminPrincipalsByIdRolesData = {
     url: '/api/principals/{id}/roles';
 };
 
-export type GetApiAdminPrincipalsByIdRolesErrors = {
+export type GetApiPrincipalsByIdRolesErrors = {
     /**
      * Default Response
      */
@@ -495,9 +490,9 @@ export type GetApiAdminPrincipalsByIdRolesErrors = {
     };
 };
 
-export type GetApiAdminPrincipalsByIdRolesError = GetApiAdminPrincipalsByIdRolesErrors[keyof GetApiAdminPrincipalsByIdRolesErrors];
+export type GetApiPrincipalsByIdRolesError = GetApiPrincipalsByIdRolesErrors[keyof GetApiPrincipalsByIdRolesErrors];
 
-export type GetApiAdminPrincipalsByIdRolesResponses = {
+export type GetApiPrincipalsByIdRolesResponses = {
     /**
      * Default Response
      */
@@ -510,9 +505,9 @@ export type GetApiAdminPrincipalsByIdRolesResponses = {
     };
 };
 
-export type GetApiAdminPrincipalsByIdRolesResponse = GetApiAdminPrincipalsByIdRolesResponses[keyof GetApiAdminPrincipalsByIdRolesResponses];
+export type GetApiPrincipalsByIdRolesResponse = GetApiPrincipalsByIdRolesResponses[keyof GetApiPrincipalsByIdRolesResponses];
 
-export type PostApiAdminPrincipalsByIdRolesData = {
+export type PostApiPrincipalsByIdRolesData = {
     body: {
         roleName: string;
     };
@@ -523,7 +518,7 @@ export type PostApiAdminPrincipalsByIdRolesData = {
     url: '/api/principals/{id}/roles';
 };
 
-export type PostApiAdminPrincipalsByIdRolesErrors = {
+export type PostApiPrincipalsByIdRolesErrors = {
     /**
      * Default Response
      */
@@ -564,9 +559,9 @@ export type PostApiAdminPrincipalsByIdRolesErrors = {
     };
 };
 
-export type PostApiAdminPrincipalsByIdRolesError = PostApiAdminPrincipalsByIdRolesErrors[keyof PostApiAdminPrincipalsByIdRolesErrors];
+export type PostApiPrincipalsByIdRolesError = PostApiPrincipalsByIdRolesErrors[keyof PostApiPrincipalsByIdRolesErrors];
 
-export type PostApiAdminPrincipalsByIdRolesResponses = {
+export type PostApiPrincipalsByIdRolesResponses = {
     /**
      * Default Response
      */
@@ -577,9 +572,9 @@ export type PostApiAdminPrincipalsByIdRolesResponses = {
     };
 };
 
-export type PostApiAdminPrincipalsByIdRolesResponse = PostApiAdminPrincipalsByIdRolesResponses[keyof PostApiAdminPrincipalsByIdRolesResponses];
+export type PostApiPrincipalsByIdRolesResponse = PostApiPrincipalsByIdRolesResponses[keyof PostApiPrincipalsByIdRolesResponses];
 
-export type PutApiAdminPrincipalsByIdRolesData = {
+export type PutApiPrincipalsByIdRolesData = {
     body: {
         roles: Array<string>;
     };
@@ -590,7 +585,7 @@ export type PutApiAdminPrincipalsByIdRolesData = {
     url: '/api/principals/{id}/roles';
 };
 
-export type PutApiAdminPrincipalsByIdRolesErrors = {
+export type PutApiPrincipalsByIdRolesErrors = {
     /**
      * Default Response
      */
@@ -631,9 +626,9 @@ export type PutApiAdminPrincipalsByIdRolesErrors = {
     };
 };
 
-export type PutApiAdminPrincipalsByIdRolesError = PutApiAdminPrincipalsByIdRolesErrors[keyof PutApiAdminPrincipalsByIdRolesErrors];
+export type PutApiPrincipalsByIdRolesError = PutApiPrincipalsByIdRolesErrors[keyof PutApiPrincipalsByIdRolesErrors];
 
-export type PutApiAdminPrincipalsByIdRolesResponses = {
+export type PutApiPrincipalsByIdRolesResponses = {
     /**
      * Default Response
      */
@@ -648,19 +643,19 @@ export type PutApiAdminPrincipalsByIdRolesResponses = {
     };
 };
 
-export type PutApiAdminPrincipalsByIdRolesResponse = PutApiAdminPrincipalsByIdRolesResponses[keyof PutApiAdminPrincipalsByIdRolesResponses];
+export type PutApiPrincipalsByIdRolesResponse = PutApiPrincipalsByIdRolesResponses[keyof PutApiPrincipalsByIdRolesResponses];
 
-export type DeleteApiAdminPrincipalsByIdRolesByRoleNameData = {
+export type DeleteApiPrincipalsByIdRolesByRoleData = {
     body?: never;
     path: {
         id: string;
-        roleName: string;
+        role: string;
     };
     query?: never;
-    url: '/api/principals/{id}/roles/{roleName}';
+    url: '/api/principals/{id}/roles/{role}';
 };
 
-export type DeleteApiAdminPrincipalsByIdRolesByRoleNameErrors = {
+export type DeleteApiPrincipalsByIdRolesByRoleErrors = {
     /**
      * Default Response
      */
@@ -682,18 +677,18 @@ export type DeleteApiAdminPrincipalsByIdRolesByRoleNameErrors = {
     };
 };
 
-export type DeleteApiAdminPrincipalsByIdRolesByRoleNameError = DeleteApiAdminPrincipalsByIdRolesByRoleNameErrors[keyof DeleteApiAdminPrincipalsByIdRolesByRoleNameErrors];
+export type DeleteApiPrincipalsByIdRolesByRoleError = DeleteApiPrincipalsByIdRolesByRoleErrors[keyof DeleteApiPrincipalsByIdRolesByRoleErrors];
 
-export type DeleteApiAdminPrincipalsByIdRolesByRoleNameResponses = {
+export type DeleteApiPrincipalsByIdRolesByRoleResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminPrincipalsByIdRolesByRoleNameResponse = DeleteApiAdminPrincipalsByIdRolesByRoleNameResponses[keyof DeleteApiAdminPrincipalsByIdRolesByRoleNameResponses];
+export type DeleteApiPrincipalsByIdRolesByRoleResponse = DeleteApiPrincipalsByIdRolesByRoleResponses[keyof DeleteApiPrincipalsByIdRolesByRoleResponses];
 
-export type GetApiAdminPrincipalsByIdClientAccessData = {
+export type GetApiPrincipalsByIdClientAccessData = {
     body?: never;
     path: {
         id: string;
@@ -702,7 +697,7 @@ export type GetApiAdminPrincipalsByIdClientAccessData = {
     url: '/api/principals/{id}/client-access';
 };
 
-export type GetApiAdminPrincipalsByIdClientAccessErrors = {
+export type GetApiPrincipalsByIdClientAccessErrors = {
     /**
      * Default Response
      */
@@ -724,9 +719,9 @@ export type GetApiAdminPrincipalsByIdClientAccessErrors = {
     };
 };
 
-export type GetApiAdminPrincipalsByIdClientAccessError = GetApiAdminPrincipalsByIdClientAccessErrors[keyof GetApiAdminPrincipalsByIdClientAccessErrors];
+export type GetApiPrincipalsByIdClientAccessError = GetApiPrincipalsByIdClientAccessErrors[keyof GetApiPrincipalsByIdClientAccessErrors];
 
-export type GetApiAdminPrincipalsByIdClientAccessResponses = {
+export type GetApiPrincipalsByIdClientAccessResponses = {
     /**
      * Default Response
      */
@@ -740,9 +735,9 @@ export type GetApiAdminPrincipalsByIdClientAccessResponses = {
     };
 };
 
-export type GetApiAdminPrincipalsByIdClientAccessResponse = GetApiAdminPrincipalsByIdClientAccessResponses[keyof GetApiAdminPrincipalsByIdClientAccessResponses];
+export type GetApiPrincipalsByIdClientAccessResponse = GetApiPrincipalsByIdClientAccessResponses[keyof GetApiPrincipalsByIdClientAccessResponses];
 
-export type PostApiAdminPrincipalsByIdClientAccessData = {
+export type PostApiPrincipalsByIdClientAccessData = {
     body: {
         clientId: string;
     };
@@ -753,7 +748,7 @@ export type PostApiAdminPrincipalsByIdClientAccessData = {
     url: '/api/principals/{id}/client-access';
 };
 
-export type PostApiAdminPrincipalsByIdClientAccessErrors = {
+export type PostApiPrincipalsByIdClientAccessErrors = {
     /**
      * Default Response
      */
@@ -813,9 +808,9 @@ export type PostApiAdminPrincipalsByIdClientAccessErrors = {
     };
 };
 
-export type PostApiAdminPrincipalsByIdClientAccessError = PostApiAdminPrincipalsByIdClientAccessErrors[keyof PostApiAdminPrincipalsByIdClientAccessErrors];
+export type PostApiPrincipalsByIdClientAccessError = PostApiPrincipalsByIdClientAccessErrors[keyof PostApiPrincipalsByIdClientAccessErrors];
 
-export type PostApiAdminPrincipalsByIdClientAccessResponses = {
+export type PostApiPrincipalsByIdClientAccessResponses = {
     /**
      * Default Response
      */
@@ -827,9 +822,9 @@ export type PostApiAdminPrincipalsByIdClientAccessResponses = {
     };
 };
 
-export type PostApiAdminPrincipalsByIdClientAccessResponse = PostApiAdminPrincipalsByIdClientAccessResponses[keyof PostApiAdminPrincipalsByIdClientAccessResponses];
+export type PostApiPrincipalsByIdClientAccessResponse = PostApiPrincipalsByIdClientAccessResponses[keyof PostApiPrincipalsByIdClientAccessResponses];
 
-export type DeleteApiAdminPrincipalsByIdClientAccessByClientIdData = {
+export type DeleteApiPrincipalsByIdClientAccessByClientIdData = {
     body?: never;
     path: {
         id: string;
@@ -839,7 +834,7 @@ export type DeleteApiAdminPrincipalsByIdClientAccessByClientIdData = {
     url: '/api/principals/{id}/client-access/{clientId}';
 };
 
-export type DeleteApiAdminPrincipalsByIdClientAccessByClientIdErrors = {
+export type DeleteApiPrincipalsByIdClientAccessByClientIdErrors = {
     /**
      * Default Response
      */
@@ -861,18 +856,18 @@ export type DeleteApiAdminPrincipalsByIdClientAccessByClientIdErrors = {
     };
 };
 
-export type DeleteApiAdminPrincipalsByIdClientAccessByClientIdError = DeleteApiAdminPrincipalsByIdClientAccessByClientIdErrors[keyof DeleteApiAdminPrincipalsByIdClientAccessByClientIdErrors];
+export type DeleteApiPrincipalsByIdClientAccessByClientIdError = DeleteApiPrincipalsByIdClientAccessByClientIdErrors[keyof DeleteApiPrincipalsByIdClientAccessByClientIdErrors];
 
-export type DeleteApiAdminPrincipalsByIdClientAccessByClientIdResponses = {
+export type DeleteApiPrincipalsByIdClientAccessByClientIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminPrincipalsByIdClientAccessByClientIdResponse = DeleteApiAdminPrincipalsByIdClientAccessByClientIdResponses[keyof DeleteApiAdminPrincipalsByIdClientAccessByClientIdResponses];
+export type DeleteApiPrincipalsByIdClientAccessByClientIdResponse = DeleteApiPrincipalsByIdClientAccessByClientIdResponses[keyof DeleteApiPrincipalsByIdClientAccessByClientIdResponses];
 
-export type GetApiAdminPrincipalsCheckEmailDomainData = {
+export type GetApiPrincipalsCheckEmailDomainData = {
     body?: never;
     path?: never;
     query?: {
@@ -881,7 +876,7 @@ export type GetApiAdminPrincipalsCheckEmailDomainData = {
     url: '/api/principals/check-email-domain';
 };
 
-export type GetApiAdminPrincipalsCheckEmailDomainErrors = {
+export type GetApiPrincipalsCheckEmailDomainErrors = {
     /**
      * Default Response
      */
@@ -903,9 +898,9 @@ export type GetApiAdminPrincipalsCheckEmailDomainErrors = {
     };
 };
 
-export type GetApiAdminPrincipalsCheckEmailDomainError = GetApiAdminPrincipalsCheckEmailDomainErrors[keyof GetApiAdminPrincipalsCheckEmailDomainErrors];
+export type GetApiPrincipalsCheckEmailDomainError = GetApiPrincipalsCheckEmailDomainErrors[keyof GetApiPrincipalsCheckEmailDomainErrors];
 
-export type GetApiAdminPrincipalsCheckEmailDomainResponses = {
+export type GetApiPrincipalsCheckEmailDomainResponses = {
     /**
      * Default Response
      */
@@ -920,9 +915,9 @@ export type GetApiAdminPrincipalsCheckEmailDomainResponses = {
     };
 };
 
-export type GetApiAdminPrincipalsCheckEmailDomainResponse = GetApiAdminPrincipalsCheckEmailDomainResponses[keyof GetApiAdminPrincipalsCheckEmailDomainResponses];
+export type GetApiPrincipalsCheckEmailDomainResponse = GetApiPrincipalsCheckEmailDomainResponses[keyof GetApiPrincipalsCheckEmailDomainResponses];
 
-export type GetApiAdminPrincipalsByIdApplicationAccessData = {
+export type GetApiPrincipalsByIdApplicationAccessData = {
     body?: never;
     path: {
         id: string;
@@ -931,7 +926,7 @@ export type GetApiAdminPrincipalsByIdApplicationAccessData = {
     url: '/api/principals/{id}/application-access';
 };
 
-export type GetApiAdminPrincipalsByIdApplicationAccessErrors = {
+export type GetApiPrincipalsByIdApplicationAccessErrors = {
     /**
      * Default Response
      */
@@ -953,9 +948,9 @@ export type GetApiAdminPrincipalsByIdApplicationAccessErrors = {
     };
 };
 
-export type GetApiAdminPrincipalsByIdApplicationAccessError = GetApiAdminPrincipalsByIdApplicationAccessErrors[keyof GetApiAdminPrincipalsByIdApplicationAccessErrors];
+export type GetApiPrincipalsByIdApplicationAccessError = GetApiPrincipalsByIdApplicationAccessErrors[keyof GetApiPrincipalsByIdApplicationAccessErrors];
 
-export type GetApiAdminPrincipalsByIdApplicationAccessResponses = {
+export type GetApiPrincipalsByIdApplicationAccessResponses = {
     /**
      * Default Response
      */
@@ -969,9 +964,9 @@ export type GetApiAdminPrincipalsByIdApplicationAccessResponses = {
     };
 };
 
-export type GetApiAdminPrincipalsByIdApplicationAccessResponse = GetApiAdminPrincipalsByIdApplicationAccessResponses[keyof GetApiAdminPrincipalsByIdApplicationAccessResponses];
+export type GetApiPrincipalsByIdApplicationAccessResponse = GetApiPrincipalsByIdApplicationAccessResponses[keyof GetApiPrincipalsByIdApplicationAccessResponses];
 
-export type PutApiAdminPrincipalsByIdApplicationAccessData = {
+export type PutApiPrincipalsByIdApplicationAccessData = {
     body: {
         applicationIds: Array<string>;
     };
@@ -982,7 +977,7 @@ export type PutApiAdminPrincipalsByIdApplicationAccessData = {
     url: '/api/principals/{id}/application-access';
 };
 
-export type PutApiAdminPrincipalsByIdApplicationAccessErrors = {
+export type PutApiPrincipalsByIdApplicationAccessErrors = {
     /**
      * Default Response
      */
@@ -1023,9 +1018,9 @@ export type PutApiAdminPrincipalsByIdApplicationAccessErrors = {
     };
 };
 
-export type PutApiAdminPrincipalsByIdApplicationAccessError = PutApiAdminPrincipalsByIdApplicationAccessErrors[keyof PutApiAdminPrincipalsByIdApplicationAccessErrors];
+export type PutApiPrincipalsByIdApplicationAccessError = PutApiPrincipalsByIdApplicationAccessErrors[keyof PutApiPrincipalsByIdApplicationAccessErrors];
 
-export type PutApiAdminPrincipalsByIdApplicationAccessResponses = {
+export type PutApiPrincipalsByIdApplicationAccessResponses = {
     /**
      * Default Response
      */
@@ -1041,9 +1036,9 @@ export type PutApiAdminPrincipalsByIdApplicationAccessResponses = {
     };
 };
 
-export type PutApiAdminPrincipalsByIdApplicationAccessResponse = PutApiAdminPrincipalsByIdApplicationAccessResponses[keyof PutApiAdminPrincipalsByIdApplicationAccessResponses];
+export type PutApiPrincipalsByIdApplicationAccessResponse = PutApiPrincipalsByIdApplicationAccessResponses[keyof PutApiPrincipalsByIdApplicationAccessResponses];
 
-export type GetApiAdminPrincipalsByIdAvailableApplicationsData = {
+export type GetApiPrincipalsByIdAvailableApplicationsData = {
     body?: never;
     path: {
         id: string;
@@ -1052,7 +1047,7 @@ export type GetApiAdminPrincipalsByIdAvailableApplicationsData = {
     url: '/api/principals/{id}/available-applications';
 };
 
-export type GetApiAdminPrincipalsByIdAvailableApplicationsErrors = {
+export type GetApiPrincipalsByIdAvailableApplicationsErrors = {
     /**
      * Default Response
      */
@@ -1074,9 +1069,9 @@ export type GetApiAdminPrincipalsByIdAvailableApplicationsErrors = {
     };
 };
 
-export type GetApiAdminPrincipalsByIdAvailableApplicationsError = GetApiAdminPrincipalsByIdAvailableApplicationsErrors[keyof GetApiAdminPrincipalsByIdAvailableApplicationsErrors];
+export type GetApiPrincipalsByIdAvailableApplicationsError = GetApiPrincipalsByIdAvailableApplicationsErrors[keyof GetApiPrincipalsByIdAvailableApplicationsErrors];
 
-export type GetApiAdminPrincipalsByIdAvailableApplicationsResponses = {
+export type GetApiPrincipalsByIdAvailableApplicationsResponses = {
     /**
      * Default Response
      */
@@ -1090,9 +1085,9 @@ export type GetApiAdminPrincipalsByIdAvailableApplicationsResponses = {
     };
 };
 
-export type GetApiAdminPrincipalsByIdAvailableApplicationsResponse = GetApiAdminPrincipalsByIdAvailableApplicationsResponses[keyof GetApiAdminPrincipalsByIdAvailableApplicationsResponses];
+export type GetApiPrincipalsByIdAvailableApplicationsResponse = GetApiPrincipalsByIdAvailableApplicationsResponses[keyof GetApiPrincipalsByIdAvailableApplicationsResponses];
 
-export type GetApiAdminClientsData = {
+export type GetApiClientsData = {
     body?: never;
     path?: never;
     query?: {
@@ -1103,7 +1098,7 @@ export type GetApiAdminClientsData = {
     url: '/api/clients';
 };
 
-export type GetApiAdminClientsResponses = {
+export type GetApiClientsResponses = {
     /**
      * Default Response
      */
@@ -1130,9 +1125,9 @@ export type GetApiAdminClientsResponses = {
     };
 };
 
-export type GetApiAdminClientsResponse = GetApiAdminClientsResponses[keyof GetApiAdminClientsResponses];
+export type GetApiClientsResponse = GetApiClientsResponses[keyof GetApiClientsResponses];
 
-export type PostApiAdminClientsData = {
+export type PostApiClientsData = {
     body: {
         name: string;
         identifier: string;
@@ -1142,7 +1137,7 @@ export type PostApiAdminClientsData = {
     url: '/api/clients';
 };
 
-export type PostApiAdminClientsErrors = {
+export type PostApiClientsErrors = {
     /**
      * Default Response
      */
@@ -1183,9 +1178,9 @@ export type PostApiAdminClientsErrors = {
     };
 };
 
-export type PostApiAdminClientsError = PostApiAdminClientsErrors[keyof PostApiAdminClientsErrors];
+export type PostApiClientsError = PostApiClientsErrors[keyof PostApiClientsErrors];
 
-export type PostApiAdminClientsResponses = {
+export type PostApiClientsResponses = {
     /**
      * Default Response
      */
@@ -1207,9 +1202,9 @@ export type PostApiAdminClientsResponses = {
     };
 };
 
-export type PostApiAdminClientsResponse = PostApiAdminClientsResponses[keyof PostApiAdminClientsResponses];
+export type PostApiClientsResponse = PostApiClientsResponses[keyof PostApiClientsResponses];
 
-export type GetApiAdminClientsSearchData = {
+export type GetApiClientsSearchData = {
     body?: never;
     path?: never;
     query?: {
@@ -1220,7 +1215,7 @@ export type GetApiAdminClientsSearchData = {
     url: '/api/clients/search';
 };
 
-export type GetApiAdminClientsSearchResponses = {
+export type GetApiClientsSearchResponses = {
     /**
      * Default Response
      */
@@ -1247,9 +1242,9 @@ export type GetApiAdminClientsSearchResponses = {
     };
 };
 
-export type GetApiAdminClientsSearchResponse = GetApiAdminClientsSearchResponses[keyof GetApiAdminClientsSearchResponses];
+export type GetApiClientsSearchResponse = GetApiClientsSearchResponses[keyof GetApiClientsSearchResponses];
 
-export type DeleteApiAdminClientsByIdData = {
+export type DeleteApiClientsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -1258,7 +1253,7 @@ export type DeleteApiAdminClientsByIdData = {
     url: '/api/clients/{id}';
 };
 
-export type DeleteApiAdminClientsByIdErrors = {
+export type DeleteApiClientsByIdErrors = {
     /**
      * Default Response
      */
@@ -1280,18 +1275,18 @@ export type DeleteApiAdminClientsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminClientsByIdError = DeleteApiAdminClientsByIdErrors[keyof DeleteApiAdminClientsByIdErrors];
+export type DeleteApiClientsByIdError = DeleteApiClientsByIdErrors[keyof DeleteApiClientsByIdErrors];
 
-export type DeleteApiAdminClientsByIdResponses = {
+export type DeleteApiClientsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminClientsByIdResponse = DeleteApiAdminClientsByIdResponses[keyof DeleteApiAdminClientsByIdResponses];
+export type DeleteApiClientsByIdResponse = DeleteApiClientsByIdResponses[keyof DeleteApiClientsByIdResponses];
 
-export type GetApiAdminClientsByIdData = {
+export type GetApiClientsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -1300,7 +1295,7 @@ export type GetApiAdminClientsByIdData = {
     url: '/api/clients/{id}';
 };
 
-export type GetApiAdminClientsByIdErrors = {
+export type GetApiClientsByIdErrors = {
     /**
      * Default Response
      */
@@ -1322,9 +1317,9 @@ export type GetApiAdminClientsByIdErrors = {
     };
 };
 
-export type GetApiAdminClientsByIdError = GetApiAdminClientsByIdErrors[keyof GetApiAdminClientsByIdErrors];
+export type GetApiClientsByIdError = GetApiClientsByIdErrors[keyof GetApiClientsByIdErrors];
 
-export type GetApiAdminClientsByIdResponses = {
+export type GetApiClientsByIdResponses = {
     /**
      * Default Response
      */
@@ -1346,9 +1341,9 @@ export type GetApiAdminClientsByIdResponses = {
     };
 };
 
-export type GetApiAdminClientsByIdResponse = GetApiAdminClientsByIdResponses[keyof GetApiAdminClientsByIdResponses];
+export type GetApiClientsByIdResponse = GetApiClientsByIdResponses[keyof GetApiClientsByIdResponses];
 
-export type PutApiAdminClientsByIdData = {
+export type PutApiClientsByIdData = {
     body: {
         name: string;
     };
@@ -1359,7 +1354,7 @@ export type PutApiAdminClientsByIdData = {
     url: '/api/clients/{id}';
 };
 
-export type PutApiAdminClientsByIdErrors = {
+export type PutApiClientsByIdErrors = {
     /**
      * Default Response
      */
@@ -1419,9 +1414,9 @@ export type PutApiAdminClientsByIdErrors = {
     };
 };
 
-export type PutApiAdminClientsByIdError = PutApiAdminClientsByIdErrors[keyof PutApiAdminClientsByIdErrors];
+export type PutApiClientsByIdError = PutApiClientsByIdErrors[keyof PutApiClientsByIdErrors];
 
-export type PutApiAdminClientsByIdResponses = {
+export type PutApiClientsByIdResponses = {
     /**
      * Default Response
      */
@@ -1443,9 +1438,9 @@ export type PutApiAdminClientsByIdResponses = {
     };
 };
 
-export type PutApiAdminClientsByIdResponse = PutApiAdminClientsByIdResponses[keyof PutApiAdminClientsByIdResponses];
+export type PutApiClientsByIdResponse = PutApiClientsByIdResponses[keyof PutApiClientsByIdResponses];
 
-export type GetApiAdminClientsByIdentifierByIdentifierData = {
+export type GetApiClientsByIdentifierByIdentifierData = {
     body?: never;
     path: {
         identifier: string;
@@ -1454,7 +1449,7 @@ export type GetApiAdminClientsByIdentifierByIdentifierData = {
     url: '/api/clients/by-identifier/{identifier}';
 };
 
-export type GetApiAdminClientsByIdentifierByIdentifierErrors = {
+export type GetApiClientsByIdentifierByIdentifierErrors = {
     /**
      * Default Response
      */
@@ -1476,9 +1471,9 @@ export type GetApiAdminClientsByIdentifierByIdentifierErrors = {
     };
 };
 
-export type GetApiAdminClientsByIdentifierByIdentifierError = GetApiAdminClientsByIdentifierByIdentifierErrors[keyof GetApiAdminClientsByIdentifierByIdentifierErrors];
+export type GetApiClientsByIdentifierByIdentifierError = GetApiClientsByIdentifierByIdentifierErrors[keyof GetApiClientsByIdentifierByIdentifierErrors];
 
-export type GetApiAdminClientsByIdentifierByIdentifierResponses = {
+export type GetApiClientsByIdentifierByIdentifierResponses = {
     /**
      * Default Response
      */
@@ -1500,9 +1495,9 @@ export type GetApiAdminClientsByIdentifierByIdentifierResponses = {
     };
 };
 
-export type GetApiAdminClientsByIdentifierByIdentifierResponse = GetApiAdminClientsByIdentifierByIdentifierResponses[keyof GetApiAdminClientsByIdentifierByIdentifierResponses];
+export type GetApiClientsByIdentifierByIdentifierResponse = GetApiClientsByIdentifierByIdentifierResponses[keyof GetApiClientsByIdentifierByIdentifierResponses];
 
-export type PostApiAdminClientsByIdActivateData = {
+export type PostApiClientsByIdActivateData = {
     body: {
         reason?: string | null;
         note?: string | null;
@@ -1514,7 +1509,7 @@ export type PostApiAdminClientsByIdActivateData = {
     url: '/api/clients/{id}/activate';
 };
 
-export type PostApiAdminClientsByIdActivateErrors = {
+export type PostApiClientsByIdActivateErrors = {
     /**
      * Default Response
      */
@@ -1574,9 +1569,9 @@ export type PostApiAdminClientsByIdActivateErrors = {
     };
 };
 
-export type PostApiAdminClientsByIdActivateError = PostApiAdminClientsByIdActivateErrors[keyof PostApiAdminClientsByIdActivateErrors];
+export type PostApiClientsByIdActivateError = PostApiClientsByIdActivateErrors[keyof PostApiClientsByIdActivateErrors];
 
-export type PostApiAdminClientsByIdActivateResponses = {
+export type PostApiClientsByIdActivateResponses = {
     /**
      * Default Response
      */
@@ -1598,9 +1593,9 @@ export type PostApiAdminClientsByIdActivateResponses = {
     };
 };
 
-export type PostApiAdminClientsByIdActivateResponse = PostApiAdminClientsByIdActivateResponses[keyof PostApiAdminClientsByIdActivateResponses];
+export type PostApiClientsByIdActivateResponse = PostApiClientsByIdActivateResponses[keyof PostApiClientsByIdActivateResponses];
 
-export type PostApiAdminClientsByIdSuspendData = {
+export type PostApiClientsByIdSuspendData = {
     body: {
         reason?: string | null;
         note?: string | null;
@@ -1612,7 +1607,7 @@ export type PostApiAdminClientsByIdSuspendData = {
     url: '/api/clients/{id}/suspend';
 };
 
-export type PostApiAdminClientsByIdSuspendErrors = {
+export type PostApiClientsByIdSuspendErrors = {
     /**
      * Default Response
      */
@@ -1672,9 +1667,9 @@ export type PostApiAdminClientsByIdSuspendErrors = {
     };
 };
 
-export type PostApiAdminClientsByIdSuspendError = PostApiAdminClientsByIdSuspendErrors[keyof PostApiAdminClientsByIdSuspendErrors];
+export type PostApiClientsByIdSuspendError = PostApiClientsByIdSuspendErrors[keyof PostApiClientsByIdSuspendErrors];
 
-export type PostApiAdminClientsByIdSuspendResponses = {
+export type PostApiClientsByIdSuspendResponses = {
     /**
      * Default Response
      */
@@ -1696,9 +1691,9 @@ export type PostApiAdminClientsByIdSuspendResponses = {
     };
 };
 
-export type PostApiAdminClientsByIdSuspendResponse = PostApiAdminClientsByIdSuspendResponses[keyof PostApiAdminClientsByIdSuspendResponses];
+export type PostApiClientsByIdSuspendResponse = PostApiClientsByIdSuspendResponses[keyof PostApiClientsByIdSuspendResponses];
 
-export type PostApiAdminClientsByIdDeactivateData = {
+export type PostApiClientsByIdDeactivateData = {
     body: {
         reason?: string | null;
         note?: string | null;
@@ -1710,7 +1705,7 @@ export type PostApiAdminClientsByIdDeactivateData = {
     url: '/api/clients/{id}/deactivate';
 };
 
-export type PostApiAdminClientsByIdDeactivateErrors = {
+export type PostApiClientsByIdDeactivateErrors = {
     /**
      * Default Response
      */
@@ -1770,9 +1765,9 @@ export type PostApiAdminClientsByIdDeactivateErrors = {
     };
 };
 
-export type PostApiAdminClientsByIdDeactivateError = PostApiAdminClientsByIdDeactivateErrors[keyof PostApiAdminClientsByIdDeactivateErrors];
+export type PostApiClientsByIdDeactivateError = PostApiClientsByIdDeactivateErrors[keyof PostApiClientsByIdDeactivateErrors];
 
-export type PostApiAdminClientsByIdDeactivateResponses = {
+export type PostApiClientsByIdDeactivateResponses = {
     /**
      * Default Response
      */
@@ -1794,9 +1789,9 @@ export type PostApiAdminClientsByIdDeactivateResponses = {
     };
 };
 
-export type PostApiAdminClientsByIdDeactivateResponse = PostApiAdminClientsByIdDeactivateResponses[keyof PostApiAdminClientsByIdDeactivateResponses];
+export type PostApiClientsByIdDeactivateResponse = PostApiClientsByIdDeactivateResponses[keyof PostApiClientsByIdDeactivateResponses];
 
-export type PostApiAdminClientsByIdNotesData = {
+export type PostApiClientsByIdNotesData = {
     body: {
         category: string;
         text: string;
@@ -1808,7 +1803,7 @@ export type PostApiAdminClientsByIdNotesData = {
     url: '/api/clients/{id}/notes';
 };
 
-export type PostApiAdminClientsByIdNotesErrors = {
+export type PostApiClientsByIdNotesErrors = {
     /**
      * Default Response
      */
@@ -1849,9 +1844,9 @@ export type PostApiAdminClientsByIdNotesErrors = {
     };
 };
 
-export type PostApiAdminClientsByIdNotesError = PostApiAdminClientsByIdNotesErrors[keyof PostApiAdminClientsByIdNotesErrors];
+export type PostApiClientsByIdNotesError = PostApiClientsByIdNotesErrors[keyof PostApiClientsByIdNotesErrors];
 
-export type PostApiAdminClientsByIdNotesResponses = {
+export type PostApiClientsByIdNotesResponses = {
     /**
      * Default Response
      */
@@ -1873,9 +1868,9 @@ export type PostApiAdminClientsByIdNotesResponses = {
     };
 };
 
-export type PostApiAdminClientsByIdNotesResponse = PostApiAdminClientsByIdNotesResponses[keyof PostApiAdminClientsByIdNotesResponses];
+export type PostApiClientsByIdNotesResponse = PostApiClientsByIdNotesResponses[keyof PostApiClientsByIdNotesResponses];
 
-export type GetApiAdminClientsByIdApplicationsData = {
+export type GetApiClientsByIdApplicationsData = {
     body?: never;
     path: {
         id: string;
@@ -1884,7 +1879,7 @@ export type GetApiAdminClientsByIdApplicationsData = {
     url: '/api/clients/{id}/applications';
 };
 
-export type GetApiAdminClientsByIdApplicationsErrors = {
+export type GetApiClientsByIdApplicationsErrors = {
     /**
      * Default Response
      */
@@ -1906,9 +1901,9 @@ export type GetApiAdminClientsByIdApplicationsErrors = {
     };
 };
 
-export type GetApiAdminClientsByIdApplicationsError = GetApiAdminClientsByIdApplicationsErrors[keyof GetApiAdminClientsByIdApplicationsErrors];
+export type GetApiClientsByIdApplicationsError = GetApiClientsByIdApplicationsErrors[keyof GetApiClientsByIdApplicationsErrors];
 
-export type GetApiAdminClientsByIdApplicationsResponses = {
+export type GetApiClientsByIdApplicationsResponses = {
     /**
      * Default Response
      */
@@ -1928,9 +1923,9 @@ export type GetApiAdminClientsByIdApplicationsResponses = {
     };
 };
 
-export type GetApiAdminClientsByIdApplicationsResponse = GetApiAdminClientsByIdApplicationsResponses[keyof GetApiAdminClientsByIdApplicationsResponses];
+export type GetApiClientsByIdApplicationsResponse = GetApiClientsByIdApplicationsResponses[keyof GetApiClientsByIdApplicationsResponses];
 
-export type PutApiAdminClientsByIdApplicationsData = {
+export type PutApiClientsByIdApplicationsData = {
     body: {
         enabledApplicationIds: Array<string>;
     };
@@ -1941,7 +1936,7 @@ export type PutApiAdminClientsByIdApplicationsData = {
     url: '/api/clients/{id}/applications';
 };
 
-export type PutApiAdminClientsByIdApplicationsErrors = {
+export type PutApiClientsByIdApplicationsErrors = {
     /**
      * Default Response
      */
@@ -1963,9 +1958,9 @@ export type PutApiAdminClientsByIdApplicationsErrors = {
     };
 };
 
-export type PutApiAdminClientsByIdApplicationsError = PutApiAdminClientsByIdApplicationsErrors[keyof PutApiAdminClientsByIdApplicationsErrors];
+export type PutApiClientsByIdApplicationsError = PutApiClientsByIdApplicationsErrors[keyof PutApiClientsByIdApplicationsErrors];
 
-export type PutApiAdminClientsByIdApplicationsResponses = {
+export type PutApiClientsByIdApplicationsResponses = {
     /**
      * Default Response
      */
@@ -1977,19 +1972,19 @@ export type PutApiAdminClientsByIdApplicationsResponses = {
     };
 };
 
-export type PutApiAdminClientsByIdApplicationsResponse = PutApiAdminClientsByIdApplicationsResponses[keyof PutApiAdminClientsByIdApplicationsResponses];
+export type PutApiClientsByIdApplicationsResponse = PutApiClientsByIdApplicationsResponses[keyof PutApiClientsByIdApplicationsResponses];
 
-export type PostApiAdminClientsByIdApplicationsByAppIdEnableData = {
+export type PostApiClientsByIdApplicationsByApplicationIdEnableData = {
     body?: never;
     path: {
         id: string;
-        appId: string;
+        applicationId: string;
     };
     query?: never;
-    url: '/api/clients/{id}/applications/{appId}/enable';
+    url: '/api/clients/{id}/applications/{applicationId}/enable';
 };
 
-export type PostApiAdminClientsByIdApplicationsByAppIdEnableErrors = {
+export type PostApiClientsByIdApplicationsByApplicationIdEnableErrors = {
     /**
      * Default Response
      */
@@ -2011,9 +2006,9 @@ export type PostApiAdminClientsByIdApplicationsByAppIdEnableErrors = {
     };
 };
 
-export type PostApiAdminClientsByIdApplicationsByAppIdEnableError = PostApiAdminClientsByIdApplicationsByAppIdEnableErrors[keyof PostApiAdminClientsByIdApplicationsByAppIdEnableErrors];
+export type PostApiClientsByIdApplicationsByApplicationIdEnableError = PostApiClientsByIdApplicationsByApplicationIdEnableErrors[keyof PostApiClientsByIdApplicationsByApplicationIdEnableErrors];
 
-export type PostApiAdminClientsByIdApplicationsByAppIdEnableResponses = {
+export type PostApiClientsByIdApplicationsByApplicationIdEnableResponses = {
     /**
      * Default Response
      */
@@ -2025,19 +2020,19 @@ export type PostApiAdminClientsByIdApplicationsByAppIdEnableResponses = {
     };
 };
 
-export type PostApiAdminClientsByIdApplicationsByAppIdEnableResponse = PostApiAdminClientsByIdApplicationsByAppIdEnableResponses[keyof PostApiAdminClientsByIdApplicationsByAppIdEnableResponses];
+export type PostApiClientsByIdApplicationsByApplicationIdEnableResponse = PostApiClientsByIdApplicationsByApplicationIdEnableResponses[keyof PostApiClientsByIdApplicationsByApplicationIdEnableResponses];
 
-export type PostApiAdminClientsByIdApplicationsByAppIdDisableData = {
+export type PostApiClientsByIdApplicationsByApplicationIdDisableData = {
     body?: never;
     path: {
         id: string;
-        appId: string;
+        applicationId: string;
     };
     query?: never;
-    url: '/api/clients/{id}/applications/{appId}/disable';
+    url: '/api/clients/{id}/applications/{applicationId}/disable';
 };
 
-export type PostApiAdminClientsByIdApplicationsByAppIdDisableErrors = {
+export type PostApiClientsByIdApplicationsByApplicationIdDisableErrors = {
     /**
      * Default Response
      */
@@ -2059,9 +2054,9 @@ export type PostApiAdminClientsByIdApplicationsByAppIdDisableErrors = {
     };
 };
 
-export type PostApiAdminClientsByIdApplicationsByAppIdDisableError = PostApiAdminClientsByIdApplicationsByAppIdDisableErrors[keyof PostApiAdminClientsByIdApplicationsByAppIdDisableErrors];
+export type PostApiClientsByIdApplicationsByApplicationIdDisableError = PostApiClientsByIdApplicationsByApplicationIdDisableErrors[keyof PostApiClientsByIdApplicationsByApplicationIdDisableErrors];
 
-export type PostApiAdminClientsByIdApplicationsByAppIdDisableResponses = {
+export type PostApiClientsByIdApplicationsByApplicationIdDisableResponses = {
     /**
      * Default Response
      */
@@ -2073,16 +2068,16 @@ export type PostApiAdminClientsByIdApplicationsByAppIdDisableResponses = {
     };
 };
 
-export type PostApiAdminClientsByIdApplicationsByAppIdDisableResponse = PostApiAdminClientsByIdApplicationsByAppIdDisableResponses[keyof PostApiAdminClientsByIdApplicationsByAppIdDisableResponses];
+export type PostApiClientsByIdApplicationsByApplicationIdDisableResponse = PostApiClientsByIdApplicationsByApplicationIdDisableResponses[keyof PostApiClientsByIdApplicationsByApplicationIdDisableResponses];
 
-export type GetApiAdminAnchorDomainsData = {
+export type GetApiAnchorDomainsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/anchor-domains';
 };
 
-export type GetApiAdminAnchorDomainsResponses = {
+export type GetApiAnchorDomainsResponses = {
     /**
      * Default Response
      */
@@ -2096,9 +2091,9 @@ export type GetApiAdminAnchorDomainsResponses = {
     };
 };
 
-export type GetApiAdminAnchorDomainsResponse = GetApiAdminAnchorDomainsResponses[keyof GetApiAdminAnchorDomainsResponses];
+export type GetApiAnchorDomainsResponse = GetApiAnchorDomainsResponses[keyof GetApiAnchorDomainsResponses];
 
-export type PostApiAdminAnchorDomainsData = {
+export type PostApiAnchorDomainsData = {
     body: {
         domain: string;
     };
@@ -2107,7 +2102,7 @@ export type PostApiAdminAnchorDomainsData = {
     url: '/api/anchor-domains';
 };
 
-export type PostApiAdminAnchorDomainsErrors = {
+export type PostApiAnchorDomainsErrors = {
     /**
      * Default Response
      */
@@ -2148,9 +2143,9 @@ export type PostApiAdminAnchorDomainsErrors = {
     };
 };
 
-export type PostApiAdminAnchorDomainsError = PostApiAdminAnchorDomainsErrors[keyof PostApiAdminAnchorDomainsErrors];
+export type PostApiAnchorDomainsError = PostApiAnchorDomainsErrors[keyof PostApiAnchorDomainsErrors];
 
-export type PostApiAdminAnchorDomainsResponses = {
+export type PostApiAnchorDomainsResponses = {
     /**
      * Default Response
      */
@@ -2161,9 +2156,9 @@ export type PostApiAdminAnchorDomainsResponses = {
     };
 };
 
-export type PostApiAdminAnchorDomainsResponse = PostApiAdminAnchorDomainsResponses[keyof PostApiAdminAnchorDomainsResponses];
+export type PostApiAnchorDomainsResponse = PostApiAnchorDomainsResponses[keyof PostApiAnchorDomainsResponses];
 
-export type DeleteApiAdminAnchorDomainsByIdData = {
+export type DeleteApiAnchorDomainsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -2172,7 +2167,7 @@ export type DeleteApiAdminAnchorDomainsByIdData = {
     url: '/api/anchor-domains/{id}';
 };
 
-export type DeleteApiAdminAnchorDomainsByIdErrors = {
+export type DeleteApiAnchorDomainsByIdErrors = {
     /**
      * Default Response
      */
@@ -2194,18 +2189,18 @@ export type DeleteApiAdminAnchorDomainsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminAnchorDomainsByIdError = DeleteApiAdminAnchorDomainsByIdErrors[keyof DeleteApiAdminAnchorDomainsByIdErrors];
+export type DeleteApiAnchorDomainsByIdError = DeleteApiAnchorDomainsByIdErrors[keyof DeleteApiAnchorDomainsByIdErrors];
 
-export type DeleteApiAdminAnchorDomainsByIdResponses = {
+export type DeleteApiAnchorDomainsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminAnchorDomainsByIdResponse = DeleteApiAdminAnchorDomainsByIdResponses[keyof DeleteApiAdminAnchorDomainsByIdResponses];
+export type DeleteApiAnchorDomainsByIdResponse = DeleteApiAnchorDomainsByIdResponses[keyof DeleteApiAnchorDomainsByIdResponses];
 
-export type GetApiAdminAnchorDomainsByIdData = {
+export type GetApiAnchorDomainsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -2214,7 +2209,7 @@ export type GetApiAdminAnchorDomainsByIdData = {
     url: '/api/anchor-domains/{id}';
 };
 
-export type GetApiAdminAnchorDomainsByIdErrors = {
+export type GetApiAnchorDomainsByIdErrors = {
     /**
      * Default Response
      */
@@ -2236,9 +2231,9 @@ export type GetApiAdminAnchorDomainsByIdErrors = {
     };
 };
 
-export type GetApiAdminAnchorDomainsByIdError = GetApiAdminAnchorDomainsByIdErrors[keyof GetApiAdminAnchorDomainsByIdErrors];
+export type GetApiAnchorDomainsByIdError = GetApiAnchorDomainsByIdErrors[keyof GetApiAnchorDomainsByIdErrors];
 
-export type GetApiAdminAnchorDomainsByIdResponses = {
+export type GetApiAnchorDomainsByIdResponses = {
     /**
      * Default Response
      */
@@ -2249,9 +2244,9 @@ export type GetApiAdminAnchorDomainsByIdResponses = {
     };
 };
 
-export type GetApiAdminAnchorDomainsByIdResponse = GetApiAdminAnchorDomainsByIdResponses[keyof GetApiAdminAnchorDomainsByIdResponses];
+export type GetApiAnchorDomainsByIdResponse = GetApiAnchorDomainsByIdResponses[keyof GetApiAnchorDomainsByIdResponses];
 
-export type PutApiAdminAnchorDomainsByIdData = {
+export type PutApiAnchorDomainsByIdData = {
     body: {
         domain: string;
     };
@@ -2262,7 +2257,7 @@ export type PutApiAdminAnchorDomainsByIdData = {
     url: '/api/anchor-domains/{id}';
 };
 
-export type PutApiAdminAnchorDomainsByIdErrors = {
+export type PutApiAnchorDomainsByIdErrors = {
     /**
      * Default Response
      */
@@ -2303,9 +2298,9 @@ export type PutApiAdminAnchorDomainsByIdErrors = {
     };
 };
 
-export type PutApiAdminAnchorDomainsByIdError = PutApiAdminAnchorDomainsByIdErrors[keyof PutApiAdminAnchorDomainsByIdErrors];
+export type PutApiAnchorDomainsByIdError = PutApiAnchorDomainsByIdErrors[keyof PutApiAnchorDomainsByIdErrors];
 
-export type PutApiAdminAnchorDomainsByIdResponses = {
+export type PutApiAnchorDomainsByIdResponses = {
     /**
      * Default Response
      */
@@ -2316,9 +2311,9 @@ export type PutApiAdminAnchorDomainsByIdResponses = {
     };
 };
 
-export type PutApiAdminAnchorDomainsByIdResponse = PutApiAdminAnchorDomainsByIdResponses[keyof PutApiAdminAnchorDomainsByIdResponses];
+export type PutApiAnchorDomainsByIdResponse = PutApiAnchorDomainsByIdResponses[keyof PutApiAnchorDomainsByIdResponses];
 
-export type GetApiAdminApplicationsData = {
+export type GetApiApplicationsData = {
     body?: never;
     path?: never;
     query?: {
@@ -2330,7 +2325,7 @@ export type GetApiAdminApplicationsData = {
     url: '/api/applications';
 };
 
-export type GetApiAdminApplicationsResponses = {
+export type GetApiApplicationsResponses = {
     /**
      * Default Response
      */
@@ -2357,9 +2352,9 @@ export type GetApiAdminApplicationsResponses = {
     };
 };
 
-export type GetApiAdminApplicationsResponse = GetApiAdminApplicationsResponses[keyof GetApiAdminApplicationsResponses];
+export type GetApiApplicationsResponse = GetApiApplicationsResponses[keyof GetApiApplicationsResponses];
 
-export type PostApiAdminApplicationsData = {
+export type PostApiApplicationsData = {
     body: {
         code: string;
         name: string;
@@ -2376,7 +2371,7 @@ export type PostApiAdminApplicationsData = {
     url: '/api/applications';
 };
 
-export type PostApiAdminApplicationsErrors = {
+export type PostApiApplicationsErrors = {
     /**
      * Default Response
      */
@@ -2417,9 +2412,9 @@ export type PostApiAdminApplicationsErrors = {
     };
 };
 
-export type PostApiAdminApplicationsError = PostApiAdminApplicationsErrors[keyof PostApiAdminApplicationsErrors];
+export type PostApiApplicationsError = PostApiApplicationsErrors[keyof PostApiApplicationsErrors];
 
-export type PostApiAdminApplicationsResponses = {
+export type PostApiApplicationsResponses = {
     /**
      * Default Response
      */
@@ -2441,9 +2436,9 @@ export type PostApiAdminApplicationsResponses = {
     };
 };
 
-export type PostApiAdminApplicationsResponse = PostApiAdminApplicationsResponses[keyof PostApiAdminApplicationsResponses];
+export type PostApiApplicationsResponse = PostApiApplicationsResponses[keyof PostApiApplicationsResponses];
 
-export type DeleteApiAdminApplicationsByIdData = {
+export type DeleteApiApplicationsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -2452,7 +2447,7 @@ export type DeleteApiAdminApplicationsByIdData = {
     url: '/api/applications/{id}';
 };
 
-export type DeleteApiAdminApplicationsByIdErrors = {
+export type DeleteApiApplicationsByIdErrors = {
     /**
      * Default Response
      */
@@ -2474,18 +2469,18 @@ export type DeleteApiAdminApplicationsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminApplicationsByIdError = DeleteApiAdminApplicationsByIdErrors[keyof DeleteApiAdminApplicationsByIdErrors];
+export type DeleteApiApplicationsByIdError = DeleteApiApplicationsByIdErrors[keyof DeleteApiApplicationsByIdErrors];
 
-export type DeleteApiAdminApplicationsByIdResponses = {
+export type DeleteApiApplicationsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminApplicationsByIdResponse = DeleteApiAdminApplicationsByIdResponses[keyof DeleteApiAdminApplicationsByIdResponses];
+export type DeleteApiApplicationsByIdResponse = DeleteApiApplicationsByIdResponses[keyof DeleteApiApplicationsByIdResponses];
 
-export type GetApiAdminApplicationsByIdData = {
+export type GetApiApplicationsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -2494,7 +2489,7 @@ export type GetApiAdminApplicationsByIdData = {
     url: '/api/applications/{id}';
 };
 
-export type GetApiAdminApplicationsByIdErrors = {
+export type GetApiApplicationsByIdErrors = {
     /**
      * Default Response
      */
@@ -2516,9 +2511,9 @@ export type GetApiAdminApplicationsByIdErrors = {
     };
 };
 
-export type GetApiAdminApplicationsByIdError = GetApiAdminApplicationsByIdErrors[keyof GetApiAdminApplicationsByIdErrors];
+export type GetApiApplicationsByIdError = GetApiApplicationsByIdErrors[keyof GetApiApplicationsByIdErrors];
 
-export type GetApiAdminApplicationsByIdResponses = {
+export type GetApiApplicationsByIdResponses = {
     /**
      * Default Response
      */
@@ -2540,9 +2535,9 @@ export type GetApiAdminApplicationsByIdResponses = {
     };
 };
 
-export type GetApiAdminApplicationsByIdResponse = GetApiAdminApplicationsByIdResponses[keyof GetApiAdminApplicationsByIdResponses];
+export type GetApiApplicationsByIdResponse = GetApiApplicationsByIdResponses[keyof GetApiApplicationsByIdResponses];
 
-export type PutApiAdminApplicationsByIdData = {
+export type PutApiApplicationsByIdData = {
     body: {
         name: string;
         description?: string | null;
@@ -2559,7 +2554,7 @@ export type PutApiAdminApplicationsByIdData = {
     url: '/api/applications/{id}';
 };
 
-export type PutApiAdminApplicationsByIdErrors = {
+export type PutApiApplicationsByIdErrors = {
     /**
      * Default Response
      */
@@ -2619,9 +2614,9 @@ export type PutApiAdminApplicationsByIdErrors = {
     };
 };
 
-export type PutApiAdminApplicationsByIdError = PutApiAdminApplicationsByIdErrors[keyof PutApiAdminApplicationsByIdErrors];
+export type PutApiApplicationsByIdError = PutApiApplicationsByIdErrors[keyof PutApiApplicationsByIdErrors];
 
-export type PutApiAdminApplicationsByIdResponses = {
+export type PutApiApplicationsByIdResponses = {
     /**
      * Default Response
      */
@@ -2643,9 +2638,9 @@ export type PutApiAdminApplicationsByIdResponses = {
     };
 };
 
-export type PutApiAdminApplicationsByIdResponse = PutApiAdminApplicationsByIdResponses[keyof PutApiAdminApplicationsByIdResponses];
+export type PutApiApplicationsByIdResponse = PutApiApplicationsByIdResponses[keyof PutApiApplicationsByIdResponses];
 
-export type GetApiAdminApplicationsByCodeByCodeData = {
+export type GetApiApplicationsByCodeByCodeData = {
     body?: never;
     path: {
         code: string;
@@ -2654,7 +2649,7 @@ export type GetApiAdminApplicationsByCodeByCodeData = {
     url: '/api/applications/by-code/{code}';
 };
 
-export type GetApiAdminApplicationsByCodeByCodeErrors = {
+export type GetApiApplicationsByCodeByCodeErrors = {
     /**
      * Default Response
      */
@@ -2676,9 +2671,9 @@ export type GetApiAdminApplicationsByCodeByCodeErrors = {
     };
 };
 
-export type GetApiAdminApplicationsByCodeByCodeError = GetApiAdminApplicationsByCodeByCodeErrors[keyof GetApiAdminApplicationsByCodeByCodeErrors];
+export type GetApiApplicationsByCodeByCodeError = GetApiApplicationsByCodeByCodeErrors[keyof GetApiApplicationsByCodeByCodeErrors];
 
-export type GetApiAdminApplicationsByCodeByCodeResponses = {
+export type GetApiApplicationsByCodeByCodeResponses = {
     /**
      * Default Response
      */
@@ -2700,9 +2695,9 @@ export type GetApiAdminApplicationsByCodeByCodeResponses = {
     };
 };
 
-export type GetApiAdminApplicationsByCodeByCodeResponse = GetApiAdminApplicationsByCodeByCodeResponses[keyof GetApiAdminApplicationsByCodeByCodeResponses];
+export type GetApiApplicationsByCodeByCodeResponse = GetApiApplicationsByCodeByCodeResponses[keyof GetApiApplicationsByCodeByCodeResponses];
 
-export type PostApiAdminApplicationsByIdActivateData = {
+export type PostApiApplicationsByIdActivateData = {
     body?: never;
     path: {
         id: string;
@@ -2711,7 +2706,7 @@ export type PostApiAdminApplicationsByIdActivateData = {
     url: '/api/applications/{id}/activate';
 };
 
-export type PostApiAdminApplicationsByIdActivateErrors = {
+export type PostApiApplicationsByIdActivateErrors = {
     /**
      * Default Response
      */
@@ -2752,9 +2747,9 @@ export type PostApiAdminApplicationsByIdActivateErrors = {
     };
 };
 
-export type PostApiAdminApplicationsByIdActivateError = PostApiAdminApplicationsByIdActivateErrors[keyof PostApiAdminApplicationsByIdActivateErrors];
+export type PostApiApplicationsByIdActivateError = PostApiApplicationsByIdActivateErrors[keyof PostApiApplicationsByIdActivateErrors];
 
-export type PostApiAdminApplicationsByIdActivateResponses = {
+export type PostApiApplicationsByIdActivateResponses = {
     /**
      * Default Response
      */
@@ -2776,9 +2771,9 @@ export type PostApiAdminApplicationsByIdActivateResponses = {
     };
 };
 
-export type PostApiAdminApplicationsByIdActivateResponse = PostApiAdminApplicationsByIdActivateResponses[keyof PostApiAdminApplicationsByIdActivateResponses];
+export type PostApiApplicationsByIdActivateResponse = PostApiApplicationsByIdActivateResponses[keyof PostApiApplicationsByIdActivateResponses];
 
-export type PostApiAdminApplicationsByIdDeactivateData = {
+export type PostApiApplicationsByIdDeactivateData = {
     body?: never;
     path: {
         id: string;
@@ -2787,7 +2782,7 @@ export type PostApiAdminApplicationsByIdDeactivateData = {
     url: '/api/applications/{id}/deactivate';
 };
 
-export type PostApiAdminApplicationsByIdDeactivateErrors = {
+export type PostApiApplicationsByIdDeactivateErrors = {
     /**
      * Default Response
      */
@@ -2828,9 +2823,9 @@ export type PostApiAdminApplicationsByIdDeactivateErrors = {
     };
 };
 
-export type PostApiAdminApplicationsByIdDeactivateError = PostApiAdminApplicationsByIdDeactivateErrors[keyof PostApiAdminApplicationsByIdDeactivateErrors];
+export type PostApiApplicationsByIdDeactivateError = PostApiApplicationsByIdDeactivateErrors[keyof PostApiApplicationsByIdDeactivateErrors];
 
-export type PostApiAdminApplicationsByIdDeactivateResponses = {
+export type PostApiApplicationsByIdDeactivateResponses = {
     /**
      * Default Response
      */
@@ -2852,9 +2847,9 @@ export type PostApiAdminApplicationsByIdDeactivateResponses = {
     };
 };
 
-export type PostApiAdminApplicationsByIdDeactivateResponse = PostApiAdminApplicationsByIdDeactivateResponses[keyof PostApiAdminApplicationsByIdDeactivateResponses];
+export type PostApiApplicationsByIdDeactivateResponse = PostApiApplicationsByIdDeactivateResponses[keyof PostApiApplicationsByIdDeactivateResponses];
 
-export type GetApiAdminApplicationsByIdClientsData = {
+export type GetApiApplicationsByIdClientsData = {
     body?: never;
     path: {
         id: string;
@@ -2863,7 +2858,7 @@ export type GetApiAdminApplicationsByIdClientsData = {
     url: '/api/applications/{id}/clients';
 };
 
-export type GetApiAdminApplicationsByIdClientsErrors = {
+export type GetApiApplicationsByIdClientsErrors = {
     /**
      * Default Response
      */
@@ -2885,9 +2880,9 @@ export type GetApiAdminApplicationsByIdClientsErrors = {
     };
 };
 
-export type GetApiAdminApplicationsByIdClientsError = GetApiAdminApplicationsByIdClientsErrors[keyof GetApiAdminApplicationsByIdClientsErrors];
+export type GetApiApplicationsByIdClientsError = GetApiApplicationsByIdClientsErrors[keyof GetApiApplicationsByIdClientsErrors];
 
-export type GetApiAdminApplicationsByIdClientsResponses = {
+export type GetApiApplicationsByIdClientsResponses = {
     /**
      * Default Response
      */
@@ -2903,9 +2898,9 @@ export type GetApiAdminApplicationsByIdClientsResponses = {
     };
 };
 
-export type GetApiAdminApplicationsByIdClientsResponse = GetApiAdminApplicationsByIdClientsResponses[keyof GetApiAdminApplicationsByIdClientsResponses];
+export type GetApiApplicationsByIdClientsResponse = GetApiApplicationsByIdClientsResponses[keyof GetApiApplicationsByIdClientsResponses];
 
-export type PostApiAdminApplicationsByIdClientsData = {
+export type PostApiApplicationsByIdClientsData = {
     body: {
         clientId: string;
     };
@@ -2916,7 +2911,7 @@ export type PostApiAdminApplicationsByIdClientsData = {
     url: '/api/applications/{id}/clients';
 };
 
-export type PostApiAdminApplicationsByIdClientsErrors = {
+export type PostApiApplicationsByIdClientsErrors = {
     /**
      * Default Response
      */
@@ -2976,9 +2971,9 @@ export type PostApiAdminApplicationsByIdClientsErrors = {
     };
 };
 
-export type PostApiAdminApplicationsByIdClientsError = PostApiAdminApplicationsByIdClientsErrors[keyof PostApiAdminApplicationsByIdClientsErrors];
+export type PostApiApplicationsByIdClientsError = PostApiApplicationsByIdClientsErrors[keyof PostApiApplicationsByIdClientsErrors];
 
-export type PostApiAdminApplicationsByIdClientsResponses = {
+export type PostApiApplicationsByIdClientsResponses = {
     /**
      * Default Response
      */
@@ -2992,9 +2987,9 @@ export type PostApiAdminApplicationsByIdClientsResponses = {
     };
 };
 
-export type PostApiAdminApplicationsByIdClientsResponse = PostApiAdminApplicationsByIdClientsResponses[keyof PostApiAdminApplicationsByIdClientsResponses];
+export type PostApiApplicationsByIdClientsResponse = PostApiApplicationsByIdClientsResponses[keyof PostApiApplicationsByIdClientsResponses];
 
-export type DeleteApiAdminApplicationsByIdClientsByClientIdData = {
+export type DeleteApiApplicationsByIdClientsByClientIdData = {
     body?: never;
     path: {
         id: string;
@@ -3004,7 +2999,7 @@ export type DeleteApiAdminApplicationsByIdClientsByClientIdData = {
     url: '/api/applications/{id}/clients/{clientId}';
 };
 
-export type DeleteApiAdminApplicationsByIdClientsByClientIdErrors = {
+export type DeleteApiApplicationsByIdClientsByClientIdErrors = {
     /**
      * Default Response
      */
@@ -3026,18 +3021,18 @@ export type DeleteApiAdminApplicationsByIdClientsByClientIdErrors = {
     };
 };
 
-export type DeleteApiAdminApplicationsByIdClientsByClientIdError = DeleteApiAdminApplicationsByIdClientsByClientIdErrors[keyof DeleteApiAdminApplicationsByIdClientsByClientIdErrors];
+export type DeleteApiApplicationsByIdClientsByClientIdError = DeleteApiApplicationsByIdClientsByClientIdErrors[keyof DeleteApiApplicationsByIdClientsByClientIdErrors];
 
-export type DeleteApiAdminApplicationsByIdClientsByClientIdResponses = {
+export type DeleteApiApplicationsByIdClientsByClientIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminApplicationsByIdClientsByClientIdResponse = DeleteApiAdminApplicationsByIdClientsByClientIdResponses[keyof DeleteApiAdminApplicationsByIdClientsByClientIdResponses];
+export type DeleteApiApplicationsByIdClientsByClientIdResponse = DeleteApiApplicationsByIdClientsByClientIdResponses[keyof DeleteApiApplicationsByIdClientsByClientIdResponses];
 
-export type GetApiAdminApplicationsByIdRolesData = {
+export type GetApiApplicationsByIdRolesData = {
     body?: never;
     path: {
         id: string;
@@ -3046,7 +3041,7 @@ export type GetApiAdminApplicationsByIdRolesData = {
     url: '/api/applications/{id}/roles';
 };
 
-export type GetApiAdminApplicationsByIdRolesErrors = {
+export type GetApiApplicationsByIdRolesErrors = {
     /**
      * Default Response
      */
@@ -3068,9 +3063,9 @@ export type GetApiAdminApplicationsByIdRolesErrors = {
     };
 };
 
-export type GetApiAdminApplicationsByIdRolesError = GetApiAdminApplicationsByIdRolesErrors[keyof GetApiAdminApplicationsByIdRolesErrors];
+export type GetApiApplicationsByIdRolesError = GetApiApplicationsByIdRolesErrors[keyof GetApiApplicationsByIdRolesErrors];
 
-export type GetApiAdminApplicationsByIdRolesResponses = {
+export type GetApiApplicationsByIdRolesResponses = {
     /**
      * Default Response
      */
@@ -3086,9 +3081,9 @@ export type GetApiAdminApplicationsByIdRolesResponses = {
     };
 };
 
-export type GetApiAdminApplicationsByIdRolesResponse = GetApiAdminApplicationsByIdRolesResponses[keyof GetApiAdminApplicationsByIdRolesResponses];
+export type GetApiApplicationsByIdRolesResponse = GetApiApplicationsByIdRolesResponses[keyof GetApiApplicationsByIdRolesResponses];
 
-export type PostApiAdminApplicationsByIdProvisionServiceAccountData = {
+export type PostApiApplicationsByIdProvisionServiceAccountData = {
     body: {
         code?: string;
         name?: string;
@@ -3100,7 +3095,7 @@ export type PostApiAdminApplicationsByIdProvisionServiceAccountData = {
     url: '/api/applications/{id}/provision-service-account';
 };
 
-export type PostApiAdminApplicationsByIdProvisionServiceAccountErrors = {
+export type PostApiApplicationsByIdProvisionServiceAccountErrors = {
     /**
      * Default Response
      */
@@ -3160,9 +3155,9 @@ export type PostApiAdminApplicationsByIdProvisionServiceAccountErrors = {
     };
 };
 
-export type PostApiAdminApplicationsByIdProvisionServiceAccountError = PostApiAdminApplicationsByIdProvisionServiceAccountErrors[keyof PostApiAdminApplicationsByIdProvisionServiceAccountErrors];
+export type PostApiApplicationsByIdProvisionServiceAccountError = PostApiApplicationsByIdProvisionServiceAccountErrors[keyof PostApiApplicationsByIdProvisionServiceAccountErrors];
 
-export type PostApiAdminApplicationsByIdProvisionServiceAccountResponses = {
+export type PostApiApplicationsByIdProvisionServiceAccountResponses = {
     /**
      * Default Response
      */
@@ -3176,9 +3171,9 @@ export type PostApiAdminApplicationsByIdProvisionServiceAccountResponses = {
     };
 };
 
-export type PostApiAdminApplicationsByIdProvisionServiceAccountResponse = PostApiAdminApplicationsByIdProvisionServiceAccountResponses[keyof PostApiAdminApplicationsByIdProvisionServiceAccountResponses];
+export type PostApiApplicationsByIdProvisionServiceAccountResponse = PostApiApplicationsByIdProvisionServiceAccountResponses[keyof PostApiApplicationsByIdProvisionServiceAccountResponses];
 
-export type GetApiAdminRolesData = {
+export type GetApiRolesData = {
     body?: never;
     path?: never;
     query?: {
@@ -3191,7 +3186,7 @@ export type GetApiAdminRolesData = {
     url: '/api/roles';
 };
 
-export type GetApiAdminRolesResponses = {
+export type GetApiRolesResponses = {
     /**
      * Default Response
      */
@@ -3215,9 +3210,9 @@ export type GetApiAdminRolesResponses = {
     };
 };
 
-export type GetApiAdminRolesResponse = GetApiAdminRolesResponses[keyof GetApiAdminRolesResponses];
+export type GetApiRolesResponse = GetApiRolesResponses[keyof GetApiRolesResponses];
 
-export type PostApiAdminRolesData = {
+export type PostApiRolesData = {
     body: {
         applicationId?: string | null;
         applicationCode?: string | null;
@@ -3233,7 +3228,7 @@ export type PostApiAdminRolesData = {
     url: '/api/roles';
 };
 
-export type PostApiAdminRolesErrors = {
+export type PostApiRolesErrors = {
     /**
      * Default Response
      */
@@ -3274,9 +3269,9 @@ export type PostApiAdminRolesErrors = {
     };
 };
 
-export type PostApiAdminRolesError = PostApiAdminRolesErrors[keyof PostApiAdminRolesErrors];
+export type PostApiRolesError = PostApiRolesErrors[keyof PostApiRolesErrors];
 
-export type PostApiAdminRolesResponses = {
+export type PostApiRolesResponses = {
     /**
      * Default Response
      */
@@ -3295,18 +3290,18 @@ export type PostApiAdminRolesResponses = {
     };
 };
 
-export type PostApiAdminRolesResponse = PostApiAdminRolesResponses[keyof PostApiAdminRolesResponses];
+export type PostApiRolesResponse = PostApiRolesResponses[keyof PostApiRolesResponses];
 
-export type DeleteApiAdminRolesByNameData = {
+export type DeleteApiRolesByRoleNameData = {
     body?: never;
     path: {
-        name: string;
+        roleName: string;
     };
     query?: never;
-    url: '/api/roles/{name}';
+    url: '/api/roles/{roleName}';
 };
 
-export type DeleteApiAdminRolesByNameErrors = {
+export type DeleteApiRolesByRoleNameErrors = {
     /**
      * Default Response
      */
@@ -3328,27 +3323,27 @@ export type DeleteApiAdminRolesByNameErrors = {
     };
 };
 
-export type DeleteApiAdminRolesByNameError = DeleteApiAdminRolesByNameErrors[keyof DeleteApiAdminRolesByNameErrors];
+export type DeleteApiRolesByRoleNameError = DeleteApiRolesByRoleNameErrors[keyof DeleteApiRolesByRoleNameErrors];
 
-export type DeleteApiAdminRolesByNameResponses = {
+export type DeleteApiRolesByRoleNameResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminRolesByNameResponse = DeleteApiAdminRolesByNameResponses[keyof DeleteApiAdminRolesByNameResponses];
+export type DeleteApiRolesByRoleNameResponse = DeleteApiRolesByRoleNameResponses[keyof DeleteApiRolesByRoleNameResponses];
 
-export type GetApiAdminRolesByNameData = {
+export type GetApiRolesByRoleNameData = {
     body?: never;
     path: {
-        name: string;
+        roleName: string;
     };
     query?: never;
-    url: '/api/roles/{name}';
+    url: '/api/roles/{roleName}';
 };
 
-export type GetApiAdminRolesByNameErrors = {
+export type GetApiRolesByRoleNameErrors = {
     /**
      * Default Response
      */
@@ -3370,9 +3365,9 @@ export type GetApiAdminRolesByNameErrors = {
     };
 };
 
-export type GetApiAdminRolesByNameError = GetApiAdminRolesByNameErrors[keyof GetApiAdminRolesByNameErrors];
+export type GetApiRolesByRoleNameError = GetApiRolesByRoleNameErrors[keyof GetApiRolesByRoleNameErrors];
 
-export type GetApiAdminRolesByNameResponses = {
+export type GetApiRolesByRoleNameResponses = {
     /**
      * Default Response
      */
@@ -3391,9 +3386,9 @@ export type GetApiAdminRolesByNameResponses = {
     };
 };
 
-export type GetApiAdminRolesByNameResponse = GetApiAdminRolesByNameResponses[keyof GetApiAdminRolesByNameResponses];
+export type GetApiRolesByRoleNameResponse = GetApiRolesByRoleNameResponses[keyof GetApiRolesByRoleNameResponses];
 
-export type PutApiAdminRolesByNameData = {
+export type PutApiRolesByRoleNameData = {
     body: {
         displayName: string;
         description?: string | null;
@@ -3401,13 +3396,13 @@ export type PutApiAdminRolesByNameData = {
         clientManaged?: boolean;
     };
     path: {
-        name: string;
+        roleName: string;
     };
     query?: never;
-    url: '/api/roles/{name}';
+    url: '/api/roles/{roleName}';
 };
 
-export type PutApiAdminRolesByNameErrors = {
+export type PutApiRolesByRoleNameErrors = {
     /**
      * Default Response
      */
@@ -3467,9 +3462,9 @@ export type PutApiAdminRolesByNameErrors = {
     };
 };
 
-export type PutApiAdminRolesByNameError = PutApiAdminRolesByNameErrors[keyof PutApiAdminRolesByNameErrors];
+export type PutApiRolesByRoleNameError = PutApiRolesByRoleNameErrors[keyof PutApiRolesByRoleNameErrors];
 
-export type PutApiAdminRolesByNameResponses = {
+export type PutApiRolesByRoleNameResponses = {
     /**
      * Default Response
      */
@@ -3488,9 +3483,9 @@ export type PutApiAdminRolesByNameResponses = {
     };
 };
 
-export type PutApiAdminRolesByNameResponse = PutApiAdminRolesByNameResponses[keyof PutApiAdminRolesByNameResponses];
+export type PutApiRolesByRoleNameResponse = PutApiRolesByRoleNameResponses[keyof PutApiRolesByRoleNameResponses];
 
-export type GetApiAdminRolesBySourceBySourceData = {
+export type GetApiRolesBySourceBySourceData = {
     body?: never;
     path: {
         source: string;
@@ -3499,7 +3494,7 @@ export type GetApiAdminRolesBySourceBySourceData = {
     url: '/api/roles/by-source/{source}';
 };
 
-export type GetApiAdminRolesBySourceBySourceErrors = {
+export type GetApiRolesBySourceBySourceErrors = {
     /**
      * Default Response
      */
@@ -3521,9 +3516,9 @@ export type GetApiAdminRolesBySourceBySourceErrors = {
     };
 };
 
-export type GetApiAdminRolesBySourceBySourceError = GetApiAdminRolesBySourceBySourceErrors[keyof GetApiAdminRolesBySourceBySourceErrors];
+export type GetApiRolesBySourceBySourceError = GetApiRolesBySourceBySourceErrors[keyof GetApiRolesBySourceBySourceErrors];
 
-export type GetApiAdminRolesBySourceBySourceResponses = {
+export type GetApiRolesBySourceBySourceResponses = {
     /**
      * Default Response
      */
@@ -3544,9 +3539,9 @@ export type GetApiAdminRolesBySourceBySourceResponses = {
     };
 };
 
-export type GetApiAdminRolesBySourceBySourceResponse = GetApiAdminRolesBySourceBySourceResponses[keyof GetApiAdminRolesBySourceBySourceResponses];
+export type GetApiRolesBySourceBySourceResponse = GetApiRolesBySourceBySourceResponses[keyof GetApiRolesBySourceBySourceResponses];
 
-export type GetApiAdminRolesByApplicationByApplicationIdData = {
+export type GetApiRolesByApplicationByApplicationIdData = {
     body?: never;
     path: {
         applicationId: string;
@@ -3555,7 +3550,7 @@ export type GetApiAdminRolesByApplicationByApplicationIdData = {
     url: '/api/roles/by-application/{applicationId}';
 };
 
-export type GetApiAdminRolesByApplicationByApplicationIdResponses = {
+export type GetApiRolesByApplicationByApplicationIdResponses = {
     /**
      * Default Response
      */
@@ -3576,16 +3571,16 @@ export type GetApiAdminRolesByApplicationByApplicationIdResponses = {
     };
 };
 
-export type GetApiAdminRolesByApplicationByApplicationIdResponse = GetApiAdminRolesByApplicationByApplicationIdResponses[keyof GetApiAdminRolesByApplicationByApplicationIdResponses];
+export type GetApiRolesByApplicationByApplicationIdResponse = GetApiRolesByApplicationByApplicationIdResponses[keyof GetApiRolesByApplicationByApplicationIdResponses];
 
-export type GetApiAdminRolesPermissionsData = {
+export type GetApiRolesPermissionsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/roles/permissions';
 };
 
-export type GetApiAdminRolesPermissionsResponses = {
+export type GetApiRolesPermissionsResponses = {
     /**
      * Default Response
      */
@@ -3602,9 +3597,9 @@ export type GetApiAdminRolesPermissionsResponses = {
     };
 };
 
-export type GetApiAdminRolesPermissionsResponse = GetApiAdminRolesPermissionsResponses[keyof GetApiAdminRolesPermissionsResponses];
+export type GetApiRolesPermissionsResponse = GetApiRolesPermissionsResponses[keyof GetApiRolesPermissionsResponses];
 
-export type GetApiAdminRolesPermissionsByPermissionData = {
+export type GetApiRolesPermissionsByPermissionData = {
     body?: never;
     path: {
         permission: string;
@@ -3613,7 +3608,7 @@ export type GetApiAdminRolesPermissionsByPermissionData = {
     url: '/api/roles/permissions/{permission}';
 };
 
-export type GetApiAdminRolesPermissionsByPermissionErrors = {
+export type GetApiRolesPermissionsByPermissionErrors = {
     /**
      * Default Response
      */
@@ -3635,9 +3630,9 @@ export type GetApiAdminRolesPermissionsByPermissionErrors = {
     };
 };
 
-export type GetApiAdminRolesPermissionsByPermissionError = GetApiAdminRolesPermissionsByPermissionErrors[keyof GetApiAdminRolesPermissionsByPermissionErrors];
+export type GetApiRolesPermissionsByPermissionError = GetApiRolesPermissionsByPermissionErrors[keyof GetApiRolesPermissionsByPermissionErrors];
 
-export type GetApiAdminRolesPermissionsByPermissionResponses = {
+export type GetApiRolesPermissionsByPermissionResponses = {
     /**
      * Default Response
      */
@@ -3652,9 +3647,9 @@ export type GetApiAdminRolesPermissionsByPermissionResponses = {
     };
 };
 
-export type GetApiAdminRolesPermissionsByPermissionResponse = GetApiAdminRolesPermissionsByPermissionResponses[keyof GetApiAdminRolesPermissionsByPermissionResponses];
+export type GetApiRolesPermissionsByPermissionResponse = GetApiRolesPermissionsByPermissionResponses[keyof GetApiRolesPermissionsByPermissionResponses];
 
-export type GetApiAdminAuthConfigsData = {
+export type GetApiAuthConfigsData = {
     body?: never;
     path?: never;
     query?: {
@@ -3664,7 +3659,7 @@ export type GetApiAdminAuthConfigsData = {
     url: '/api/auth-configs';
 };
 
-export type GetApiAdminAuthConfigsResponses = {
+export type GetApiAuthConfigsResponses = {
     /**
      * Default Response
      */
@@ -3689,9 +3684,9 @@ export type GetApiAdminAuthConfigsResponses = {
     };
 };
 
-export type GetApiAdminAuthConfigsResponse = GetApiAdminAuthConfigsResponses[keyof GetApiAdminAuthConfigsResponses];
+export type GetApiAuthConfigsResponse = GetApiAuthConfigsResponses[keyof GetApiAuthConfigsResponses];
 
-export type DeleteApiAdminAuthConfigsByIdData = {
+export type DeleteApiAuthConfigsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -3700,7 +3695,7 @@ export type DeleteApiAdminAuthConfigsByIdData = {
     url: '/api/auth-configs/{id}';
 };
 
-export type DeleteApiAdminAuthConfigsByIdErrors = {
+export type DeleteApiAuthConfigsByIdErrors = {
     /**
      * Default Response
      */
@@ -3722,18 +3717,18 @@ export type DeleteApiAdminAuthConfigsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminAuthConfigsByIdError = DeleteApiAdminAuthConfigsByIdErrors[keyof DeleteApiAdminAuthConfigsByIdErrors];
+export type DeleteApiAuthConfigsByIdError = DeleteApiAuthConfigsByIdErrors[keyof DeleteApiAuthConfigsByIdErrors];
 
-export type DeleteApiAdminAuthConfigsByIdResponses = {
+export type DeleteApiAuthConfigsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminAuthConfigsByIdResponse = DeleteApiAdminAuthConfigsByIdResponses[keyof DeleteApiAdminAuthConfigsByIdResponses];
+export type DeleteApiAuthConfigsByIdResponse = DeleteApiAuthConfigsByIdResponses[keyof DeleteApiAuthConfigsByIdResponses];
 
-export type GetApiAdminAuthConfigsByIdData = {
+export type GetApiAuthConfigsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -3742,7 +3737,7 @@ export type GetApiAdminAuthConfigsByIdData = {
     url: '/api/auth-configs/{id}';
 };
 
-export type GetApiAdminAuthConfigsByIdErrors = {
+export type GetApiAuthConfigsByIdErrors = {
     /**
      * Default Response
      */
@@ -3764,9 +3759,9 @@ export type GetApiAdminAuthConfigsByIdErrors = {
     };
 };
 
-export type GetApiAdminAuthConfigsByIdError = GetApiAdminAuthConfigsByIdErrors[keyof GetApiAdminAuthConfigsByIdErrors];
+export type GetApiAuthConfigsByIdError = GetApiAuthConfigsByIdErrors[keyof GetApiAuthConfigsByIdErrors];
 
-export type GetApiAdminAuthConfigsByIdResponses = {
+export type GetApiAuthConfigsByIdResponses = {
     /**
      * Default Response
      */
@@ -3788,9 +3783,9 @@ export type GetApiAdminAuthConfigsByIdResponses = {
     };
 };
 
-export type GetApiAdminAuthConfigsByIdResponse = GetApiAdminAuthConfigsByIdResponses[keyof GetApiAdminAuthConfigsByIdResponses];
+export type GetApiAuthConfigsByIdResponse = GetApiAuthConfigsByIdResponses[keyof GetApiAuthConfigsByIdResponses];
 
-export type GetApiAdminAuthConfigsByDomainByDomainData = {
+export type GetApiAuthConfigsByDomainByDomainData = {
     body?: never;
     path: {
         domain: string;
@@ -3799,7 +3794,7 @@ export type GetApiAdminAuthConfigsByDomainByDomainData = {
     url: '/api/auth-configs/by-domain/{domain}';
 };
 
-export type GetApiAdminAuthConfigsByDomainByDomainErrors = {
+export type GetApiAuthConfigsByDomainByDomainErrors = {
     /**
      * Default Response
      */
@@ -3821,9 +3816,9 @@ export type GetApiAdminAuthConfigsByDomainByDomainErrors = {
     };
 };
 
-export type GetApiAdminAuthConfigsByDomainByDomainError = GetApiAdminAuthConfigsByDomainByDomainErrors[keyof GetApiAdminAuthConfigsByDomainByDomainErrors];
+export type GetApiAuthConfigsByDomainByDomainError = GetApiAuthConfigsByDomainByDomainErrors[keyof GetApiAuthConfigsByDomainByDomainErrors];
 
-export type GetApiAdminAuthConfigsByDomainByDomainResponses = {
+export type GetApiAuthConfigsByDomainByDomainResponses = {
     /**
      * Default Response
      */
@@ -3845,9 +3840,9 @@ export type GetApiAdminAuthConfigsByDomainByDomainResponses = {
     };
 };
 
-export type GetApiAdminAuthConfigsByDomainByDomainResponse = GetApiAdminAuthConfigsByDomainByDomainResponses[keyof GetApiAdminAuthConfigsByDomainByDomainResponses];
+export type GetApiAuthConfigsByDomainByDomainResponse = GetApiAuthConfigsByDomainByDomainResponses[keyof GetApiAuthConfigsByDomainByDomainResponses];
 
-export type PostApiAdminAuthConfigsInternalData = {
+export type PostApiAuthConfigsInternalData = {
     body: {
         emailDomain: string;
         configType: 'ANCHOR' | 'PARTNER' | 'CLIENT';
@@ -3860,7 +3855,7 @@ export type PostApiAdminAuthConfigsInternalData = {
     url: '/api/auth-configs/internal';
 };
 
-export type PostApiAdminAuthConfigsInternalErrors = {
+export type PostApiAuthConfigsInternalErrors = {
     /**
      * Default Response
      */
@@ -3901,9 +3896,9 @@ export type PostApiAdminAuthConfigsInternalErrors = {
     };
 };
 
-export type PostApiAdminAuthConfigsInternalError = PostApiAdminAuthConfigsInternalErrors[keyof PostApiAdminAuthConfigsInternalErrors];
+export type PostApiAuthConfigsInternalError = PostApiAuthConfigsInternalErrors[keyof PostApiAuthConfigsInternalErrors];
 
-export type PostApiAdminAuthConfigsInternalResponses = {
+export type PostApiAuthConfigsInternalResponses = {
     /**
      * Default Response
      */
@@ -3925,9 +3920,9 @@ export type PostApiAdminAuthConfigsInternalResponses = {
     };
 };
 
-export type PostApiAdminAuthConfigsInternalResponse = PostApiAdminAuthConfigsInternalResponses[keyof PostApiAdminAuthConfigsInternalResponses];
+export type PostApiAuthConfigsInternalResponse = PostApiAuthConfigsInternalResponses[keyof PostApiAuthConfigsInternalResponses];
 
-export type PostApiAdminAuthConfigsOidcData = {
+export type PostApiAuthConfigsOidcData = {
     body: {
         emailDomain: string;
         configType: 'ANCHOR' | 'PARTNER' | 'CLIENT';
@@ -3945,7 +3940,7 @@ export type PostApiAdminAuthConfigsOidcData = {
     url: '/api/auth-configs/oidc';
 };
 
-export type PostApiAdminAuthConfigsOidcErrors = {
+export type PostApiAuthConfigsOidcErrors = {
     /**
      * Default Response
      */
@@ -3986,9 +3981,9 @@ export type PostApiAdminAuthConfigsOidcErrors = {
     };
 };
 
-export type PostApiAdminAuthConfigsOidcError = PostApiAdminAuthConfigsOidcErrors[keyof PostApiAdminAuthConfigsOidcErrors];
+export type PostApiAuthConfigsOidcError = PostApiAuthConfigsOidcErrors[keyof PostApiAuthConfigsOidcErrors];
 
-export type PostApiAdminAuthConfigsOidcResponses = {
+export type PostApiAuthConfigsOidcResponses = {
     /**
      * Default Response
      */
@@ -4010,9 +4005,9 @@ export type PostApiAdminAuthConfigsOidcResponses = {
     };
 };
 
-export type PostApiAdminAuthConfigsOidcResponse = PostApiAdminAuthConfigsOidcResponses[keyof PostApiAdminAuthConfigsOidcResponses];
+export type PostApiAuthConfigsOidcResponse = PostApiAuthConfigsOidcResponses[keyof PostApiAuthConfigsOidcResponses];
 
-export type PutApiAdminAuthConfigsByIdOidcData = {
+export type PutApiAuthConfigsByIdOidcData = {
     body: {
         oidcIssuerUrl: string;
         oidcClientId: string;
@@ -4027,7 +4022,7 @@ export type PutApiAdminAuthConfigsByIdOidcData = {
     url: '/api/auth-configs/{id}/oidc';
 };
 
-export type PutApiAdminAuthConfigsByIdOidcErrors = {
+export type PutApiAuthConfigsByIdOidcErrors = {
     /**
      * Default Response
      */
@@ -4087,9 +4082,9 @@ export type PutApiAdminAuthConfigsByIdOidcErrors = {
     };
 };
 
-export type PutApiAdminAuthConfigsByIdOidcError = PutApiAdminAuthConfigsByIdOidcErrors[keyof PutApiAdminAuthConfigsByIdOidcErrors];
+export type PutApiAuthConfigsByIdOidcError = PutApiAuthConfigsByIdOidcErrors[keyof PutApiAuthConfigsByIdOidcErrors];
 
-export type PutApiAdminAuthConfigsByIdOidcResponses = {
+export type PutApiAuthConfigsByIdOidcResponses = {
     /**
      * Default Response
      */
@@ -4111,9 +4106,9 @@ export type PutApiAdminAuthConfigsByIdOidcResponses = {
     };
 };
 
-export type PutApiAdminAuthConfigsByIdOidcResponse = PutApiAdminAuthConfigsByIdOidcResponses[keyof PutApiAdminAuthConfigsByIdOidcResponses];
+export type PutApiAuthConfigsByIdOidcResponse = PutApiAuthConfigsByIdOidcResponses[keyof PutApiAuthConfigsByIdOidcResponses];
 
-export type PutApiAdminAuthConfigsByIdConfigTypeData = {
+export type PutApiAuthConfigsByIdConfigTypeData = {
     body: {
         configType: 'ANCHOR' | 'PARTNER' | 'CLIENT';
         primaryClientId?: string | null;
@@ -4125,7 +4120,7 @@ export type PutApiAdminAuthConfigsByIdConfigTypeData = {
     url: '/api/auth-configs/{id}/config-type';
 };
 
-export type PutApiAdminAuthConfigsByIdConfigTypeErrors = {
+export type PutApiAuthConfigsByIdConfigTypeErrors = {
     /**
      * Default Response
      */
@@ -4185,9 +4180,9 @@ export type PutApiAdminAuthConfigsByIdConfigTypeErrors = {
     };
 };
 
-export type PutApiAdminAuthConfigsByIdConfigTypeError = PutApiAdminAuthConfigsByIdConfigTypeErrors[keyof PutApiAdminAuthConfigsByIdConfigTypeErrors];
+export type PutApiAuthConfigsByIdConfigTypeError = PutApiAuthConfigsByIdConfigTypeErrors[keyof PutApiAuthConfigsByIdConfigTypeErrors];
 
-export type PutApiAdminAuthConfigsByIdConfigTypeResponses = {
+export type PutApiAuthConfigsByIdConfigTypeResponses = {
     /**
      * Default Response
      */
@@ -4209,9 +4204,9 @@ export type PutApiAdminAuthConfigsByIdConfigTypeResponses = {
     };
 };
 
-export type PutApiAdminAuthConfigsByIdConfigTypeResponse = PutApiAdminAuthConfigsByIdConfigTypeResponses[keyof PutApiAdminAuthConfigsByIdConfigTypeResponses];
+export type PutApiAuthConfigsByIdConfigTypeResponse = PutApiAuthConfigsByIdConfigTypeResponses[keyof PutApiAuthConfigsByIdConfigTypeResponses];
 
-export type PutApiAdminAuthConfigsByIdAdditionalClientsData = {
+export type PutApiAuthConfigsByIdAdditionalClientsData = {
     body: {
         clientIds: Array<string>;
     };
@@ -4222,7 +4217,7 @@ export type PutApiAdminAuthConfigsByIdAdditionalClientsData = {
     url: '/api/auth-configs/{id}/additional-clients';
 };
 
-export type PutApiAdminAuthConfigsByIdAdditionalClientsErrors = {
+export type PutApiAuthConfigsByIdAdditionalClientsErrors = {
     /**
      * Default Response
      */
@@ -4263,9 +4258,9 @@ export type PutApiAdminAuthConfigsByIdAdditionalClientsErrors = {
     };
 };
 
-export type PutApiAdminAuthConfigsByIdAdditionalClientsError = PutApiAdminAuthConfigsByIdAdditionalClientsErrors[keyof PutApiAdminAuthConfigsByIdAdditionalClientsErrors];
+export type PutApiAuthConfigsByIdAdditionalClientsError = PutApiAuthConfigsByIdAdditionalClientsErrors[keyof PutApiAuthConfigsByIdAdditionalClientsErrors];
 
-export type PutApiAdminAuthConfigsByIdAdditionalClientsResponses = {
+export type PutApiAuthConfigsByIdAdditionalClientsResponses = {
     /**
      * Default Response
      */
@@ -4287,9 +4282,9 @@ export type PutApiAdminAuthConfigsByIdAdditionalClientsResponses = {
     };
 };
 
-export type PutApiAdminAuthConfigsByIdAdditionalClientsResponse = PutApiAdminAuthConfigsByIdAdditionalClientsResponses[keyof PutApiAdminAuthConfigsByIdAdditionalClientsResponses];
+export type PutApiAuthConfigsByIdAdditionalClientsResponse = PutApiAuthConfigsByIdAdditionalClientsResponses[keyof PutApiAuthConfigsByIdAdditionalClientsResponses];
 
-export type PutApiAdminAuthConfigsByIdGrantedClientsData = {
+export type PutApiAuthConfigsByIdGrantedClientsData = {
     body: {
         clientIds: Array<string>;
     };
@@ -4300,7 +4295,7 @@ export type PutApiAdminAuthConfigsByIdGrantedClientsData = {
     url: '/api/auth-configs/{id}/granted-clients';
 };
 
-export type PutApiAdminAuthConfigsByIdGrantedClientsErrors = {
+export type PutApiAuthConfigsByIdGrantedClientsErrors = {
     /**
      * Default Response
      */
@@ -4341,9 +4336,9 @@ export type PutApiAdminAuthConfigsByIdGrantedClientsErrors = {
     };
 };
 
-export type PutApiAdminAuthConfigsByIdGrantedClientsError = PutApiAdminAuthConfigsByIdGrantedClientsErrors[keyof PutApiAdminAuthConfigsByIdGrantedClientsErrors];
+export type PutApiAuthConfigsByIdGrantedClientsError = PutApiAuthConfigsByIdGrantedClientsErrors[keyof PutApiAuthConfigsByIdGrantedClientsErrors];
 
-export type PutApiAdminAuthConfigsByIdGrantedClientsResponses = {
+export type PutApiAuthConfigsByIdGrantedClientsResponses = {
     /**
      * Default Response
      */
@@ -4365,9 +4360,9 @@ export type PutApiAdminAuthConfigsByIdGrantedClientsResponses = {
     };
 };
 
-export type PutApiAdminAuthConfigsByIdGrantedClientsResponse = PutApiAdminAuthConfigsByIdGrantedClientsResponses[keyof PutApiAdminAuthConfigsByIdGrantedClientsResponses];
+export type PutApiAuthConfigsByIdGrantedClientsResponse = PutApiAuthConfigsByIdGrantedClientsResponses[keyof PutApiAuthConfigsByIdGrantedClientsResponses];
 
-export type GetApiAdminOauthClientsData = {
+export type GetApiOauthClientsData = {
     body?: never;
     path?: never;
     query?: {
@@ -4376,7 +4371,7 @@ export type GetApiAdminOauthClientsData = {
     url: '/api/oauth-clients';
 };
 
-export type GetApiAdminOauthClientsResponses = {
+export type GetApiOauthClientsResponses = {
     /**
      * Default Response
      */
@@ -4406,9 +4401,9 @@ export type GetApiAdminOauthClientsResponses = {
     };
 };
 
-export type GetApiAdminOauthClientsResponse = GetApiAdminOauthClientsResponses[keyof GetApiAdminOauthClientsResponses];
+export type GetApiOauthClientsResponse = GetApiOauthClientsResponses[keyof GetApiOauthClientsResponses];
 
-export type PostApiAdminOauthClientsData = {
+export type PostApiOauthClientsData = {
     body: {
         clientName: string;
         clientType: 'PUBLIC' | 'CONFIDENTIAL';
@@ -4425,7 +4420,7 @@ export type PostApiAdminOauthClientsData = {
     url: '/api/oauth-clients';
 };
 
-export type PostApiAdminOauthClientsErrors = {
+export type PostApiOauthClientsErrors = {
     /**
      * Default Response
      */
@@ -4466,38 +4461,44 @@ export type PostApiAdminOauthClientsErrors = {
     };
 };
 
-export type PostApiAdminOauthClientsError = PostApiAdminOauthClientsErrors[keyof PostApiAdminOauthClientsErrors];
+export type PostApiOauthClientsError = PostApiOauthClientsErrors[keyof PostApiOauthClientsErrors];
 
-export type PostApiAdminOauthClientsResponses = {
+export type PostApiOauthClientsResponses = {
     /**
      * Default Response
      */
     201: {
-        id: string;
-        clientId: string;
-        clientName: string;
-        clientType: string;
-        hasClientSecret: boolean;
-        redirectUris: Array<string>;
-        allowedOrigins: Array<string>;
-        grantTypes: Array<string>;
-        defaultScopes: Array<string>;
-        pkceRequired: boolean;
-        applicationIds: Array<string>;
-        applications: Array<{
+        client: {
             id: string;
-            name: string;
-        }>;
-        serviceAccountPrincipalId: string | null;
-        active: boolean;
-        createdAt: string;
-        updatedAt: string;
+            clientId: string;
+            clientName: string;
+            clientType: string;
+            hasClientSecret: boolean;
+            redirectUris: Array<string>;
+            allowedOrigins: Array<string>;
+            grantTypes: Array<string>;
+            defaultScopes: Array<string>;
+            pkceRequired: boolean;
+            applicationIds: Array<string>;
+            applications: Array<{
+                id: string;
+                name: string;
+            }>;
+            serviceAccountPrincipalId: string | null;
+            active: boolean;
+            createdAt: string;
+            updatedAt: string;
+        };
+        /**
+         * Auto-generated plaintext client secret for CONFIDENTIAL clients (shown only once)
+         */
+        clientSecret?: string;
     };
 };
 
-export type PostApiAdminOauthClientsResponse = PostApiAdminOauthClientsResponses[keyof PostApiAdminOauthClientsResponses];
+export type PostApiOauthClientsResponse = PostApiOauthClientsResponses[keyof PostApiOauthClientsResponses];
 
-export type DeleteApiAdminOauthClientsByIdData = {
+export type DeleteApiOauthClientsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -4506,7 +4507,7 @@ export type DeleteApiAdminOauthClientsByIdData = {
     url: '/api/oauth-clients/{id}';
 };
 
-export type DeleteApiAdminOauthClientsByIdErrors = {
+export type DeleteApiOauthClientsByIdErrors = {
     /**
      * Default Response
      */
@@ -4528,18 +4529,18 @@ export type DeleteApiAdminOauthClientsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminOauthClientsByIdError = DeleteApiAdminOauthClientsByIdErrors[keyof DeleteApiAdminOauthClientsByIdErrors];
+export type DeleteApiOauthClientsByIdError = DeleteApiOauthClientsByIdErrors[keyof DeleteApiOauthClientsByIdErrors];
 
-export type DeleteApiAdminOauthClientsByIdResponses = {
+export type DeleteApiOauthClientsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminOauthClientsByIdResponse = DeleteApiAdminOauthClientsByIdResponses[keyof DeleteApiAdminOauthClientsByIdResponses];
+export type DeleteApiOauthClientsByIdResponse = DeleteApiOauthClientsByIdResponses[keyof DeleteApiOauthClientsByIdResponses];
 
-export type GetApiAdminOauthClientsByIdData = {
+export type GetApiOauthClientsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -4548,7 +4549,7 @@ export type GetApiAdminOauthClientsByIdData = {
     url: '/api/oauth-clients/{id}';
 };
 
-export type GetApiAdminOauthClientsByIdErrors = {
+export type GetApiOauthClientsByIdErrors = {
     /**
      * Default Response
      */
@@ -4570,9 +4571,9 @@ export type GetApiAdminOauthClientsByIdErrors = {
     };
 };
 
-export type GetApiAdminOauthClientsByIdError = GetApiAdminOauthClientsByIdErrors[keyof GetApiAdminOauthClientsByIdErrors];
+export type GetApiOauthClientsByIdError = GetApiOauthClientsByIdErrors[keyof GetApiOauthClientsByIdErrors];
 
-export type GetApiAdminOauthClientsByIdResponses = {
+export type GetApiOauthClientsByIdResponses = {
     /**
      * Default Response
      */
@@ -4599,9 +4600,9 @@ export type GetApiAdminOauthClientsByIdResponses = {
     };
 };
 
-export type GetApiAdminOauthClientsByIdResponse = GetApiAdminOauthClientsByIdResponses[keyof GetApiAdminOauthClientsByIdResponses];
+export type GetApiOauthClientsByIdResponse = GetApiOauthClientsByIdResponses[keyof GetApiOauthClientsByIdResponses];
 
-export type PutApiAdminOauthClientsByIdData = {
+export type PutApiOauthClientsByIdData = {
     body: {
         clientName?: string;
         redirectUris?: Array<string>;
@@ -4619,7 +4620,7 @@ export type PutApiAdminOauthClientsByIdData = {
     url: '/api/oauth-clients/{id}';
 };
 
-export type PutApiAdminOauthClientsByIdErrors = {
+export type PutApiOauthClientsByIdErrors = {
     /**
      * Default Response
      */
@@ -4679,9 +4680,9 @@ export type PutApiAdminOauthClientsByIdErrors = {
     };
 };
 
-export type PutApiAdminOauthClientsByIdError = PutApiAdminOauthClientsByIdErrors[keyof PutApiAdminOauthClientsByIdErrors];
+export type PutApiOauthClientsByIdError = PutApiOauthClientsByIdErrors[keyof PutApiOauthClientsByIdErrors];
 
-export type PutApiAdminOauthClientsByIdResponses = {
+export type PutApiOauthClientsByIdResponses = {
     /**
      * Default Response
      */
@@ -4708,9 +4709,9 @@ export type PutApiAdminOauthClientsByIdResponses = {
     };
 };
 
-export type PutApiAdminOauthClientsByIdResponse = PutApiAdminOauthClientsByIdResponses[keyof PutApiAdminOauthClientsByIdResponses];
+export type PutApiOauthClientsByIdResponse = PutApiOauthClientsByIdResponses[keyof PutApiOauthClientsByIdResponses];
 
-export type GetApiAdminOauthClientsByClientIdByClientIdData = {
+export type GetApiOauthClientsByClientIdByClientIdData = {
     body?: never;
     path: {
         clientId: string;
@@ -4719,7 +4720,7 @@ export type GetApiAdminOauthClientsByClientIdByClientIdData = {
     url: '/api/oauth-clients/by-client-id/{clientId}';
 };
 
-export type GetApiAdminOauthClientsByClientIdByClientIdErrors = {
+export type GetApiOauthClientsByClientIdByClientIdErrors = {
     /**
      * Default Response
      */
@@ -4741,9 +4742,9 @@ export type GetApiAdminOauthClientsByClientIdByClientIdErrors = {
     };
 };
 
-export type GetApiAdminOauthClientsByClientIdByClientIdError = GetApiAdminOauthClientsByClientIdByClientIdErrors[keyof GetApiAdminOauthClientsByClientIdByClientIdErrors];
+export type GetApiOauthClientsByClientIdByClientIdError = GetApiOauthClientsByClientIdByClientIdErrors[keyof GetApiOauthClientsByClientIdByClientIdErrors];
 
-export type GetApiAdminOauthClientsByClientIdByClientIdResponses = {
+export type GetApiOauthClientsByClientIdByClientIdResponses = {
     /**
      * Default Response
      */
@@ -4770,9 +4771,9 @@ export type GetApiAdminOauthClientsByClientIdByClientIdResponses = {
     };
 };
 
-export type GetApiAdminOauthClientsByClientIdByClientIdResponse = GetApiAdminOauthClientsByClientIdByClientIdResponses[keyof GetApiAdminOauthClientsByClientIdByClientIdResponses];
+export type GetApiOauthClientsByClientIdByClientIdResponse = GetApiOauthClientsByClientIdByClientIdResponses[keyof GetApiOauthClientsByClientIdByClientIdResponses];
 
-export type PostApiAdminOauthClientsByIdRegenerateSecretData = {
+export type PostApiOauthClientsByIdRegenerateSecretData = {
     body?: never;
     path: {
         id: string;
@@ -4781,7 +4782,7 @@ export type PostApiAdminOauthClientsByIdRegenerateSecretData = {
     url: '/api/oauth-clients/{id}/regenerate-secret';
 };
 
-export type PostApiAdminOauthClientsByIdRegenerateSecretErrors = {
+export type PostApiOauthClientsByIdRegenerateSecretErrors = {
     /**
      * Default Response
      */
@@ -4822,9 +4823,9 @@ export type PostApiAdminOauthClientsByIdRegenerateSecretErrors = {
     };
 };
 
-export type PostApiAdminOauthClientsByIdRegenerateSecretError = PostApiAdminOauthClientsByIdRegenerateSecretErrors[keyof PostApiAdminOauthClientsByIdRegenerateSecretErrors];
+export type PostApiOauthClientsByIdRegenerateSecretError = PostApiOauthClientsByIdRegenerateSecretErrors[keyof PostApiOauthClientsByIdRegenerateSecretErrors];
 
-export type PostApiAdminOauthClientsByIdRegenerateSecretResponses = {
+export type PostApiOauthClientsByIdRegenerateSecretResponses = {
     /**
      * Default Response
      */
@@ -4857,9 +4858,9 @@ export type PostApiAdminOauthClientsByIdRegenerateSecretResponses = {
     };
 };
 
-export type PostApiAdminOauthClientsByIdRegenerateSecretResponse = PostApiAdminOauthClientsByIdRegenerateSecretResponses[keyof PostApiAdminOauthClientsByIdRegenerateSecretResponses];
+export type PostApiOauthClientsByIdRegenerateSecretResponse = PostApiOauthClientsByIdRegenerateSecretResponses[keyof PostApiOauthClientsByIdRegenerateSecretResponses];
 
-export type PostApiAdminOauthClientsByIdActivateData = {
+export type PostApiOauthClientsByIdActivateData = {
     body?: never;
     path: {
         id: string;
@@ -4868,7 +4869,7 @@ export type PostApiAdminOauthClientsByIdActivateData = {
     url: '/api/oauth-clients/{id}/activate';
 };
 
-export type PostApiAdminOauthClientsByIdActivateErrors = {
+export type PostApiOauthClientsByIdActivateErrors = {
     /**
      * Default Response
      */
@@ -4890,9 +4891,9 @@ export type PostApiAdminOauthClientsByIdActivateErrors = {
     };
 };
 
-export type PostApiAdminOauthClientsByIdActivateError = PostApiAdminOauthClientsByIdActivateErrors[keyof PostApiAdminOauthClientsByIdActivateErrors];
+export type PostApiOauthClientsByIdActivateError = PostApiOauthClientsByIdActivateErrors[keyof PostApiOauthClientsByIdActivateErrors];
 
-export type PostApiAdminOauthClientsByIdActivateResponses = {
+export type PostApiOauthClientsByIdActivateResponses = {
     /**
      * Default Response
      */
@@ -4904,9 +4905,9 @@ export type PostApiAdminOauthClientsByIdActivateResponses = {
     };
 };
 
-export type PostApiAdminOauthClientsByIdActivateResponse = PostApiAdminOauthClientsByIdActivateResponses[keyof PostApiAdminOauthClientsByIdActivateResponses];
+export type PostApiOauthClientsByIdActivateResponse = PostApiOauthClientsByIdActivateResponses[keyof PostApiOauthClientsByIdActivateResponses];
 
-export type PostApiAdminOauthClientsByIdDeactivateData = {
+export type PostApiOauthClientsByIdDeactivateData = {
     body?: never;
     path: {
         id: string;
@@ -4915,7 +4916,7 @@ export type PostApiAdminOauthClientsByIdDeactivateData = {
     url: '/api/oauth-clients/{id}/deactivate';
 };
 
-export type PostApiAdminOauthClientsByIdDeactivateErrors = {
+export type PostApiOauthClientsByIdDeactivateErrors = {
     /**
      * Default Response
      */
@@ -4937,9 +4938,9 @@ export type PostApiAdminOauthClientsByIdDeactivateErrors = {
     };
 };
 
-export type PostApiAdminOauthClientsByIdDeactivateError = PostApiAdminOauthClientsByIdDeactivateErrors[keyof PostApiAdminOauthClientsByIdDeactivateErrors];
+export type PostApiOauthClientsByIdDeactivateError = PostApiOauthClientsByIdDeactivateErrors[keyof PostApiOauthClientsByIdDeactivateErrors];
 
-export type PostApiAdminOauthClientsByIdDeactivateResponses = {
+export type PostApiOauthClientsByIdDeactivateResponses = {
     /**
      * Default Response
      */
@@ -4951,9 +4952,9 @@ export type PostApiAdminOauthClientsByIdDeactivateResponses = {
     };
 };
 
-export type PostApiAdminOauthClientsByIdDeactivateResponse = PostApiAdminOauthClientsByIdDeactivateResponses[keyof PostApiAdminOauthClientsByIdDeactivateResponses];
+export type PostApiOauthClientsByIdDeactivateResponse = PostApiOauthClientsByIdDeactivateResponses[keyof PostApiOauthClientsByIdDeactivateResponses];
 
-export type PostApiAdminOauthClientsByIdRotateSecretData = {
+export type PostApiOauthClientsByIdRotateSecretData = {
     body?: never;
     path: {
         id: string;
@@ -4962,7 +4963,7 @@ export type PostApiAdminOauthClientsByIdRotateSecretData = {
     url: '/api/oauth-clients/{id}/rotate-secret';
 };
 
-export type PostApiAdminOauthClientsByIdRotateSecretErrors = {
+export type PostApiOauthClientsByIdRotateSecretErrors = {
     /**
      * Default Response
      */
@@ -5003,9 +5004,9 @@ export type PostApiAdminOauthClientsByIdRotateSecretErrors = {
     };
 };
 
-export type PostApiAdminOauthClientsByIdRotateSecretError = PostApiAdminOauthClientsByIdRotateSecretErrors[keyof PostApiAdminOauthClientsByIdRotateSecretErrors];
+export type PostApiOauthClientsByIdRotateSecretError = PostApiOauthClientsByIdRotateSecretErrors[keyof PostApiOauthClientsByIdRotateSecretErrors];
 
-export type PostApiAdminOauthClientsByIdRotateSecretResponses = {
+export type PostApiOauthClientsByIdRotateSecretResponses = {
     /**
      * Default Response
      */
@@ -5038,9 +5039,9 @@ export type PostApiAdminOauthClientsByIdRotateSecretResponses = {
     };
 };
 
-export type PostApiAdminOauthClientsByIdRotateSecretResponse = PostApiAdminOauthClientsByIdRotateSecretResponses[keyof PostApiAdminOauthClientsByIdRotateSecretResponses];
+export type PostApiOauthClientsByIdRotateSecretResponse = PostApiOauthClientsByIdRotateSecretResponses[keyof PostApiOauthClientsByIdRotateSecretResponses];
 
-export type GetApiAdminAuditLogsData = {
+export type GetApiAuditLogsData = {
     body?: never;
     path?: never;
     query?: {
@@ -5058,7 +5059,7 @@ export type GetApiAdminAuditLogsData = {
     url: '/api/audit-logs';
 };
 
-export type GetApiAdminAuditLogsResponses = {
+export type GetApiAuditLogsResponses = {
     /**
      * Default Response
      */
@@ -5075,15 +5076,15 @@ export type GetApiAdminAuditLogsResponses = {
             clientId: string | null;
             performedAt: string;
         }>;
-        total: number;
+        hasMore: boolean;
         page: number;
         pageSize: number;
     };
 };
 
-export type GetApiAdminAuditLogsResponse = GetApiAdminAuditLogsResponses[keyof GetApiAdminAuditLogsResponses];
+export type GetApiAuditLogsResponse = GetApiAuditLogsResponses[keyof GetApiAuditLogsResponses];
 
-export type GetApiAdminAuditLogsByIdData = {
+export type GetApiAuditLogsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -5092,7 +5093,7 @@ export type GetApiAdminAuditLogsByIdData = {
     url: '/api/audit-logs/{id}';
 };
 
-export type GetApiAdminAuditLogsByIdErrors = {
+export type GetApiAuditLogsByIdErrors = {
     /**
      * Default Response
      */
@@ -5114,9 +5115,9 @@ export type GetApiAdminAuditLogsByIdErrors = {
     };
 };
 
-export type GetApiAdminAuditLogsByIdError = GetApiAdminAuditLogsByIdErrors[keyof GetApiAdminAuditLogsByIdErrors];
+export type GetApiAuditLogsByIdError = GetApiAuditLogsByIdErrors[keyof GetApiAuditLogsByIdErrors];
 
-export type GetApiAdminAuditLogsByIdResponses = {
+export type GetApiAuditLogsByIdResponses = {
     /**
      * Default Response
      */
@@ -5134,9 +5135,9 @@ export type GetApiAdminAuditLogsByIdResponses = {
     };
 };
 
-export type GetApiAdminAuditLogsByIdResponse = GetApiAdminAuditLogsByIdResponses[keyof GetApiAdminAuditLogsByIdResponses];
+export type GetApiAuditLogsByIdResponse = GetApiAuditLogsByIdResponses[keyof GetApiAuditLogsByIdResponses];
 
-export type GetApiAdminAuditLogsEntityByEntityTypeByEntityIdData = {
+export type GetApiAuditLogsEntityByEntityTypeByEntityIdData = {
     body?: never;
     path: {
         entityType: string;
@@ -5149,7 +5150,7 @@ export type GetApiAdminAuditLogsEntityByEntityTypeByEntityIdData = {
     url: '/api/audit-logs/entity/{entityType}/{entityId}';
 };
 
-export type GetApiAdminAuditLogsEntityByEntityTypeByEntityIdResponses = {
+export type GetApiAuditLogsEntityByEntityTypeByEntityIdResponses = {
     /**
      * Default Response
      */
@@ -5166,22 +5167,22 @@ export type GetApiAdminAuditLogsEntityByEntityTypeByEntityIdResponses = {
             clientId: string | null;
             performedAt: string;
         }>;
-        total: number;
+        hasMore: boolean;
         page: number;
         pageSize: number;
     };
 };
 
-export type GetApiAdminAuditLogsEntityByEntityTypeByEntityIdResponse = GetApiAdminAuditLogsEntityByEntityTypeByEntityIdResponses[keyof GetApiAdminAuditLogsEntityByEntityTypeByEntityIdResponses];
+export type GetApiAuditLogsEntityByEntityTypeByEntityIdResponse = GetApiAuditLogsEntityByEntityTypeByEntityIdResponses[keyof GetApiAuditLogsEntityByEntityTypeByEntityIdResponses];
 
-export type GetApiAdminAuditLogsEntityTypesData = {
+export type GetApiAuditLogsEntityTypesData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/audit-logs/entity-types';
 };
 
-export type GetApiAdminAuditLogsEntityTypesResponses = {
+export type GetApiAuditLogsEntityTypesResponses = {
     /**
      * Default Response
      */
@@ -5190,16 +5191,16 @@ export type GetApiAdminAuditLogsEntityTypesResponses = {
     };
 };
 
-export type GetApiAdminAuditLogsEntityTypesResponse = GetApiAdminAuditLogsEntityTypesResponses[keyof GetApiAdminAuditLogsEntityTypesResponses];
+export type GetApiAuditLogsEntityTypesResponse = GetApiAuditLogsEntityTypesResponses[keyof GetApiAuditLogsEntityTypesResponses];
 
-export type GetApiAdminAuditLogsOperationsData = {
+export type GetApiAuditLogsOperationsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/audit-logs/operations';
 };
 
-export type GetApiAdminAuditLogsOperationsResponses = {
+export type GetApiAuditLogsOperationsResponses = {
     /**
      * Default Response
      */
@@ -5208,16 +5209,16 @@ export type GetApiAdminAuditLogsOperationsResponses = {
     };
 };
 
-export type GetApiAdminAuditLogsOperationsResponse = GetApiAdminAuditLogsOperationsResponses[keyof GetApiAdminAuditLogsOperationsResponses];
+export type GetApiAuditLogsOperationsResponse = GetApiAuditLogsOperationsResponses[keyof GetApiAuditLogsOperationsResponses];
 
-export type GetApiAdminAuditLogsApplicationIdsData = {
+export type GetApiAuditLogsApplicationIdsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/audit-logs/application-ids';
 };
 
-export type GetApiAdminAuditLogsApplicationIdsResponses = {
+export type GetApiAuditLogsApplicationIdsResponses = {
     /**
      * Default Response
      */
@@ -5226,16 +5227,16 @@ export type GetApiAdminAuditLogsApplicationIdsResponses = {
     };
 };
 
-export type GetApiAdminAuditLogsApplicationIdsResponse = GetApiAdminAuditLogsApplicationIdsResponses[keyof GetApiAdminAuditLogsApplicationIdsResponses];
+export type GetApiAuditLogsApplicationIdsResponse = GetApiAuditLogsApplicationIdsResponses[keyof GetApiAuditLogsApplicationIdsResponses];
 
-export type GetApiAdminAuditLogsClientIdsData = {
+export type GetApiAuditLogsClientIdsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/audit-logs/client-ids';
 };
 
-export type GetApiAdminAuditLogsClientIdsResponses = {
+export type GetApiAuditLogsClientIdsResponses = {
     /**
      * Default Response
      */
@@ -5244,9 +5245,9 @@ export type GetApiAdminAuditLogsClientIdsResponses = {
     };
 };
 
-export type GetApiAdminAuditLogsClientIdsResponse = GetApiAdminAuditLogsClientIdsResponses[keyof GetApiAdminAuditLogsClientIdsResponses];
+export type GetApiAuditLogsClientIdsResponse = GetApiAuditLogsClientIdsResponses[keyof GetApiAuditLogsClientIdsResponses];
 
-export type GetApiAdminEventTypesData = {
+export type GetApiEventTypesData = {
     body?: never;
     path?: never;
     query?: {
@@ -5258,7 +5259,7 @@ export type GetApiAdminEventTypesData = {
     url: '/api/event-types';
 };
 
-export type GetApiAdminEventTypesResponses = {
+export type GetApiEventTypesResponses = {
     /**
      * Default Response
      */
@@ -5292,9 +5293,9 @@ export type GetApiAdminEventTypesResponses = {
     };
 };
 
-export type GetApiAdminEventTypesResponse = GetApiAdminEventTypesResponses[keyof GetApiAdminEventTypesResponses];
+export type GetApiEventTypesResponse = GetApiEventTypesResponses[keyof GetApiEventTypesResponses];
 
-export type PostApiAdminEventTypesData = {
+export type PostApiEventTypesData = {
     body: {
         application: string;
         subdomain: string;
@@ -5309,7 +5310,7 @@ export type PostApiAdminEventTypesData = {
     url: '/api/event-types';
 };
 
-export type PostApiAdminEventTypesErrors = {
+export type PostApiEventTypesErrors = {
     /**
      * Default Response
      */
@@ -5350,9 +5351,9 @@ export type PostApiAdminEventTypesErrors = {
     };
 };
 
-export type PostApiAdminEventTypesError = PostApiAdminEventTypesErrors[keyof PostApiAdminEventTypesErrors];
+export type PostApiEventTypesError = PostApiEventTypesErrors[keyof PostApiEventTypesErrors];
 
-export type PostApiAdminEventTypesResponses = {
+export type PostApiEventTypesResponses = {
     /**
      * Default Response
      */
@@ -5383,9 +5384,9 @@ export type PostApiAdminEventTypesResponses = {
     };
 };
 
-export type PostApiAdminEventTypesResponse = PostApiAdminEventTypesResponses[keyof PostApiAdminEventTypesResponses];
+export type PostApiEventTypesResponse = PostApiEventTypesResponses[keyof PostApiEventTypesResponses];
 
-export type DeleteApiAdminEventTypesByIdData = {
+export type DeleteApiEventTypesByIdData = {
     body?: never;
     path: {
         id: string;
@@ -5394,7 +5395,7 @@ export type DeleteApiAdminEventTypesByIdData = {
     url: '/api/event-types/{id}';
 };
 
-export type DeleteApiAdminEventTypesByIdErrors = {
+export type DeleteApiEventTypesByIdErrors = {
     /**
      * Default Response
      */
@@ -5416,18 +5417,18 @@ export type DeleteApiAdminEventTypesByIdErrors = {
     };
 };
 
-export type DeleteApiAdminEventTypesByIdError = DeleteApiAdminEventTypesByIdErrors[keyof DeleteApiAdminEventTypesByIdErrors];
+export type DeleteApiEventTypesByIdError = DeleteApiEventTypesByIdErrors[keyof DeleteApiEventTypesByIdErrors];
 
-export type DeleteApiAdminEventTypesByIdResponses = {
+export type DeleteApiEventTypesByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminEventTypesByIdResponse = DeleteApiAdminEventTypesByIdResponses[keyof DeleteApiAdminEventTypesByIdResponses];
+export type DeleteApiEventTypesByIdResponse = DeleteApiEventTypesByIdResponses[keyof DeleteApiEventTypesByIdResponses];
 
-export type GetApiAdminEventTypesByIdData = {
+export type GetApiEventTypesByIdData = {
     body?: never;
     path: {
         id: string;
@@ -5436,7 +5437,7 @@ export type GetApiAdminEventTypesByIdData = {
     url: '/api/event-types/{id}';
 };
 
-export type GetApiAdminEventTypesByIdErrors = {
+export type GetApiEventTypesByIdErrors = {
     /**
      * Default Response
      */
@@ -5458,9 +5459,9 @@ export type GetApiAdminEventTypesByIdErrors = {
     };
 };
 
-export type GetApiAdminEventTypesByIdError = GetApiAdminEventTypesByIdErrors[keyof GetApiAdminEventTypesByIdErrors];
+export type GetApiEventTypesByIdError = GetApiEventTypesByIdErrors[keyof GetApiEventTypesByIdErrors];
 
-export type GetApiAdminEventTypesByIdResponses = {
+export type GetApiEventTypesByIdResponses = {
     /**
      * Default Response
      */
@@ -5491,9 +5492,9 @@ export type GetApiAdminEventTypesByIdResponses = {
     };
 };
 
-export type GetApiAdminEventTypesByIdResponse = GetApiAdminEventTypesByIdResponses[keyof GetApiAdminEventTypesByIdResponses];
+export type GetApiEventTypesByIdResponse = GetApiEventTypesByIdResponses[keyof GetApiEventTypesByIdResponses];
 
-export type PatchApiAdminEventTypesByIdData = {
+export type PatchApiEventTypesByIdData = {
     body: {
         name?: string;
         description?: string | null;
@@ -5505,7 +5506,7 @@ export type PatchApiAdminEventTypesByIdData = {
     url: '/api/event-types/{id}';
 };
 
-export type PatchApiAdminEventTypesByIdErrors = {
+export type PatchApiEventTypesByIdErrors = {
     /**
      * Default Response
      */
@@ -5546,9 +5547,9 @@ export type PatchApiAdminEventTypesByIdErrors = {
     };
 };
 
-export type PatchApiAdminEventTypesByIdError = PatchApiAdminEventTypesByIdErrors[keyof PatchApiAdminEventTypesByIdErrors];
+export type PatchApiEventTypesByIdError = PatchApiEventTypesByIdErrors[keyof PatchApiEventTypesByIdErrors];
 
-export type PatchApiAdminEventTypesByIdResponses = {
+export type PatchApiEventTypesByIdResponses = {
     /**
      * Default Response
      */
@@ -5579,9 +5580,9 @@ export type PatchApiAdminEventTypesByIdResponses = {
     };
 };
 
-export type PatchApiAdminEventTypesByIdResponse = PatchApiAdminEventTypesByIdResponses[keyof PatchApiAdminEventTypesByIdResponses];
+export type PatchApiEventTypesByIdResponse = PatchApiEventTypesByIdResponses[keyof PatchApiEventTypesByIdResponses];
 
-export type PostApiAdminEventTypesByIdCodegenData = {
+export type PostApiEventTypesByIdCodegenData = {
     body: {
         language: 'typescript' | 'php' | 'python' | 'java';
         version?: string;
@@ -5593,7 +5594,7 @@ export type PostApiAdminEventTypesByIdCodegenData = {
     url: '/api/event-types/{id}/codegen';
 };
 
-export type PostApiAdminEventTypesByIdCodegenErrors = {
+export type PostApiEventTypesByIdCodegenErrors = {
     /**
      * Default Response
      */
@@ -5634,9 +5635,9 @@ export type PostApiAdminEventTypesByIdCodegenErrors = {
     };
 };
 
-export type PostApiAdminEventTypesByIdCodegenError = PostApiAdminEventTypesByIdCodegenErrors[keyof PostApiAdminEventTypesByIdCodegenErrors];
+export type PostApiEventTypesByIdCodegenError = PostApiEventTypesByIdCodegenErrors[keyof PostApiEventTypesByIdCodegenErrors];
 
-export type PostApiAdminEventTypesByIdCodegenResponses = {
+export type PostApiEventTypesByIdCodegenResponses = {
     /**
      * Default Response
      */
@@ -5649,9 +5650,9 @@ export type PostApiAdminEventTypesByIdCodegenResponses = {
     };
 };
 
-export type PostApiAdminEventTypesByIdCodegenResponse = PostApiAdminEventTypesByIdCodegenResponses[keyof PostApiAdminEventTypesByIdCodegenResponses];
+export type PostApiEventTypesByIdCodegenResponse = PostApiEventTypesByIdCodegenResponses[keyof PostApiEventTypesByIdCodegenResponses];
 
-export type PostApiAdminEventTypesByIdArchiveData = {
+export type PostApiEventTypesByIdArchiveData = {
     body?: never;
     path: {
         id: string;
@@ -5660,7 +5661,7 @@ export type PostApiAdminEventTypesByIdArchiveData = {
     url: '/api/event-types/{id}/archive';
 };
 
-export type PostApiAdminEventTypesByIdArchiveErrors = {
+export type PostApiEventTypesByIdArchiveErrors = {
     /**
      * Default Response
      */
@@ -5682,9 +5683,9 @@ export type PostApiAdminEventTypesByIdArchiveErrors = {
     };
 };
 
-export type PostApiAdminEventTypesByIdArchiveError = PostApiAdminEventTypesByIdArchiveErrors[keyof PostApiAdminEventTypesByIdArchiveErrors];
+export type PostApiEventTypesByIdArchiveError = PostApiEventTypesByIdArchiveErrors[keyof PostApiEventTypesByIdArchiveErrors];
 
-export type PostApiAdminEventTypesByIdArchiveResponses = {
+export type PostApiEventTypesByIdArchiveResponses = {
     /**
      * Default Response
      */
@@ -5715,9 +5716,9 @@ export type PostApiAdminEventTypesByIdArchiveResponses = {
     };
 };
 
-export type PostApiAdminEventTypesByIdArchiveResponse = PostApiAdminEventTypesByIdArchiveResponses[keyof PostApiAdminEventTypesByIdArchiveResponses];
+export type PostApiEventTypesByIdArchiveResponse = PostApiEventTypesByIdArchiveResponses[keyof PostApiEventTypesByIdArchiveResponses];
 
-export type PostApiAdminEventTypesByIdSchemasData = {
+export type PostApiEventTypesByIdSchemasData = {
     body: {
         version: string;
         mimeType: string;
@@ -5731,7 +5732,7 @@ export type PostApiAdminEventTypesByIdSchemasData = {
     url: '/api/event-types/{id}/schemas';
 };
 
-export type PostApiAdminEventTypesByIdSchemasErrors = {
+export type PostApiEventTypesByIdSchemasErrors = {
     /**
      * Default Response
      */
@@ -5772,9 +5773,9 @@ export type PostApiAdminEventTypesByIdSchemasErrors = {
     };
 };
 
-export type PostApiAdminEventTypesByIdSchemasError = PostApiAdminEventTypesByIdSchemasErrors[keyof PostApiAdminEventTypesByIdSchemasErrors];
+export type PostApiEventTypesByIdSchemasError = PostApiEventTypesByIdSchemasErrors[keyof PostApiEventTypesByIdSchemasErrors];
 
-export type PostApiAdminEventTypesByIdSchemasResponses = {
+export type PostApiEventTypesByIdSchemasResponses = {
     /**
      * Default Response
      */
@@ -5805,9 +5806,9 @@ export type PostApiAdminEventTypesByIdSchemasResponses = {
     };
 };
 
-export type PostApiAdminEventTypesByIdSchemasResponse = PostApiAdminEventTypesByIdSchemasResponses[keyof PostApiAdminEventTypesByIdSchemasResponses];
+export type PostApiEventTypesByIdSchemasResponse = PostApiEventTypesByIdSchemasResponses[keyof PostApiEventTypesByIdSchemasResponses];
 
-export type PostApiAdminEventTypesByIdSchemasByVersionFinaliseData = {
+export type PostApiEventTypesByIdSchemasByVersionFinaliseData = {
     body?: never;
     path: {
         id: string;
@@ -5817,7 +5818,7 @@ export type PostApiAdminEventTypesByIdSchemasByVersionFinaliseData = {
     url: '/api/event-types/{id}/schemas/{version}/finalise';
 };
 
-export type PostApiAdminEventTypesByIdSchemasByVersionFinaliseErrors = {
+export type PostApiEventTypesByIdSchemasByVersionFinaliseErrors = {
     /**
      * Default Response
      */
@@ -5839,9 +5840,9 @@ export type PostApiAdminEventTypesByIdSchemasByVersionFinaliseErrors = {
     };
 };
 
-export type PostApiAdminEventTypesByIdSchemasByVersionFinaliseError = PostApiAdminEventTypesByIdSchemasByVersionFinaliseErrors[keyof PostApiAdminEventTypesByIdSchemasByVersionFinaliseErrors];
+export type PostApiEventTypesByIdSchemasByVersionFinaliseError = PostApiEventTypesByIdSchemasByVersionFinaliseErrors[keyof PostApiEventTypesByIdSchemasByVersionFinaliseErrors];
 
-export type PostApiAdminEventTypesByIdSchemasByVersionFinaliseResponses = {
+export type PostApiEventTypesByIdSchemasByVersionFinaliseResponses = {
     /**
      * Default Response
      */
@@ -5872,9 +5873,9 @@ export type PostApiAdminEventTypesByIdSchemasByVersionFinaliseResponses = {
     };
 };
 
-export type PostApiAdminEventTypesByIdSchemasByVersionFinaliseResponse = PostApiAdminEventTypesByIdSchemasByVersionFinaliseResponses[keyof PostApiAdminEventTypesByIdSchemasByVersionFinaliseResponses];
+export type PostApiEventTypesByIdSchemasByVersionFinaliseResponse = PostApiEventTypesByIdSchemasByVersionFinaliseResponses[keyof PostApiEventTypesByIdSchemasByVersionFinaliseResponses];
 
-export type PostApiAdminEventTypesByIdSchemasByVersionDeprecateData = {
+export type PostApiEventTypesByIdSchemasByVersionDeprecateData = {
     body?: never;
     path: {
         id: string;
@@ -5884,7 +5885,7 @@ export type PostApiAdminEventTypesByIdSchemasByVersionDeprecateData = {
     url: '/api/event-types/{id}/schemas/{version}/deprecate';
 };
 
-export type PostApiAdminEventTypesByIdSchemasByVersionDeprecateErrors = {
+export type PostApiEventTypesByIdSchemasByVersionDeprecateErrors = {
     /**
      * Default Response
      */
@@ -5906,9 +5907,9 @@ export type PostApiAdminEventTypesByIdSchemasByVersionDeprecateErrors = {
     };
 };
 
-export type PostApiAdminEventTypesByIdSchemasByVersionDeprecateError = PostApiAdminEventTypesByIdSchemasByVersionDeprecateErrors[keyof PostApiAdminEventTypesByIdSchemasByVersionDeprecateErrors];
+export type PostApiEventTypesByIdSchemasByVersionDeprecateError = PostApiEventTypesByIdSchemasByVersionDeprecateErrors[keyof PostApiEventTypesByIdSchemasByVersionDeprecateErrors];
 
-export type PostApiAdminEventTypesByIdSchemasByVersionDeprecateResponses = {
+export type PostApiEventTypesByIdSchemasByVersionDeprecateResponses = {
     /**
      * Default Response
      */
@@ -5939,9 +5940,9 @@ export type PostApiAdminEventTypesByIdSchemasByVersionDeprecateResponses = {
     };
 };
 
-export type PostApiAdminEventTypesByIdSchemasByVersionDeprecateResponse = PostApiAdminEventTypesByIdSchemasByVersionDeprecateResponses[keyof PostApiAdminEventTypesByIdSchemasByVersionDeprecateResponses];
+export type PostApiEventTypesByIdSchemasByVersionDeprecateResponse = PostApiEventTypesByIdSchemasByVersionDeprecateResponses[keyof PostApiEventTypesByIdSchemasByVersionDeprecateResponses];
 
-export type PostApiAdminEventTypesSyncData = {
+export type PostApiEventTypesSyncData = {
     body: {
         applicationCode: string;
         eventTypes: Array<{
@@ -5959,7 +5960,7 @@ export type PostApiAdminEventTypesSyncData = {
     url: '/api/event-types/sync';
 };
 
-export type PostApiAdminEventTypesSyncErrors = {
+export type PostApiEventTypesSyncErrors = {
     /**
      * Default Response
      */
@@ -5981,9 +5982,9 @@ export type PostApiAdminEventTypesSyncErrors = {
     };
 };
 
-export type PostApiAdminEventTypesSyncError = PostApiAdminEventTypesSyncErrors[keyof PostApiAdminEventTypesSyncErrors];
+export type PostApiEventTypesSyncError = PostApiEventTypesSyncErrors[keyof PostApiEventTypesSyncErrors];
 
-export type PostApiAdminEventTypesSyncResponses = {
+export type PostApiEventTypesSyncResponses = {
     /**
      * Default Response
      */
@@ -5996,16 +5997,16 @@ export type PostApiAdminEventTypesSyncResponses = {
     };
 };
 
-export type PostApiAdminEventTypesSyncResponse = PostApiAdminEventTypesSyncResponses[keyof PostApiAdminEventTypesSyncResponses];
+export type PostApiEventTypesSyncResponse = PostApiEventTypesSyncResponses[keyof PostApiEventTypesSyncResponses];
 
-export type GetApiAdminEventTypesFiltersApplicationsData = {
+export type GetApiEventTypesFiltersApplicationsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/event-types/filters/applications';
 };
 
-export type GetApiAdminEventTypesFiltersApplicationsResponses = {
+export type GetApiEventTypesFiltersApplicationsResponses = {
     /**
      * Default Response
      */
@@ -6014,9 +6015,9 @@ export type GetApiAdminEventTypesFiltersApplicationsResponses = {
     };
 };
 
-export type GetApiAdminEventTypesFiltersApplicationsResponse = GetApiAdminEventTypesFiltersApplicationsResponses[keyof GetApiAdminEventTypesFiltersApplicationsResponses];
+export type GetApiEventTypesFiltersApplicationsResponse = GetApiEventTypesFiltersApplicationsResponses[keyof GetApiEventTypesFiltersApplicationsResponses];
 
-export type GetApiAdminEventTypesFiltersSubdomainsData = {
+export type GetApiEventTypesFiltersSubdomainsData = {
     body?: never;
     path?: never;
     query?: {
@@ -6025,7 +6026,7 @@ export type GetApiAdminEventTypesFiltersSubdomainsData = {
     url: '/api/event-types/filters/subdomains';
 };
 
-export type GetApiAdminEventTypesFiltersSubdomainsResponses = {
+export type GetApiEventTypesFiltersSubdomainsResponses = {
     /**
      * Default Response
      */
@@ -6034,9 +6035,9 @@ export type GetApiAdminEventTypesFiltersSubdomainsResponses = {
     };
 };
 
-export type GetApiAdminEventTypesFiltersSubdomainsResponse = GetApiAdminEventTypesFiltersSubdomainsResponses[keyof GetApiAdminEventTypesFiltersSubdomainsResponses];
+export type GetApiEventTypesFiltersSubdomainsResponse = GetApiEventTypesFiltersSubdomainsResponses[keyof GetApiEventTypesFiltersSubdomainsResponses];
 
-export type GetApiAdminEventTypesFiltersAggregatesData = {
+export type GetApiEventTypesFiltersAggregatesData = {
     body?: never;
     path?: never;
     query?: {
@@ -6046,7 +6047,7 @@ export type GetApiAdminEventTypesFiltersAggregatesData = {
     url: '/api/event-types/filters/aggregates';
 };
 
-export type GetApiAdminEventTypesFiltersAggregatesResponses = {
+export type GetApiEventTypesFiltersAggregatesResponses = {
     /**
      * Default Response
      */
@@ -6055,9 +6056,9 @@ export type GetApiAdminEventTypesFiltersAggregatesResponses = {
     };
 };
 
-export type GetApiAdminEventTypesFiltersAggregatesResponse = GetApiAdminEventTypesFiltersAggregatesResponses[keyof GetApiAdminEventTypesFiltersAggregatesResponses];
+export type GetApiEventTypesFiltersAggregatesResponse = GetApiEventTypesFiltersAggregatesResponses[keyof GetApiEventTypesFiltersAggregatesResponses];
 
-export type GetApiAdminDispatchPoolsData = {
+export type GetApiDispatchPoolsData = {
     body?: never;
     path?: never;
     query?: {
@@ -6068,7 +6069,7 @@ export type GetApiAdminDispatchPoolsData = {
     url: '/api/dispatch-pools';
 };
 
-export type GetApiAdminDispatchPoolsResponses = {
+export type GetApiDispatchPoolsResponses = {
     /**
      * Default Response
      */
@@ -6078,7 +6079,7 @@ export type GetApiAdminDispatchPoolsResponses = {
             code: string;
             name: string;
             description: string | null;
-            rateLimit: number;
+            rateLimit: number | null;
             concurrency: number;
             clientId: string | null;
             clientIdentifier: string | null;
@@ -6090,9 +6091,9 @@ export type GetApiAdminDispatchPoolsResponses = {
     };
 };
 
-export type GetApiAdminDispatchPoolsResponse = GetApiAdminDispatchPoolsResponses[keyof GetApiAdminDispatchPoolsResponses];
+export type GetApiDispatchPoolsResponse = GetApiDispatchPoolsResponses[keyof GetApiDispatchPoolsResponses];
 
-export type PostApiAdminDispatchPoolsData = {
+export type PostApiDispatchPoolsData = {
     body: {
         code: string;
         name: string;
@@ -6106,7 +6107,7 @@ export type PostApiAdminDispatchPoolsData = {
     url: '/api/dispatch-pools';
 };
 
-export type PostApiAdminDispatchPoolsErrors = {
+export type PostApiDispatchPoolsErrors = {
     /**
      * Default Response
      */
@@ -6147,9 +6148,9 @@ export type PostApiAdminDispatchPoolsErrors = {
     };
 };
 
-export type PostApiAdminDispatchPoolsError = PostApiAdminDispatchPoolsErrors[keyof PostApiAdminDispatchPoolsErrors];
+export type PostApiDispatchPoolsError = PostApiDispatchPoolsErrors[keyof PostApiDispatchPoolsErrors];
 
-export type PostApiAdminDispatchPoolsResponses = {
+export type PostApiDispatchPoolsResponses = {
     /**
      * Default Response
      */
@@ -6158,7 +6159,7 @@ export type PostApiAdminDispatchPoolsResponses = {
         code: string;
         name: string;
         description: string | null;
-        rateLimit: number;
+        rateLimit: number | null;
         concurrency: number;
         clientId: string | null;
         clientIdentifier: string | null;
@@ -6168,9 +6169,9 @@ export type PostApiAdminDispatchPoolsResponses = {
     };
 };
 
-export type PostApiAdminDispatchPoolsResponse = PostApiAdminDispatchPoolsResponses[keyof PostApiAdminDispatchPoolsResponses];
+export type PostApiDispatchPoolsResponse = PostApiDispatchPoolsResponses[keyof PostApiDispatchPoolsResponses];
 
-export type DeleteApiAdminDispatchPoolsByIdData = {
+export type DeleteApiDispatchPoolsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -6179,7 +6180,7 @@ export type DeleteApiAdminDispatchPoolsByIdData = {
     url: '/api/dispatch-pools/{id}';
 };
 
-export type DeleteApiAdminDispatchPoolsByIdErrors = {
+export type DeleteApiDispatchPoolsByIdErrors = {
     /**
      * Default Response
      */
@@ -6201,18 +6202,18 @@ export type DeleteApiAdminDispatchPoolsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminDispatchPoolsByIdError = DeleteApiAdminDispatchPoolsByIdErrors[keyof DeleteApiAdminDispatchPoolsByIdErrors];
+export type DeleteApiDispatchPoolsByIdError = DeleteApiDispatchPoolsByIdErrors[keyof DeleteApiDispatchPoolsByIdErrors];
 
-export type DeleteApiAdminDispatchPoolsByIdResponses = {
+export type DeleteApiDispatchPoolsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminDispatchPoolsByIdResponse = DeleteApiAdminDispatchPoolsByIdResponses[keyof DeleteApiAdminDispatchPoolsByIdResponses];
+export type DeleteApiDispatchPoolsByIdResponse = DeleteApiDispatchPoolsByIdResponses[keyof DeleteApiDispatchPoolsByIdResponses];
 
-export type GetApiAdminDispatchPoolsByIdData = {
+export type GetApiDispatchPoolsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -6221,7 +6222,7 @@ export type GetApiAdminDispatchPoolsByIdData = {
     url: '/api/dispatch-pools/{id}';
 };
 
-export type GetApiAdminDispatchPoolsByIdErrors = {
+export type GetApiDispatchPoolsByIdErrors = {
     /**
      * Default Response
      */
@@ -6243,9 +6244,9 @@ export type GetApiAdminDispatchPoolsByIdErrors = {
     };
 };
 
-export type GetApiAdminDispatchPoolsByIdError = GetApiAdminDispatchPoolsByIdErrors[keyof GetApiAdminDispatchPoolsByIdErrors];
+export type GetApiDispatchPoolsByIdError = GetApiDispatchPoolsByIdErrors[keyof GetApiDispatchPoolsByIdErrors];
 
-export type GetApiAdminDispatchPoolsByIdResponses = {
+export type GetApiDispatchPoolsByIdResponses = {
     /**
      * Default Response
      */
@@ -6254,7 +6255,7 @@ export type GetApiAdminDispatchPoolsByIdResponses = {
         code: string;
         name: string;
         description: string | null;
-        rateLimit: number;
+        rateLimit: number | null;
         concurrency: number;
         clientId: string | null;
         clientIdentifier: string | null;
@@ -6264,9 +6265,9 @@ export type GetApiAdminDispatchPoolsByIdResponses = {
     };
 };
 
-export type GetApiAdminDispatchPoolsByIdResponse = GetApiAdminDispatchPoolsByIdResponses[keyof GetApiAdminDispatchPoolsByIdResponses];
+export type GetApiDispatchPoolsByIdResponse = GetApiDispatchPoolsByIdResponses[keyof GetApiDispatchPoolsByIdResponses];
 
-export type PutApiAdminDispatchPoolsByIdData = {
+export type PutApiDispatchPoolsByIdData = {
     body: {
         name?: string;
         description?: string | null;
@@ -6281,7 +6282,7 @@ export type PutApiAdminDispatchPoolsByIdData = {
     url: '/api/dispatch-pools/{id}';
 };
 
-export type PutApiAdminDispatchPoolsByIdErrors = {
+export type PutApiDispatchPoolsByIdErrors = {
     /**
      * Default Response
      */
@@ -6322,9 +6323,9 @@ export type PutApiAdminDispatchPoolsByIdErrors = {
     };
 };
 
-export type PutApiAdminDispatchPoolsByIdError = PutApiAdminDispatchPoolsByIdErrors[keyof PutApiAdminDispatchPoolsByIdErrors];
+export type PutApiDispatchPoolsByIdError = PutApiDispatchPoolsByIdErrors[keyof PutApiDispatchPoolsByIdErrors];
 
-export type PutApiAdminDispatchPoolsByIdResponses = {
+export type PutApiDispatchPoolsByIdResponses = {
     /**
      * Default Response
      */
@@ -6333,7 +6334,7 @@ export type PutApiAdminDispatchPoolsByIdResponses = {
         code: string;
         name: string;
         description: string | null;
-        rateLimit: number;
+        rateLimit: number | null;
         concurrency: number;
         clientId: string | null;
         clientIdentifier: string | null;
@@ -6343,9 +6344,9 @@ export type PutApiAdminDispatchPoolsByIdResponses = {
     };
 };
 
-export type PutApiAdminDispatchPoolsByIdResponse = PutApiAdminDispatchPoolsByIdResponses[keyof PutApiAdminDispatchPoolsByIdResponses];
+export type PutApiDispatchPoolsByIdResponse = PutApiDispatchPoolsByIdResponses[keyof PutApiDispatchPoolsByIdResponses];
 
-export type PostApiAdminDispatchPoolsByIdSuspendData = {
+export type PostApiDispatchPoolsByIdSuspendData = {
     body?: never;
     path: {
         id: string;
@@ -6354,7 +6355,7 @@ export type PostApiAdminDispatchPoolsByIdSuspendData = {
     url: '/api/dispatch-pools/{id}/suspend';
 };
 
-export type PostApiAdminDispatchPoolsByIdSuspendErrors = {
+export type PostApiDispatchPoolsByIdSuspendErrors = {
     /**
      * Default Response
      */
@@ -6376,9 +6377,9 @@ export type PostApiAdminDispatchPoolsByIdSuspendErrors = {
     };
 };
 
-export type PostApiAdminDispatchPoolsByIdSuspendError = PostApiAdminDispatchPoolsByIdSuspendErrors[keyof PostApiAdminDispatchPoolsByIdSuspendErrors];
+export type PostApiDispatchPoolsByIdSuspendError = PostApiDispatchPoolsByIdSuspendErrors[keyof PostApiDispatchPoolsByIdSuspendErrors];
 
-export type PostApiAdminDispatchPoolsByIdSuspendResponses = {
+export type PostApiDispatchPoolsByIdSuspendResponses = {
     /**
      * Default Response
      */
@@ -6387,7 +6388,7 @@ export type PostApiAdminDispatchPoolsByIdSuspendResponses = {
         code: string;
         name: string;
         description: string | null;
-        rateLimit: number;
+        rateLimit: number | null;
         concurrency: number;
         clientId: string | null;
         clientIdentifier: string | null;
@@ -6397,9 +6398,9 @@ export type PostApiAdminDispatchPoolsByIdSuspendResponses = {
     };
 };
 
-export type PostApiAdminDispatchPoolsByIdSuspendResponse = PostApiAdminDispatchPoolsByIdSuspendResponses[keyof PostApiAdminDispatchPoolsByIdSuspendResponses];
+export type PostApiDispatchPoolsByIdSuspendResponse = PostApiDispatchPoolsByIdSuspendResponses[keyof PostApiDispatchPoolsByIdSuspendResponses];
 
-export type PostApiAdminDispatchPoolsByIdActivateData = {
+export type PostApiDispatchPoolsByIdActivateData = {
     body?: never;
     path: {
         id: string;
@@ -6408,7 +6409,7 @@ export type PostApiAdminDispatchPoolsByIdActivateData = {
     url: '/api/dispatch-pools/{id}/activate';
 };
 
-export type PostApiAdminDispatchPoolsByIdActivateErrors = {
+export type PostApiDispatchPoolsByIdActivateErrors = {
     /**
      * Default Response
      */
@@ -6430,9 +6431,9 @@ export type PostApiAdminDispatchPoolsByIdActivateErrors = {
     };
 };
 
-export type PostApiAdminDispatchPoolsByIdActivateError = PostApiAdminDispatchPoolsByIdActivateErrors[keyof PostApiAdminDispatchPoolsByIdActivateErrors];
+export type PostApiDispatchPoolsByIdActivateError = PostApiDispatchPoolsByIdActivateErrors[keyof PostApiDispatchPoolsByIdActivateErrors];
 
-export type PostApiAdminDispatchPoolsByIdActivateResponses = {
+export type PostApiDispatchPoolsByIdActivateResponses = {
     /**
      * Default Response
      */
@@ -6441,7 +6442,7 @@ export type PostApiAdminDispatchPoolsByIdActivateResponses = {
         code: string;
         name: string;
         description: string | null;
-        rateLimit: number;
+        rateLimit: number | null;
         concurrency: number;
         clientId: string | null;
         clientIdentifier: string | null;
@@ -6451,9 +6452,9 @@ export type PostApiAdminDispatchPoolsByIdActivateResponses = {
     };
 };
 
-export type PostApiAdminDispatchPoolsByIdActivateResponse = PostApiAdminDispatchPoolsByIdActivateResponses[keyof PostApiAdminDispatchPoolsByIdActivateResponses];
+export type PostApiDispatchPoolsByIdActivateResponse = PostApiDispatchPoolsByIdActivateResponses[keyof PostApiDispatchPoolsByIdActivateResponses];
 
-export type PostApiAdminDispatchPoolsSyncData = {
+export type PostApiDispatchPoolsSyncData = {
     body: {
         applicationCode: string;
         pools: Array<{
@@ -6470,7 +6471,7 @@ export type PostApiAdminDispatchPoolsSyncData = {
     url: '/api/dispatch-pools/sync';
 };
 
-export type PostApiAdminDispatchPoolsSyncErrors = {
+export type PostApiDispatchPoolsSyncErrors = {
     /**
      * Default Response
      */
@@ -6492,9 +6493,9 @@ export type PostApiAdminDispatchPoolsSyncErrors = {
     };
 };
 
-export type PostApiAdminDispatchPoolsSyncError = PostApiAdminDispatchPoolsSyncErrors[keyof PostApiAdminDispatchPoolsSyncErrors];
+export type PostApiDispatchPoolsSyncError = PostApiDispatchPoolsSyncErrors[keyof PostApiDispatchPoolsSyncErrors];
 
-export type PostApiAdminDispatchPoolsSyncResponses = {
+export type PostApiDispatchPoolsSyncResponses = {
     /**
      * Default Response
      */
@@ -6507,9 +6508,9 @@ export type PostApiAdminDispatchPoolsSyncResponses = {
     };
 };
 
-export type PostApiAdminDispatchPoolsSyncResponse = PostApiAdminDispatchPoolsSyncResponses[keyof PostApiAdminDispatchPoolsSyncResponses];
+export type PostApiDispatchPoolsSyncResponse = PostApiDispatchPoolsSyncResponses[keyof PostApiDispatchPoolsSyncResponses];
 
-export type GetApiAdminConnectionsData = {
+export type GetApiConnectionsData = {
     body?: never;
     path?: never;
     query?: {
@@ -6520,7 +6521,7 @@ export type GetApiAdminConnectionsData = {
     url: '/api/connections';
 };
 
-export type GetApiAdminConnectionsResponses = {
+export type GetApiConnectionsResponses = {
     /**
      * Default Response
      */
@@ -6530,7 +6531,6 @@ export type GetApiAdminConnectionsResponses = {
             code: string;
             name: string;
             description: string | null;
-            endpoint: string;
             externalId: string | null;
             status: string;
             serviceAccountId: string;
@@ -6543,14 +6543,13 @@ export type GetApiAdminConnectionsResponses = {
     };
 };
 
-export type GetApiAdminConnectionsResponse = GetApiAdminConnectionsResponses[keyof GetApiAdminConnectionsResponses];
+export type GetApiConnectionsResponse = GetApiConnectionsResponses[keyof GetApiConnectionsResponses];
 
-export type PostApiAdminConnectionsData = {
+export type PostApiConnectionsData = {
     body: {
         code: string;
         name: string;
         description?: string | null;
-        endpoint: string;
         externalId?: string | null;
         serviceAccountId: string;
         clientId?: string | null;
@@ -6560,7 +6559,7 @@ export type PostApiAdminConnectionsData = {
     url: '/api/connections';
 };
 
-export type PostApiAdminConnectionsErrors = {
+export type PostApiConnectionsErrors = {
     /**
      * Default Response
      */
@@ -6601,9 +6600,9 @@ export type PostApiAdminConnectionsErrors = {
     };
 };
 
-export type PostApiAdminConnectionsError = PostApiAdminConnectionsErrors[keyof PostApiAdminConnectionsErrors];
+export type PostApiConnectionsError = PostApiConnectionsErrors[keyof PostApiConnectionsErrors];
 
-export type PostApiAdminConnectionsResponses = {
+export type PostApiConnectionsResponses = {
     /**
      * Default Response
      */
@@ -6612,7 +6611,6 @@ export type PostApiAdminConnectionsResponses = {
         code: string;
         name: string;
         description: string | null;
-        endpoint: string;
         externalId: string | null;
         status: string;
         serviceAccountId: string;
@@ -6623,9 +6621,9 @@ export type PostApiAdminConnectionsResponses = {
     };
 };
 
-export type PostApiAdminConnectionsResponse = PostApiAdminConnectionsResponses[keyof PostApiAdminConnectionsResponses];
+export type PostApiConnectionsResponse = PostApiConnectionsResponses[keyof PostApiConnectionsResponses];
 
-export type DeleteApiAdminConnectionsByIdData = {
+export type DeleteApiConnectionsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -6634,7 +6632,7 @@ export type DeleteApiAdminConnectionsByIdData = {
     url: '/api/connections/{id}';
 };
 
-export type DeleteApiAdminConnectionsByIdErrors = {
+export type DeleteApiConnectionsByIdErrors = {
     /**
      * Default Response
      */
@@ -6675,18 +6673,18 @@ export type DeleteApiAdminConnectionsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminConnectionsByIdError = DeleteApiAdminConnectionsByIdErrors[keyof DeleteApiAdminConnectionsByIdErrors];
+export type DeleteApiConnectionsByIdError = DeleteApiConnectionsByIdErrors[keyof DeleteApiConnectionsByIdErrors];
 
-export type DeleteApiAdminConnectionsByIdResponses = {
+export type DeleteApiConnectionsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminConnectionsByIdResponse = DeleteApiAdminConnectionsByIdResponses[keyof DeleteApiAdminConnectionsByIdResponses];
+export type DeleteApiConnectionsByIdResponse = DeleteApiConnectionsByIdResponses[keyof DeleteApiConnectionsByIdResponses];
 
-export type GetApiAdminConnectionsByIdData = {
+export type GetApiConnectionsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -6695,7 +6693,7 @@ export type GetApiAdminConnectionsByIdData = {
     url: '/api/connections/{id}';
 };
 
-export type GetApiAdminConnectionsByIdErrors = {
+export type GetApiConnectionsByIdErrors = {
     /**
      * Default Response
      */
@@ -6717,9 +6715,9 @@ export type GetApiAdminConnectionsByIdErrors = {
     };
 };
 
-export type GetApiAdminConnectionsByIdError = GetApiAdminConnectionsByIdErrors[keyof GetApiAdminConnectionsByIdErrors];
+export type GetApiConnectionsByIdError = GetApiConnectionsByIdErrors[keyof GetApiConnectionsByIdErrors];
 
-export type GetApiAdminConnectionsByIdResponses = {
+export type GetApiConnectionsByIdResponses = {
     /**
      * Default Response
      */
@@ -6728,7 +6726,6 @@ export type GetApiAdminConnectionsByIdResponses = {
         code: string;
         name: string;
         description: string | null;
-        endpoint: string;
         externalId: string | null;
         status: string;
         serviceAccountId: string;
@@ -6739,13 +6736,12 @@ export type GetApiAdminConnectionsByIdResponses = {
     };
 };
 
-export type GetApiAdminConnectionsByIdResponse = GetApiAdminConnectionsByIdResponses[keyof GetApiAdminConnectionsByIdResponses];
+export type GetApiConnectionsByIdResponse = GetApiConnectionsByIdResponses[keyof GetApiConnectionsByIdResponses];
 
-export type PutApiAdminConnectionsByIdData = {
+export type PutApiConnectionsByIdData = {
     body: {
         name?: string;
         description?: string | null;
-        endpoint?: string;
         externalId?: string | null;
         status?: 'ACTIVE' | 'PAUSED';
     };
@@ -6756,7 +6752,7 @@ export type PutApiAdminConnectionsByIdData = {
     url: '/api/connections/{id}';
 };
 
-export type PutApiAdminConnectionsByIdErrors = {
+export type PutApiConnectionsByIdErrors = {
     /**
      * Default Response
      */
@@ -6797,9 +6793,9 @@ export type PutApiAdminConnectionsByIdErrors = {
     };
 };
 
-export type PutApiAdminConnectionsByIdError = PutApiAdminConnectionsByIdErrors[keyof PutApiAdminConnectionsByIdErrors];
+export type PutApiConnectionsByIdError = PutApiConnectionsByIdErrors[keyof PutApiConnectionsByIdErrors];
 
-export type PutApiAdminConnectionsByIdResponses = {
+export type PutApiConnectionsByIdResponses = {
     /**
      * Default Response
      */
@@ -6808,7 +6804,6 @@ export type PutApiAdminConnectionsByIdResponses = {
         code: string;
         name: string;
         description: string | null;
-        endpoint: string;
         externalId: string | null;
         status: string;
         serviceAccountId: string;
@@ -6819,9 +6814,9 @@ export type PutApiAdminConnectionsByIdResponses = {
     };
 };
 
-export type PutApiAdminConnectionsByIdResponse = PutApiAdminConnectionsByIdResponses[keyof PutApiAdminConnectionsByIdResponses];
+export type PutApiConnectionsByIdResponse = PutApiConnectionsByIdResponses[keyof PutApiConnectionsByIdResponses];
 
-export type PostApiAdminConnectionsByIdPauseData = {
+export type PostApiConnectionsByIdPauseData = {
     body?: never;
     path: {
         id: string;
@@ -6830,7 +6825,7 @@ export type PostApiAdminConnectionsByIdPauseData = {
     url: '/api/connections/{id}/pause';
 };
 
-export type PostApiAdminConnectionsByIdPauseErrors = {
+export type PostApiConnectionsByIdPauseErrors = {
     /**
      * Default Response
      */
@@ -6852,9 +6847,9 @@ export type PostApiAdminConnectionsByIdPauseErrors = {
     };
 };
 
-export type PostApiAdminConnectionsByIdPauseError = PostApiAdminConnectionsByIdPauseErrors[keyof PostApiAdminConnectionsByIdPauseErrors];
+export type PostApiConnectionsByIdPauseError = PostApiConnectionsByIdPauseErrors[keyof PostApiConnectionsByIdPauseErrors];
 
-export type PostApiAdminConnectionsByIdPauseResponses = {
+export type PostApiConnectionsByIdPauseResponses = {
     /**
      * Default Response
      */
@@ -6863,7 +6858,6 @@ export type PostApiAdminConnectionsByIdPauseResponses = {
         code: string;
         name: string;
         description: string | null;
-        endpoint: string;
         externalId: string | null;
         status: string;
         serviceAccountId: string;
@@ -6874,9 +6868,9 @@ export type PostApiAdminConnectionsByIdPauseResponses = {
     };
 };
 
-export type PostApiAdminConnectionsByIdPauseResponse = PostApiAdminConnectionsByIdPauseResponses[keyof PostApiAdminConnectionsByIdPauseResponses];
+export type PostApiConnectionsByIdPauseResponse = PostApiConnectionsByIdPauseResponses[keyof PostApiConnectionsByIdPauseResponses];
 
-export type PostApiAdminConnectionsByIdActivateData = {
+export type PostApiConnectionsByIdActivateData = {
     body?: never;
     path: {
         id: string;
@@ -6885,7 +6879,7 @@ export type PostApiAdminConnectionsByIdActivateData = {
     url: '/api/connections/{id}/activate';
 };
 
-export type PostApiAdminConnectionsByIdActivateErrors = {
+export type PostApiConnectionsByIdActivateErrors = {
     /**
      * Default Response
      */
@@ -6907,9 +6901,9 @@ export type PostApiAdminConnectionsByIdActivateErrors = {
     };
 };
 
-export type PostApiAdminConnectionsByIdActivateError = PostApiAdminConnectionsByIdActivateErrors[keyof PostApiAdminConnectionsByIdActivateErrors];
+export type PostApiConnectionsByIdActivateError = PostApiConnectionsByIdActivateErrors[keyof PostApiConnectionsByIdActivateErrors];
 
-export type PostApiAdminConnectionsByIdActivateResponses = {
+export type PostApiConnectionsByIdActivateResponses = {
     /**
      * Default Response
      */
@@ -6918,7 +6912,6 @@ export type PostApiAdminConnectionsByIdActivateResponses = {
         code: string;
         name: string;
         description: string | null;
-        endpoint: string;
         externalId: string | null;
         status: string;
         serviceAccountId: string;
@@ -6929,9 +6922,9 @@ export type PostApiAdminConnectionsByIdActivateResponses = {
     };
 };
 
-export type PostApiAdminConnectionsByIdActivateResponse = PostApiAdminConnectionsByIdActivateResponses[keyof PostApiAdminConnectionsByIdActivateResponses];
+export type PostApiConnectionsByIdActivateResponse = PostApiConnectionsByIdActivateResponses[keyof PostApiConnectionsByIdActivateResponses];
 
-export type GetApiAdminSubscriptionsData = {
+export type GetApiSubscriptionsData = {
     body?: never;
     path?: never;
     query?: {
@@ -6944,7 +6937,7 @@ export type GetApiAdminSubscriptionsData = {
     url: '/api/subscriptions';
 };
 
-export type GetApiAdminSubscriptionsResponses = {
+export type GetApiSubscriptionsResponses = {
     /**
      * Default Response
      */
@@ -6958,12 +6951,13 @@ export type GetApiAdminSubscriptionsResponses = {
             clientId: string | null;
             clientIdentifier: string | null;
             clientScoped: boolean;
+            endpoint: string;
             eventTypes: Array<{
                 eventTypeId: string | null;
                 eventTypeCode: string;
                 specVersion: string | null;
             }>;
-            connectionId: string;
+            connectionId: string | null;
             queue: string | null;
             customConfig: Array<{
                 key: string;
@@ -6987,9 +6981,9 @@ export type GetApiAdminSubscriptionsResponses = {
     };
 };
 
-export type GetApiAdminSubscriptionsResponse = GetApiAdminSubscriptionsResponses[keyof GetApiAdminSubscriptionsResponses];
+export type GetApiSubscriptionsResponse = GetApiSubscriptionsResponses[keyof GetApiSubscriptionsResponses];
 
-export type PostApiAdminSubscriptionsData = {
+export type PostApiSubscriptionsData = {
     body: {
         code: string;
         applicationCode?: string | null;
@@ -6997,12 +6991,13 @@ export type PostApiAdminSubscriptionsData = {
         description?: string | null;
         clientId?: string | null;
         clientScoped?: boolean;
+        endpoint: string;
         eventTypes: Array<{
             eventTypeId?: string | null;
             eventTypeCode: string;
             specVersion?: string | null;
         }>;
-        connectionId: string;
+        connectionId?: string | null;
         queue?: string | null;
         customConfig?: Array<{
             key: string;
@@ -7023,7 +7018,7 @@ export type PostApiAdminSubscriptionsData = {
     url: '/api/subscriptions';
 };
 
-export type PostApiAdminSubscriptionsErrors = {
+export type PostApiSubscriptionsErrors = {
     /**
      * Default Response
      */
@@ -7064,9 +7059,9 @@ export type PostApiAdminSubscriptionsErrors = {
     };
 };
 
-export type PostApiAdminSubscriptionsError = PostApiAdminSubscriptionsErrors[keyof PostApiAdminSubscriptionsErrors];
+export type PostApiSubscriptionsError = PostApiSubscriptionsErrors[keyof PostApiSubscriptionsErrors];
 
-export type PostApiAdminSubscriptionsResponses = {
+export type PostApiSubscriptionsResponses = {
     /**
      * Default Response
      */
@@ -7079,12 +7074,13 @@ export type PostApiAdminSubscriptionsResponses = {
         clientId: string | null;
         clientIdentifier: string | null;
         clientScoped: boolean;
+        endpoint: string;
         eventTypes: Array<{
             eventTypeId: string | null;
             eventTypeCode: string;
             specVersion: string | null;
         }>;
-        connectionId: string;
+        connectionId: string | null;
         queue: string | null;
         customConfig: Array<{
             key: string;
@@ -7106,9 +7102,9 @@ export type PostApiAdminSubscriptionsResponses = {
     };
 };
 
-export type PostApiAdminSubscriptionsResponse = PostApiAdminSubscriptionsResponses[keyof PostApiAdminSubscriptionsResponses];
+export type PostApiSubscriptionsResponse = PostApiSubscriptionsResponses[keyof PostApiSubscriptionsResponses];
 
-export type DeleteApiAdminSubscriptionsByIdData = {
+export type DeleteApiSubscriptionsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -7117,7 +7113,7 @@ export type DeleteApiAdminSubscriptionsByIdData = {
     url: '/api/subscriptions/{id}';
 };
 
-export type DeleteApiAdminSubscriptionsByIdErrors = {
+export type DeleteApiSubscriptionsByIdErrors = {
     /**
      * Default Response
      */
@@ -7139,18 +7135,18 @@ export type DeleteApiAdminSubscriptionsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminSubscriptionsByIdError = DeleteApiAdminSubscriptionsByIdErrors[keyof DeleteApiAdminSubscriptionsByIdErrors];
+export type DeleteApiSubscriptionsByIdError = DeleteApiSubscriptionsByIdErrors[keyof DeleteApiSubscriptionsByIdErrors];
 
-export type DeleteApiAdminSubscriptionsByIdResponses = {
+export type DeleteApiSubscriptionsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminSubscriptionsByIdResponse = DeleteApiAdminSubscriptionsByIdResponses[keyof DeleteApiAdminSubscriptionsByIdResponses];
+export type DeleteApiSubscriptionsByIdResponse = DeleteApiSubscriptionsByIdResponses[keyof DeleteApiSubscriptionsByIdResponses];
 
-export type GetApiAdminSubscriptionsByIdData = {
+export type GetApiSubscriptionsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -7159,7 +7155,7 @@ export type GetApiAdminSubscriptionsByIdData = {
     url: '/api/subscriptions/{id}';
 };
 
-export type GetApiAdminSubscriptionsByIdErrors = {
+export type GetApiSubscriptionsByIdErrors = {
     /**
      * Default Response
      */
@@ -7181,9 +7177,9 @@ export type GetApiAdminSubscriptionsByIdErrors = {
     };
 };
 
-export type GetApiAdminSubscriptionsByIdError = GetApiAdminSubscriptionsByIdErrors[keyof GetApiAdminSubscriptionsByIdErrors];
+export type GetApiSubscriptionsByIdError = GetApiSubscriptionsByIdErrors[keyof GetApiSubscriptionsByIdErrors];
 
-export type GetApiAdminSubscriptionsByIdResponses = {
+export type GetApiSubscriptionsByIdResponses = {
     /**
      * Default Response
      */
@@ -7196,12 +7192,13 @@ export type GetApiAdminSubscriptionsByIdResponses = {
         clientId: string | null;
         clientIdentifier: string | null;
         clientScoped: boolean;
+        endpoint: string;
         eventTypes: Array<{
             eventTypeId: string | null;
             eventTypeCode: string;
             specVersion: string | null;
         }>;
-        connectionId: string;
+        connectionId: string | null;
         queue: string | null;
         customConfig: Array<{
             key: string;
@@ -7223,18 +7220,19 @@ export type GetApiAdminSubscriptionsByIdResponses = {
     };
 };
 
-export type GetApiAdminSubscriptionsByIdResponse = GetApiAdminSubscriptionsByIdResponses[keyof GetApiAdminSubscriptionsByIdResponses];
+export type GetApiSubscriptionsByIdResponse = GetApiSubscriptionsByIdResponses[keyof GetApiSubscriptionsByIdResponses];
 
-export type PutApiAdminSubscriptionsByIdData = {
+export type PutApiSubscriptionsByIdData = {
     body: {
         name?: string;
         description?: string | null;
+        endpoint?: string;
         eventTypes?: Array<{
             eventTypeId?: string | null;
             eventTypeCode: string;
             specVersion?: string | null;
         }>;
-        connectionId?: string;
+        connectionId?: string | null;
         queue?: string | null;
         customConfig?: Array<{
             key: string;
@@ -7258,7 +7256,7 @@ export type PutApiAdminSubscriptionsByIdData = {
     url: '/api/subscriptions/{id}';
 };
 
-export type PutApiAdminSubscriptionsByIdErrors = {
+export type PutApiSubscriptionsByIdErrors = {
     /**
      * Default Response
      */
@@ -7299,9 +7297,9 @@ export type PutApiAdminSubscriptionsByIdErrors = {
     };
 };
 
-export type PutApiAdminSubscriptionsByIdError = PutApiAdminSubscriptionsByIdErrors[keyof PutApiAdminSubscriptionsByIdErrors];
+export type PutApiSubscriptionsByIdError = PutApiSubscriptionsByIdErrors[keyof PutApiSubscriptionsByIdErrors];
 
-export type PutApiAdminSubscriptionsByIdResponses = {
+export type PutApiSubscriptionsByIdResponses = {
     /**
      * Default Response
      */
@@ -7314,12 +7312,13 @@ export type PutApiAdminSubscriptionsByIdResponses = {
         clientId: string | null;
         clientIdentifier: string | null;
         clientScoped: boolean;
+        endpoint: string;
         eventTypes: Array<{
             eventTypeId: string | null;
             eventTypeCode: string;
             specVersion: string | null;
         }>;
-        connectionId: string;
+        connectionId: string | null;
         queue: string | null;
         customConfig: Array<{
             key: string;
@@ -7341,9 +7340,9 @@ export type PutApiAdminSubscriptionsByIdResponses = {
     };
 };
 
-export type PutApiAdminSubscriptionsByIdResponse = PutApiAdminSubscriptionsByIdResponses[keyof PutApiAdminSubscriptionsByIdResponses];
+export type PutApiSubscriptionsByIdResponse = PutApiSubscriptionsByIdResponses[keyof PutApiSubscriptionsByIdResponses];
 
-export type PostApiAdminSubscriptionsByIdPauseData = {
+export type PostApiSubscriptionsByIdPauseData = {
     body?: never;
     path: {
         id: string;
@@ -7352,7 +7351,7 @@ export type PostApiAdminSubscriptionsByIdPauseData = {
     url: '/api/subscriptions/{id}/pause';
 };
 
-export type PostApiAdminSubscriptionsByIdPauseErrors = {
+export type PostApiSubscriptionsByIdPauseErrors = {
     /**
      * Default Response
      */
@@ -7374,9 +7373,9 @@ export type PostApiAdminSubscriptionsByIdPauseErrors = {
     };
 };
 
-export type PostApiAdminSubscriptionsByIdPauseError = PostApiAdminSubscriptionsByIdPauseErrors[keyof PostApiAdminSubscriptionsByIdPauseErrors];
+export type PostApiSubscriptionsByIdPauseError = PostApiSubscriptionsByIdPauseErrors[keyof PostApiSubscriptionsByIdPauseErrors];
 
-export type PostApiAdminSubscriptionsByIdPauseResponses = {
+export type PostApiSubscriptionsByIdPauseResponses = {
     /**
      * Default Response
      */
@@ -7389,12 +7388,13 @@ export type PostApiAdminSubscriptionsByIdPauseResponses = {
         clientId: string | null;
         clientIdentifier: string | null;
         clientScoped: boolean;
+        endpoint: string;
         eventTypes: Array<{
             eventTypeId: string | null;
             eventTypeCode: string;
             specVersion: string | null;
         }>;
-        connectionId: string;
+        connectionId: string | null;
         queue: string | null;
         customConfig: Array<{
             key: string;
@@ -7416,9 +7416,9 @@ export type PostApiAdminSubscriptionsByIdPauseResponses = {
     };
 };
 
-export type PostApiAdminSubscriptionsByIdPauseResponse = PostApiAdminSubscriptionsByIdPauseResponses[keyof PostApiAdminSubscriptionsByIdPauseResponses];
+export type PostApiSubscriptionsByIdPauseResponse = PostApiSubscriptionsByIdPauseResponses[keyof PostApiSubscriptionsByIdPauseResponses];
 
-export type PostApiAdminSubscriptionsByIdResumeData = {
+export type PostApiSubscriptionsByIdResumeData = {
     body?: never;
     path: {
         id: string;
@@ -7427,7 +7427,7 @@ export type PostApiAdminSubscriptionsByIdResumeData = {
     url: '/api/subscriptions/{id}/resume';
 };
 
-export type PostApiAdminSubscriptionsByIdResumeErrors = {
+export type PostApiSubscriptionsByIdResumeErrors = {
     /**
      * Default Response
      */
@@ -7449,9 +7449,9 @@ export type PostApiAdminSubscriptionsByIdResumeErrors = {
     };
 };
 
-export type PostApiAdminSubscriptionsByIdResumeError = PostApiAdminSubscriptionsByIdResumeErrors[keyof PostApiAdminSubscriptionsByIdResumeErrors];
+export type PostApiSubscriptionsByIdResumeError = PostApiSubscriptionsByIdResumeErrors[keyof PostApiSubscriptionsByIdResumeErrors];
 
-export type PostApiAdminSubscriptionsByIdResumeResponses = {
+export type PostApiSubscriptionsByIdResumeResponses = {
     /**
      * Default Response
      */
@@ -7464,12 +7464,13 @@ export type PostApiAdminSubscriptionsByIdResumeResponses = {
         clientId: string | null;
         clientIdentifier: string | null;
         clientScoped: boolean;
+        endpoint: string;
         eventTypes: Array<{
             eventTypeId: string | null;
             eventTypeCode: string;
             specVersion: string | null;
         }>;
-        connectionId: string;
+        connectionId: string | null;
         queue: string | null;
         customConfig: Array<{
             key: string;
@@ -7491,9 +7492,9 @@ export type PostApiAdminSubscriptionsByIdResumeResponses = {
     };
 };
 
-export type PostApiAdminSubscriptionsByIdResumeResponse = PostApiAdminSubscriptionsByIdResumeResponses[keyof PostApiAdminSubscriptionsByIdResumeResponses];
+export type PostApiSubscriptionsByIdResumeResponse = PostApiSubscriptionsByIdResumeResponses[keyof PostApiSubscriptionsByIdResumeResponses];
 
-export type PostApiAdminSubscriptionsSyncData = {
+export type PostApiSubscriptionsSyncData = {
     body: {
         applicationCode: string;
         subscriptions: Array<{
@@ -7501,12 +7502,13 @@ export type PostApiAdminSubscriptionsSyncData = {
             name: string;
             description?: string | null;
             clientScoped?: boolean;
+            endpoint: string;
             eventTypes: Array<{
                 eventTypeId?: string | null;
                 eventTypeCode: string;
                 specVersion?: string | null;
             }>;
-            connectionId: string;
+            connectionId?: string | null;
             queue?: string | null;
             customConfig?: Array<{
                 key: string;
@@ -7528,7 +7530,7 @@ export type PostApiAdminSubscriptionsSyncData = {
     url: '/api/subscriptions/sync';
 };
 
-export type PostApiAdminSubscriptionsSyncErrors = {
+export type PostApiSubscriptionsSyncErrors = {
     /**
      * Default Response
      */
@@ -7550,9 +7552,9 @@ export type PostApiAdminSubscriptionsSyncErrors = {
     };
 };
 
-export type PostApiAdminSubscriptionsSyncError = PostApiAdminSubscriptionsSyncErrors[keyof PostApiAdminSubscriptionsSyncErrors];
+export type PostApiSubscriptionsSyncError = PostApiSubscriptionsSyncErrors[keyof PostApiSubscriptionsSyncErrors];
 
-export type PostApiAdminSubscriptionsSyncResponses = {
+export type PostApiSubscriptionsSyncResponses = {
     /**
      * Default Response
      */
@@ -7565,9 +7567,9 @@ export type PostApiAdminSubscriptionsSyncResponses = {
     };
 };
 
-export type PostApiAdminSubscriptionsSyncResponse = PostApiAdminSubscriptionsSyncResponses[keyof PostApiAdminSubscriptionsSyncResponses];
+export type PostApiSubscriptionsSyncResponse = PostApiSubscriptionsSyncResponses[keyof PostApiSubscriptionsSyncResponses];
 
-export type GetApiAdminEventsData = {
+export type GetApiEventsData = {
     body?: never;
     path?: never;
     query?: {
@@ -7590,7 +7592,7 @@ export type GetApiAdminEventsData = {
     url: '/api/events';
 };
 
-export type GetApiAdminEventsResponses = {
+export type GetApiEventsResponses = {
     /**
      * Default Response
      */
@@ -7615,14 +7617,13 @@ export type GetApiAdminEventsResponses = {
         }>;
         page: number;
         size: number;
-        totalItems: number;
-        totalPages: number;
+        hasMore: boolean;
     };
 };
 
-export type GetApiAdminEventsResponse = GetApiAdminEventsResponses[keyof GetApiAdminEventsResponses];
+export type GetApiEventsResponse = GetApiEventsResponses[keyof GetApiEventsResponses];
 
-export type GetApiAdminEventsFilterOptionsData = {
+export type GetApiEventsFilterOptionsData = {
     body?: never;
     path?: never;
     query?: {
@@ -7634,21 +7635,33 @@ export type GetApiAdminEventsFilterOptionsData = {
     url: '/api/events/filter-options';
 };
 
-export type GetApiAdminEventsFilterOptionsResponses = {
+export type GetApiEventsFilterOptionsResponses = {
     /**
      * Default Response
      */
     200: {
-        applications: Array<string>;
-        subdomains: Array<string>;
-        aggregates: Array<string>;
-        types: Array<string>;
+        applications: Array<{
+            value: string;
+            label: string;
+        }>;
+        subdomains: Array<{
+            value: string;
+            label: string;
+        }>;
+        aggregates: Array<{
+            value: string;
+            label: string;
+        }>;
+        types: Array<{
+            value: string;
+            label: string;
+        }>;
     };
 };
 
-export type GetApiAdminEventsFilterOptionsResponse = GetApiAdminEventsFilterOptionsResponses[keyof GetApiAdminEventsFilterOptionsResponses];
+export type GetApiEventsFilterOptionsResponse = GetApiEventsFilterOptionsResponses[keyof GetApiEventsFilterOptionsResponses];
 
-export type GetApiAdminEventsByIdData = {
+export type GetApiEventsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -7657,7 +7670,7 @@ export type GetApiAdminEventsByIdData = {
     url: '/api/events/{id}';
 };
 
-export type GetApiAdminEventsByIdErrors = {
+export type GetApiEventsByIdErrors = {
     /**
      * Default Response
      */
@@ -7679,9 +7692,9 @@ export type GetApiAdminEventsByIdErrors = {
     };
 };
 
-export type GetApiAdminEventsByIdError = GetApiAdminEventsByIdErrors[keyof GetApiAdminEventsByIdErrors];
+export type GetApiEventsByIdError = GetApiEventsByIdErrors[keyof GetApiEventsByIdErrors];
 
-export type GetApiAdminEventsByIdResponses = {
+export type GetApiEventsByIdResponses = {
     /**
      * Default Response
      */
@@ -7705,9 +7718,9 @@ export type GetApiAdminEventsByIdResponses = {
     };
 };
 
-export type GetApiAdminEventsByIdResponse = GetApiAdminEventsByIdResponses[keyof GetApiAdminEventsByIdResponses];
+export type GetApiEventsByIdResponse = GetApiEventsByIdResponses[keyof GetApiEventsByIdResponses];
 
-export type GetApiAdminEventsRawData = {
+export type GetApiEventsRawData = {
     body?: never;
     path?: never;
     query?: {
@@ -7717,14 +7730,14 @@ export type GetApiAdminEventsRawData = {
     url: '/api/events/raw';
 };
 
-export type GetApiAdminEventsRawResponses = {
+export type GetApiEventsRawResponses = {
     /**
      * Default Response
      */
     200: unknown;
 };
 
-export type GetApiAdminDispatchJobsData = {
+export type GetApiDispatchJobsData = {
     body?: never;
     path?: never;
     query?: {
@@ -7749,7 +7762,7 @@ export type GetApiAdminDispatchJobsData = {
     url: '/api/dispatch-jobs';
 };
 
-export type GetApiAdminDispatchJobsResponses = {
+export type GetApiDispatchJobsResponses = {
     /**
      * Default Response
      */
@@ -7795,14 +7808,13 @@ export type GetApiAdminDispatchJobsResponses = {
         }>;
         page: number;
         size: number;
-        totalItems: number;
-        totalPages: number;
+        hasMore: boolean;
     };
 };
 
-export type GetApiAdminDispatchJobsResponse = GetApiAdminDispatchJobsResponses[keyof GetApiAdminDispatchJobsResponses];
+export type GetApiDispatchJobsResponse = GetApiDispatchJobsResponses[keyof GetApiDispatchJobsResponses];
 
-export type GetApiAdminDispatchJobsFilterOptionsData = {
+export type GetApiDispatchJobsFilterOptionsData = {
     body?: never;
     path?: never;
     query?: {
@@ -7814,22 +7826,37 @@ export type GetApiAdminDispatchJobsFilterOptionsData = {
     url: '/api/dispatch-jobs/filter-options';
 };
 
-export type GetApiAdminDispatchJobsFilterOptionsResponses = {
+export type GetApiDispatchJobsFilterOptionsResponses = {
     /**
      * Default Response
      */
     200: {
-        applications: Array<string>;
-        subdomains: Array<string>;
-        aggregates: Array<string>;
-        codes: Array<string>;
-        statuses: Array<string>;
+        applications: Array<{
+            value: string;
+            label: string;
+        }>;
+        subdomains: Array<{
+            value: string;
+            label: string;
+        }>;
+        aggregates: Array<{
+            value: string;
+            label: string;
+        }>;
+        codes: Array<{
+            value: string;
+            label: string;
+        }>;
+        statuses: Array<{
+            value: string;
+            label: string;
+        }>;
     };
 };
 
-export type GetApiAdminDispatchJobsFilterOptionsResponse = GetApiAdminDispatchJobsFilterOptionsResponses[keyof GetApiAdminDispatchJobsFilterOptionsResponses];
+export type GetApiDispatchJobsFilterOptionsResponse = GetApiDispatchJobsFilterOptionsResponses[keyof GetApiDispatchJobsFilterOptionsResponses];
 
-export type GetApiAdminDispatchJobsByIdData = {
+export type GetApiDispatchJobsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -7838,7 +7865,7 @@ export type GetApiAdminDispatchJobsByIdData = {
     url: '/api/dispatch-jobs/{id}';
 };
 
-export type GetApiAdminDispatchJobsByIdErrors = {
+export type GetApiDispatchJobsByIdErrors = {
     /**
      * Default Response
      */
@@ -7860,9 +7887,9 @@ export type GetApiAdminDispatchJobsByIdErrors = {
     };
 };
 
-export type GetApiAdminDispatchJobsByIdError = GetApiAdminDispatchJobsByIdErrors[keyof GetApiAdminDispatchJobsByIdErrors];
+export type GetApiDispatchJobsByIdError = GetApiDispatchJobsByIdErrors[keyof GetApiDispatchJobsByIdErrors];
 
-export type GetApiAdminDispatchJobsByIdResponses = {
+export type GetApiDispatchJobsByIdResponses = {
     /**
      * Default Response
      */
@@ -7907,9 +7934,9 @@ export type GetApiAdminDispatchJobsByIdResponses = {
     };
 };
 
-export type GetApiAdminDispatchJobsByIdResponse = GetApiAdminDispatchJobsByIdResponses[keyof GetApiAdminDispatchJobsByIdResponses];
+export type GetApiDispatchJobsByIdResponse = GetApiDispatchJobsByIdResponses[keyof GetApiDispatchJobsByIdResponses];
 
-export type GetApiAdminDispatchJobsByIdAttemptsData = {
+export type GetApiDispatchJobsByIdAttemptsData = {
     body?: never;
     path: {
         id: string;
@@ -7918,7 +7945,7 @@ export type GetApiAdminDispatchJobsByIdAttemptsData = {
     url: '/api/dispatch-jobs/{id}/attempts';
 };
 
-export type GetApiAdminDispatchJobsByIdAttemptsErrors = {
+export type GetApiDispatchJobsByIdAttemptsErrors = {
     /**
      * Default Response
      */
@@ -7940,9 +7967,9 @@ export type GetApiAdminDispatchJobsByIdAttemptsErrors = {
     };
 };
 
-export type GetApiAdminDispatchJobsByIdAttemptsError = GetApiAdminDispatchJobsByIdAttemptsErrors[keyof GetApiAdminDispatchJobsByIdAttemptsErrors];
+export type GetApiDispatchJobsByIdAttemptsError = GetApiDispatchJobsByIdAttemptsErrors[keyof GetApiDispatchJobsByIdAttemptsErrors];
 
-export type GetApiAdminDispatchJobsByIdAttemptsResponses = {
+export type GetApiDispatchJobsByIdAttemptsResponses = {
     /**
      * Default Response
      */
@@ -7965,9 +7992,9 @@ export type GetApiAdminDispatchJobsByIdAttemptsResponses = {
     };
 };
 
-export type GetApiAdminDispatchJobsByIdAttemptsResponse = GetApiAdminDispatchJobsByIdAttemptsResponses[keyof GetApiAdminDispatchJobsByIdAttemptsResponses];
+export type GetApiDispatchJobsByIdAttemptsResponse = GetApiDispatchJobsByIdAttemptsResponses[keyof GetApiDispatchJobsByIdAttemptsResponses];
 
-export type GetApiAdminDispatchJobsRawData = {
+export type GetApiDispatchJobsRawData = {
     body?: never;
     path?: never;
     query?: {
@@ -7977,21 +8004,21 @@ export type GetApiAdminDispatchJobsRawData = {
     url: '/api/dispatch-jobs/raw';
 };
 
-export type GetApiAdminDispatchJobsRawResponses = {
+export type GetApiDispatchJobsRawResponses = {
     /**
      * Default Response
      */
     200: unknown;
 };
 
-export type GetApiAdminIdentityProvidersData = {
+export type GetApiIdentityProvidersData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/identity-providers';
 };
 
-export type GetApiAdminIdentityProvidersResponses = {
+export type GetApiIdentityProvidersResponses = {
     /**
      * Default Response
      */
@@ -8014,9 +8041,9 @@ export type GetApiAdminIdentityProvidersResponses = {
     };
 };
 
-export type GetApiAdminIdentityProvidersResponse = GetApiAdminIdentityProvidersResponses[keyof GetApiAdminIdentityProvidersResponses];
+export type GetApiIdentityProvidersResponse = GetApiIdentityProvidersResponses[keyof GetApiIdentityProvidersResponses];
 
-export type PostApiAdminIdentityProvidersData = {
+export type PostApiIdentityProvidersData = {
     body: {
         code: string;
         name: string;
@@ -8033,7 +8060,7 @@ export type PostApiAdminIdentityProvidersData = {
     url: '/api/identity-providers';
 };
 
-export type PostApiAdminIdentityProvidersErrors = {
+export type PostApiIdentityProvidersErrors = {
     /**
      * Default Response
      */
@@ -8074,9 +8101,9 @@ export type PostApiAdminIdentityProvidersErrors = {
     };
 };
 
-export type PostApiAdminIdentityProvidersError = PostApiAdminIdentityProvidersErrors[keyof PostApiAdminIdentityProvidersErrors];
+export type PostApiIdentityProvidersError = PostApiIdentityProvidersErrors[keyof PostApiIdentityProvidersErrors];
 
-export type PostApiAdminIdentityProvidersResponses = {
+export type PostApiIdentityProvidersResponses = {
     /**
      * Default Response
      */
@@ -8096,9 +8123,9 @@ export type PostApiAdminIdentityProvidersResponses = {
     };
 };
 
-export type PostApiAdminIdentityProvidersResponse = PostApiAdminIdentityProvidersResponses[keyof PostApiAdminIdentityProvidersResponses];
+export type PostApiIdentityProvidersResponse = PostApiIdentityProvidersResponses[keyof PostApiIdentityProvidersResponses];
 
-export type DeleteApiAdminIdentityProvidersByIdData = {
+export type DeleteApiIdentityProvidersByIdData = {
     body?: never;
     path: {
         id: string;
@@ -8107,7 +8134,7 @@ export type DeleteApiAdminIdentityProvidersByIdData = {
     url: '/api/identity-providers/{id}';
 };
 
-export type DeleteApiAdminIdentityProvidersByIdErrors = {
+export type DeleteApiIdentityProvidersByIdErrors = {
     /**
      * Default Response
      */
@@ -8129,18 +8156,18 @@ export type DeleteApiAdminIdentityProvidersByIdErrors = {
     };
 };
 
-export type DeleteApiAdminIdentityProvidersByIdError = DeleteApiAdminIdentityProvidersByIdErrors[keyof DeleteApiAdminIdentityProvidersByIdErrors];
+export type DeleteApiIdentityProvidersByIdError = DeleteApiIdentityProvidersByIdErrors[keyof DeleteApiIdentityProvidersByIdErrors];
 
-export type DeleteApiAdminIdentityProvidersByIdResponses = {
+export type DeleteApiIdentityProvidersByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminIdentityProvidersByIdResponse = DeleteApiAdminIdentityProvidersByIdResponses[keyof DeleteApiAdminIdentityProvidersByIdResponses];
+export type DeleteApiIdentityProvidersByIdResponse = DeleteApiIdentityProvidersByIdResponses[keyof DeleteApiIdentityProvidersByIdResponses];
 
-export type GetApiAdminIdentityProvidersByIdData = {
+export type GetApiIdentityProvidersByIdData = {
     body?: never;
     path: {
         id: string;
@@ -8149,7 +8176,7 @@ export type GetApiAdminIdentityProvidersByIdData = {
     url: '/api/identity-providers/{id}';
 };
 
-export type GetApiAdminIdentityProvidersByIdErrors = {
+export type GetApiIdentityProvidersByIdErrors = {
     /**
      * Default Response
      */
@@ -8171,9 +8198,9 @@ export type GetApiAdminIdentityProvidersByIdErrors = {
     };
 };
 
-export type GetApiAdminIdentityProvidersByIdError = GetApiAdminIdentityProvidersByIdErrors[keyof GetApiAdminIdentityProvidersByIdErrors];
+export type GetApiIdentityProvidersByIdError = GetApiIdentityProvidersByIdErrors[keyof GetApiIdentityProvidersByIdErrors];
 
-export type GetApiAdminIdentityProvidersByIdResponses = {
+export type GetApiIdentityProvidersByIdResponses = {
     /**
      * Default Response
      */
@@ -8193,9 +8220,9 @@ export type GetApiAdminIdentityProvidersByIdResponses = {
     };
 };
 
-export type GetApiAdminIdentityProvidersByIdResponse = GetApiAdminIdentityProvidersByIdResponses[keyof GetApiAdminIdentityProvidersByIdResponses];
+export type GetApiIdentityProvidersByIdResponse = GetApiIdentityProvidersByIdResponses[keyof GetApiIdentityProvidersByIdResponses];
 
-export type PutApiAdminIdentityProvidersByIdData = {
+export type PutApiIdentityProvidersByIdData = {
     body: {
         name?: string;
         type?: 'INTERNAL' | 'OIDC';
@@ -8213,7 +8240,7 @@ export type PutApiAdminIdentityProvidersByIdData = {
     url: '/api/identity-providers/{id}';
 };
 
-export type PutApiAdminIdentityProvidersByIdErrors = {
+export type PutApiIdentityProvidersByIdErrors = {
     /**
      * Default Response
      */
@@ -8273,9 +8300,9 @@ export type PutApiAdminIdentityProvidersByIdErrors = {
     };
 };
 
-export type PutApiAdminIdentityProvidersByIdError = PutApiAdminIdentityProvidersByIdErrors[keyof PutApiAdminIdentityProvidersByIdErrors];
+export type PutApiIdentityProvidersByIdError = PutApiIdentityProvidersByIdErrors[keyof PutApiIdentityProvidersByIdErrors];
 
-export type PutApiAdminIdentityProvidersByIdResponses = {
+export type PutApiIdentityProvidersByIdResponses = {
     /**
      * Default Response
      */
@@ -8295,16 +8322,16 @@ export type PutApiAdminIdentityProvidersByIdResponses = {
     };
 };
 
-export type PutApiAdminIdentityProvidersByIdResponse = PutApiAdminIdentityProvidersByIdResponses[keyof PutApiAdminIdentityProvidersByIdResponses];
+export type PutApiIdentityProvidersByIdResponse = PutApiIdentityProvidersByIdResponses[keyof PutApiIdentityProvidersByIdResponses];
 
-export type GetApiAdminEmailDomainMappingsData = {
+export type GetApiEmailDomainMappingsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/email-domain-mappings';
 };
 
-export type GetApiAdminEmailDomainMappingsResponses = {
+export type GetApiEmailDomainMappingsResponses = {
     /**
      * Default Response
      */
@@ -8330,9 +8357,9 @@ export type GetApiAdminEmailDomainMappingsResponses = {
     };
 };
 
-export type GetApiAdminEmailDomainMappingsResponse = GetApiAdminEmailDomainMappingsResponses[keyof GetApiAdminEmailDomainMappingsResponses];
+export type GetApiEmailDomainMappingsResponse = GetApiEmailDomainMappingsResponses[keyof GetApiEmailDomainMappingsResponses];
 
-export type PostApiAdminEmailDomainMappingsData = {
+export type PostApiEmailDomainMappingsData = {
     body: {
         emailDomain: string;
         identityProviderId: string;
@@ -8349,7 +8376,7 @@ export type PostApiAdminEmailDomainMappingsData = {
     url: '/api/email-domain-mappings';
 };
 
-export type PostApiAdminEmailDomainMappingsErrors = {
+export type PostApiEmailDomainMappingsErrors = {
     /**
      * Default Response
      */
@@ -8390,9 +8417,9 @@ export type PostApiAdminEmailDomainMappingsErrors = {
     };
 };
 
-export type PostApiAdminEmailDomainMappingsError = PostApiAdminEmailDomainMappingsErrors[keyof PostApiAdminEmailDomainMappingsErrors];
+export type PostApiEmailDomainMappingsError = PostApiEmailDomainMappingsErrors[keyof PostApiEmailDomainMappingsErrors];
 
-export type PostApiAdminEmailDomainMappingsResponses = {
+export type PostApiEmailDomainMappingsResponses = {
     /**
      * Default Response
      */
@@ -8415,9 +8442,9 @@ export type PostApiAdminEmailDomainMappingsResponses = {
     };
 };
 
-export type PostApiAdminEmailDomainMappingsResponse = PostApiAdminEmailDomainMappingsResponses[keyof PostApiAdminEmailDomainMappingsResponses];
+export type PostApiEmailDomainMappingsResponse = PostApiEmailDomainMappingsResponses[keyof PostApiEmailDomainMappingsResponses];
 
-export type DeleteApiAdminEmailDomainMappingsByIdData = {
+export type DeleteApiEmailDomainMappingsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -8426,7 +8453,7 @@ export type DeleteApiAdminEmailDomainMappingsByIdData = {
     url: '/api/email-domain-mappings/{id}';
 };
 
-export type DeleteApiAdminEmailDomainMappingsByIdErrors = {
+export type DeleteApiEmailDomainMappingsByIdErrors = {
     /**
      * Default Response
      */
@@ -8448,18 +8475,18 @@ export type DeleteApiAdminEmailDomainMappingsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminEmailDomainMappingsByIdError = DeleteApiAdminEmailDomainMappingsByIdErrors[keyof DeleteApiAdminEmailDomainMappingsByIdErrors];
+export type DeleteApiEmailDomainMappingsByIdError = DeleteApiEmailDomainMappingsByIdErrors[keyof DeleteApiEmailDomainMappingsByIdErrors];
 
-export type DeleteApiAdminEmailDomainMappingsByIdResponses = {
+export type DeleteApiEmailDomainMappingsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminEmailDomainMappingsByIdResponse = DeleteApiAdminEmailDomainMappingsByIdResponses[keyof DeleteApiAdminEmailDomainMappingsByIdResponses];
+export type DeleteApiEmailDomainMappingsByIdResponse = DeleteApiEmailDomainMappingsByIdResponses[keyof DeleteApiEmailDomainMappingsByIdResponses];
 
-export type GetApiAdminEmailDomainMappingsByIdData = {
+export type GetApiEmailDomainMappingsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -8468,7 +8495,7 @@ export type GetApiAdminEmailDomainMappingsByIdData = {
     url: '/api/email-domain-mappings/{id}';
 };
 
-export type GetApiAdminEmailDomainMappingsByIdErrors = {
+export type GetApiEmailDomainMappingsByIdErrors = {
     /**
      * Default Response
      */
@@ -8490,9 +8517,9 @@ export type GetApiAdminEmailDomainMappingsByIdErrors = {
     };
 };
 
-export type GetApiAdminEmailDomainMappingsByIdError = GetApiAdminEmailDomainMappingsByIdErrors[keyof GetApiAdminEmailDomainMappingsByIdErrors];
+export type GetApiEmailDomainMappingsByIdError = GetApiEmailDomainMappingsByIdErrors[keyof GetApiEmailDomainMappingsByIdErrors];
 
-export type GetApiAdminEmailDomainMappingsByIdResponses = {
+export type GetApiEmailDomainMappingsByIdResponses = {
     /**
      * Default Response
      */
@@ -8515,9 +8542,9 @@ export type GetApiAdminEmailDomainMappingsByIdResponses = {
     };
 };
 
-export type GetApiAdminEmailDomainMappingsByIdResponse = GetApiAdminEmailDomainMappingsByIdResponses[keyof GetApiAdminEmailDomainMappingsByIdResponses];
+export type GetApiEmailDomainMappingsByIdResponse = GetApiEmailDomainMappingsByIdResponses[keyof GetApiEmailDomainMappingsByIdResponses];
 
-export type PutApiAdminEmailDomainMappingsByIdData = {
+export type PutApiEmailDomainMappingsByIdData = {
     body: {
         identityProviderId?: string;
         scopeType?: 'ANCHOR' | 'PARTNER' | 'CLIENT';
@@ -8535,7 +8562,7 @@ export type PutApiAdminEmailDomainMappingsByIdData = {
     url: '/api/email-domain-mappings/{id}';
 };
 
-export type PutApiAdminEmailDomainMappingsByIdErrors = {
+export type PutApiEmailDomainMappingsByIdErrors = {
     /**
      * Default Response
      */
@@ -8595,9 +8622,9 @@ export type PutApiAdminEmailDomainMappingsByIdErrors = {
     };
 };
 
-export type PutApiAdminEmailDomainMappingsByIdError = PutApiAdminEmailDomainMappingsByIdErrors[keyof PutApiAdminEmailDomainMappingsByIdErrors];
+export type PutApiEmailDomainMappingsByIdError = PutApiEmailDomainMappingsByIdErrors[keyof PutApiEmailDomainMappingsByIdErrors];
 
-export type PutApiAdminEmailDomainMappingsByIdResponses = {
+export type PutApiEmailDomainMappingsByIdResponses = {
     /**
      * Default Response
      */
@@ -8620,9 +8647,9 @@ export type PutApiAdminEmailDomainMappingsByIdResponses = {
     };
 };
 
-export type PutApiAdminEmailDomainMappingsByIdResponse = PutApiAdminEmailDomainMappingsByIdResponses[keyof PutApiAdminEmailDomainMappingsByIdResponses];
+export type PutApiEmailDomainMappingsByIdResponse = PutApiEmailDomainMappingsByIdResponses[keyof PutApiEmailDomainMappingsByIdResponses];
 
-export type GetApiAdminEmailDomainMappingsLookupByDomainData = {
+export type GetApiEmailDomainMappingsLookupByDomainData = {
     body?: never;
     path: {
         domain: string;
@@ -8631,7 +8658,7 @@ export type GetApiAdminEmailDomainMappingsLookupByDomainData = {
     url: '/api/email-domain-mappings/lookup/{domain}';
 };
 
-export type GetApiAdminEmailDomainMappingsLookupByDomainErrors = {
+export type GetApiEmailDomainMappingsLookupByDomainErrors = {
     /**
      * Default Response
      */
@@ -8653,9 +8680,9 @@ export type GetApiAdminEmailDomainMappingsLookupByDomainErrors = {
     };
 };
 
-export type GetApiAdminEmailDomainMappingsLookupByDomainError = GetApiAdminEmailDomainMappingsLookupByDomainErrors[keyof GetApiAdminEmailDomainMappingsLookupByDomainErrors];
+export type GetApiEmailDomainMappingsLookupByDomainError = GetApiEmailDomainMappingsLookupByDomainErrors[keyof GetApiEmailDomainMappingsLookupByDomainErrors];
 
-export type GetApiAdminEmailDomainMappingsLookupByDomainResponses = {
+export type GetApiEmailDomainMappingsLookupByDomainResponses = {
     /**
      * Default Response
      */
@@ -8678,9 +8705,9 @@ export type GetApiAdminEmailDomainMappingsLookupByDomainResponses = {
     };
 };
 
-export type GetApiAdminEmailDomainMappingsLookupByDomainResponse = GetApiAdminEmailDomainMappingsLookupByDomainResponses[keyof GetApiAdminEmailDomainMappingsLookupByDomainResponses];
+export type GetApiEmailDomainMappingsLookupByDomainResponse = GetApiEmailDomainMappingsLookupByDomainResponses[keyof GetApiEmailDomainMappingsLookupByDomainResponses];
 
-export type GetApiAdminServiceAccountsData = {
+export type GetApiServiceAccountsData = {
     body?: never;
     path?: never;
     query?: {
@@ -8691,7 +8718,7 @@ export type GetApiAdminServiceAccountsData = {
     url: '/api/service-accounts';
 };
 
-export type GetApiAdminServiceAccountsResponses = {
+export type GetApiServiceAccountsResponses = {
     /**
      * Default Response
      */
@@ -8715,9 +8742,9 @@ export type GetApiAdminServiceAccountsResponses = {
     };
 };
 
-export type GetApiAdminServiceAccountsResponse = GetApiAdminServiceAccountsResponses[keyof GetApiAdminServiceAccountsResponses];
+export type GetApiServiceAccountsResponse = GetApiServiceAccountsResponses[keyof GetApiServiceAccountsResponses];
 
-export type PostApiAdminServiceAccountsData = {
+export type PostApiServiceAccountsData = {
     body: {
         code: string;
         name: string;
@@ -8732,7 +8759,7 @@ export type PostApiAdminServiceAccountsData = {
     url: '/api/service-accounts';
 };
 
-export type PostApiAdminServiceAccountsErrors = {
+export type PostApiServiceAccountsErrors = {
     /**
      * Default Response
      */
@@ -8773,9 +8800,9 @@ export type PostApiAdminServiceAccountsErrors = {
     };
 };
 
-export type PostApiAdminServiceAccountsError = PostApiAdminServiceAccountsErrors[keyof PostApiAdminServiceAccountsErrors];
+export type PostApiServiceAccountsError = PostApiServiceAccountsErrors[keyof PostApiServiceAccountsErrors];
 
-export type PostApiAdminServiceAccountsResponses = {
+export type PostApiServiceAccountsResponses = {
     /**
      * Default Response
      */
@@ -8807,9 +8834,9 @@ export type PostApiAdminServiceAccountsResponses = {
     };
 };
 
-export type PostApiAdminServiceAccountsResponse = PostApiAdminServiceAccountsResponses[keyof PostApiAdminServiceAccountsResponses];
+export type PostApiServiceAccountsResponse = PostApiServiceAccountsResponses[keyof PostApiServiceAccountsResponses];
 
-export type DeleteApiAdminServiceAccountsByIdData = {
+export type DeleteApiServiceAccountsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -8818,7 +8845,7 @@ export type DeleteApiAdminServiceAccountsByIdData = {
     url: '/api/service-accounts/{id}';
 };
 
-export type DeleteApiAdminServiceAccountsByIdErrors = {
+export type DeleteApiServiceAccountsByIdErrors = {
     /**
      * Default Response
      */
@@ -8840,18 +8867,18 @@ export type DeleteApiAdminServiceAccountsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminServiceAccountsByIdError = DeleteApiAdminServiceAccountsByIdErrors[keyof DeleteApiAdminServiceAccountsByIdErrors];
+export type DeleteApiServiceAccountsByIdError = DeleteApiServiceAccountsByIdErrors[keyof DeleteApiServiceAccountsByIdErrors];
 
-export type DeleteApiAdminServiceAccountsByIdResponses = {
+export type DeleteApiServiceAccountsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminServiceAccountsByIdResponse = DeleteApiAdminServiceAccountsByIdResponses[keyof DeleteApiAdminServiceAccountsByIdResponses];
+export type DeleteApiServiceAccountsByIdResponse = DeleteApiServiceAccountsByIdResponses[keyof DeleteApiServiceAccountsByIdResponses];
 
-export type GetApiAdminServiceAccountsByIdData = {
+export type GetApiServiceAccountsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -8860,7 +8887,7 @@ export type GetApiAdminServiceAccountsByIdData = {
     url: '/api/service-accounts/{id}';
 };
 
-export type GetApiAdminServiceAccountsByIdErrors = {
+export type GetApiServiceAccountsByIdErrors = {
     /**
      * Default Response
      */
@@ -8882,9 +8909,9 @@ export type GetApiAdminServiceAccountsByIdErrors = {
     };
 };
 
-export type GetApiAdminServiceAccountsByIdError = GetApiAdminServiceAccountsByIdErrors[keyof GetApiAdminServiceAccountsByIdErrors];
+export type GetApiServiceAccountsByIdError = GetApiServiceAccountsByIdErrors[keyof GetApiServiceAccountsByIdErrors];
 
-export type GetApiAdminServiceAccountsByIdResponses = {
+export type GetApiServiceAccountsByIdResponses = {
     /**
      * Default Response
      */
@@ -8905,9 +8932,9 @@ export type GetApiAdminServiceAccountsByIdResponses = {
     };
 };
 
-export type GetApiAdminServiceAccountsByIdResponse = GetApiAdminServiceAccountsByIdResponses[keyof GetApiAdminServiceAccountsByIdResponses];
+export type GetApiServiceAccountsByIdResponse = GetApiServiceAccountsByIdResponses[keyof GetApiServiceAccountsByIdResponses];
 
-export type PutApiAdminServiceAccountsByIdData = {
+export type PutApiServiceAccountsByIdData = {
     body: {
         name?: string;
         description?: string | null;
@@ -8921,7 +8948,7 @@ export type PutApiAdminServiceAccountsByIdData = {
     url: '/api/service-accounts/{id}';
 };
 
-export type PutApiAdminServiceAccountsByIdErrors = {
+export type PutApiServiceAccountsByIdErrors = {
     /**
      * Default Response
      */
@@ -8962,9 +8989,9 @@ export type PutApiAdminServiceAccountsByIdErrors = {
     };
 };
 
-export type PutApiAdminServiceAccountsByIdError = PutApiAdminServiceAccountsByIdErrors[keyof PutApiAdminServiceAccountsByIdErrors];
+export type PutApiServiceAccountsByIdError = PutApiServiceAccountsByIdErrors[keyof PutApiServiceAccountsByIdErrors];
 
-export type PutApiAdminServiceAccountsByIdResponses = {
+export type PutApiServiceAccountsByIdResponses = {
     /**
      * Default Response
      */
@@ -8985,9 +9012,9 @@ export type PutApiAdminServiceAccountsByIdResponses = {
     };
 };
 
-export type PutApiAdminServiceAccountsByIdResponse = PutApiAdminServiceAccountsByIdResponses[keyof PutApiAdminServiceAccountsByIdResponses];
+export type PutApiServiceAccountsByIdResponse = PutApiServiceAccountsByIdResponses[keyof PutApiServiceAccountsByIdResponses];
 
-export type GetApiAdminServiceAccountsCodeByCodeData = {
+export type GetApiServiceAccountsCodeByCodeData = {
     body?: never;
     path: {
         code: string;
@@ -8996,7 +9023,7 @@ export type GetApiAdminServiceAccountsCodeByCodeData = {
     url: '/api/service-accounts/code/{code}';
 };
 
-export type GetApiAdminServiceAccountsCodeByCodeErrors = {
+export type GetApiServiceAccountsCodeByCodeErrors = {
     /**
      * Default Response
      */
@@ -9018,9 +9045,9 @@ export type GetApiAdminServiceAccountsCodeByCodeErrors = {
     };
 };
 
-export type GetApiAdminServiceAccountsCodeByCodeError = GetApiAdminServiceAccountsCodeByCodeErrors[keyof GetApiAdminServiceAccountsCodeByCodeErrors];
+export type GetApiServiceAccountsCodeByCodeError = GetApiServiceAccountsCodeByCodeErrors[keyof GetApiServiceAccountsCodeByCodeErrors];
 
-export type GetApiAdminServiceAccountsCodeByCodeResponses = {
+export type GetApiServiceAccountsCodeByCodeResponses = {
     /**
      * Default Response
      */
@@ -9041,9 +9068,9 @@ export type GetApiAdminServiceAccountsCodeByCodeResponses = {
     };
 };
 
-export type GetApiAdminServiceAccountsCodeByCodeResponse = GetApiAdminServiceAccountsCodeByCodeResponses[keyof GetApiAdminServiceAccountsCodeByCodeResponses];
+export type GetApiServiceAccountsCodeByCodeResponse = GetApiServiceAccountsCodeByCodeResponses[keyof GetApiServiceAccountsCodeByCodeResponses];
 
-export type PutApiAdminServiceAccountsByIdAuthTokenData = {
+export type PutApiServiceAccountsByIdAuthTokenData = {
     body: {
         authToken: string;
     };
@@ -9054,7 +9081,7 @@ export type PutApiAdminServiceAccountsByIdAuthTokenData = {
     url: '/api/service-accounts/{id}/auth-token';
 };
 
-export type PutApiAdminServiceAccountsByIdAuthTokenErrors = {
+export type PutApiServiceAccountsByIdAuthTokenErrors = {
     /**
      * Default Response
      */
@@ -9095,9 +9122,9 @@ export type PutApiAdminServiceAccountsByIdAuthTokenErrors = {
     };
 };
 
-export type PutApiAdminServiceAccountsByIdAuthTokenError = PutApiAdminServiceAccountsByIdAuthTokenErrors[keyof PutApiAdminServiceAccountsByIdAuthTokenErrors];
+export type PutApiServiceAccountsByIdAuthTokenError = PutApiServiceAccountsByIdAuthTokenErrors[keyof PutApiServiceAccountsByIdAuthTokenErrors];
 
-export type PutApiAdminServiceAccountsByIdAuthTokenResponses = {
+export type PutApiServiceAccountsByIdAuthTokenResponses = {
     /**
      * Default Response
      */
@@ -9118,9 +9145,9 @@ export type PutApiAdminServiceAccountsByIdAuthTokenResponses = {
     };
 };
 
-export type PutApiAdminServiceAccountsByIdAuthTokenResponse = PutApiAdminServiceAccountsByIdAuthTokenResponses[keyof PutApiAdminServiceAccountsByIdAuthTokenResponses];
+export type PutApiServiceAccountsByIdAuthTokenResponse = PutApiServiceAccountsByIdAuthTokenResponses[keyof PutApiServiceAccountsByIdAuthTokenResponses];
 
-export type PostApiAdminServiceAccountsByIdRegenerateTokenData = {
+export type PostApiServiceAccountsByIdRegenerateTokenData = {
     body?: never;
     path: {
         id: string;
@@ -9129,7 +9156,7 @@ export type PostApiAdminServiceAccountsByIdRegenerateTokenData = {
     url: '/api/service-accounts/{id}/regenerate-token';
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateTokenErrors = {
+export type PostApiServiceAccountsByIdRegenerateTokenErrors = {
     /**
      * Default Response
      */
@@ -9151,9 +9178,9 @@ export type PostApiAdminServiceAccountsByIdRegenerateTokenErrors = {
     };
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateTokenError = PostApiAdminServiceAccountsByIdRegenerateTokenErrors[keyof PostApiAdminServiceAccountsByIdRegenerateTokenErrors];
+export type PostApiServiceAccountsByIdRegenerateTokenError = PostApiServiceAccountsByIdRegenerateTokenErrors[keyof PostApiServiceAccountsByIdRegenerateTokenErrors];
 
-export type PostApiAdminServiceAccountsByIdRegenerateTokenResponses = {
+export type PostApiServiceAccountsByIdRegenerateTokenResponses = {
     /**
      * Default Response
      */
@@ -9162,9 +9189,9 @@ export type PostApiAdminServiceAccountsByIdRegenerateTokenResponses = {
     };
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateTokenResponse = PostApiAdminServiceAccountsByIdRegenerateTokenResponses[keyof PostApiAdminServiceAccountsByIdRegenerateTokenResponses];
+export type PostApiServiceAccountsByIdRegenerateTokenResponse = PostApiServiceAccountsByIdRegenerateTokenResponses[keyof PostApiServiceAccountsByIdRegenerateTokenResponses];
 
-export type PostApiAdminServiceAccountsByIdRegenerateAuthTokenData = {
+export type PostApiServiceAccountsByIdRegenerateAuthTokenData = {
     body?: never;
     path: {
         id: string;
@@ -9173,7 +9200,7 @@ export type PostApiAdminServiceAccountsByIdRegenerateAuthTokenData = {
     url: '/api/service-accounts/{id}/regenerate-auth-token';
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateAuthTokenErrors = {
+export type PostApiServiceAccountsByIdRegenerateAuthTokenErrors = {
     /**
      * Default Response
      */
@@ -9195,9 +9222,9 @@ export type PostApiAdminServiceAccountsByIdRegenerateAuthTokenErrors = {
     };
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateAuthTokenError = PostApiAdminServiceAccountsByIdRegenerateAuthTokenErrors[keyof PostApiAdminServiceAccountsByIdRegenerateAuthTokenErrors];
+export type PostApiServiceAccountsByIdRegenerateAuthTokenError = PostApiServiceAccountsByIdRegenerateAuthTokenErrors[keyof PostApiServiceAccountsByIdRegenerateAuthTokenErrors];
 
-export type PostApiAdminServiceAccountsByIdRegenerateAuthTokenResponses = {
+export type PostApiServiceAccountsByIdRegenerateAuthTokenResponses = {
     /**
      * Default Response
      */
@@ -9206,9 +9233,9 @@ export type PostApiAdminServiceAccountsByIdRegenerateAuthTokenResponses = {
     };
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateAuthTokenResponse = PostApiAdminServiceAccountsByIdRegenerateAuthTokenResponses[keyof PostApiAdminServiceAccountsByIdRegenerateAuthTokenResponses];
+export type PostApiServiceAccountsByIdRegenerateAuthTokenResponse = PostApiServiceAccountsByIdRegenerateAuthTokenResponses[keyof PostApiServiceAccountsByIdRegenerateAuthTokenResponses];
 
-export type PostApiAdminServiceAccountsByIdRegenerateSecretData = {
+export type PostApiServiceAccountsByIdRegenerateSecretData = {
     body?: never;
     path: {
         id: string;
@@ -9217,7 +9244,7 @@ export type PostApiAdminServiceAccountsByIdRegenerateSecretData = {
     url: '/api/service-accounts/{id}/regenerate-secret';
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateSecretErrors = {
+export type PostApiServiceAccountsByIdRegenerateSecretErrors = {
     /**
      * Default Response
      */
@@ -9239,9 +9266,9 @@ export type PostApiAdminServiceAccountsByIdRegenerateSecretErrors = {
     };
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateSecretError = PostApiAdminServiceAccountsByIdRegenerateSecretErrors[keyof PostApiAdminServiceAccountsByIdRegenerateSecretErrors];
+export type PostApiServiceAccountsByIdRegenerateSecretError = PostApiServiceAccountsByIdRegenerateSecretErrors[keyof PostApiServiceAccountsByIdRegenerateSecretErrors];
 
-export type PostApiAdminServiceAccountsByIdRegenerateSecretResponses = {
+export type PostApiServiceAccountsByIdRegenerateSecretResponses = {
     /**
      * Default Response
      */
@@ -9250,9 +9277,9 @@ export type PostApiAdminServiceAccountsByIdRegenerateSecretResponses = {
     };
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateSecretResponse = PostApiAdminServiceAccountsByIdRegenerateSecretResponses[keyof PostApiAdminServiceAccountsByIdRegenerateSecretResponses];
+export type PostApiServiceAccountsByIdRegenerateSecretResponse = PostApiServiceAccountsByIdRegenerateSecretResponses[keyof PostApiServiceAccountsByIdRegenerateSecretResponses];
 
-export type PostApiAdminServiceAccountsByIdRegenerateSigningSecretData = {
+export type PostApiServiceAccountsByIdRegenerateSigningSecretData = {
     body?: never;
     path: {
         id: string;
@@ -9261,7 +9288,7 @@ export type PostApiAdminServiceAccountsByIdRegenerateSigningSecretData = {
     url: '/api/service-accounts/{id}/regenerate-signing-secret';
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateSigningSecretErrors = {
+export type PostApiServiceAccountsByIdRegenerateSigningSecretErrors = {
     /**
      * Default Response
      */
@@ -9283,9 +9310,9 @@ export type PostApiAdminServiceAccountsByIdRegenerateSigningSecretErrors = {
     };
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateSigningSecretError = PostApiAdminServiceAccountsByIdRegenerateSigningSecretErrors[keyof PostApiAdminServiceAccountsByIdRegenerateSigningSecretErrors];
+export type PostApiServiceAccountsByIdRegenerateSigningSecretError = PostApiServiceAccountsByIdRegenerateSigningSecretErrors[keyof PostApiServiceAccountsByIdRegenerateSigningSecretErrors];
 
-export type PostApiAdminServiceAccountsByIdRegenerateSigningSecretResponses = {
+export type PostApiServiceAccountsByIdRegenerateSigningSecretResponses = {
     /**
      * Default Response
      */
@@ -9294,9 +9321,9 @@ export type PostApiAdminServiceAccountsByIdRegenerateSigningSecretResponses = {
     };
 };
 
-export type PostApiAdminServiceAccountsByIdRegenerateSigningSecretResponse = PostApiAdminServiceAccountsByIdRegenerateSigningSecretResponses[keyof PostApiAdminServiceAccountsByIdRegenerateSigningSecretResponses];
+export type PostApiServiceAccountsByIdRegenerateSigningSecretResponse = PostApiServiceAccountsByIdRegenerateSigningSecretResponses[keyof PostApiServiceAccountsByIdRegenerateSigningSecretResponses];
 
-export type GetApiAdminServiceAccountsByIdRolesData = {
+export type GetApiServiceAccountsByIdRolesData = {
     body?: never;
     path: {
         id: string;
@@ -9305,7 +9332,7 @@ export type GetApiAdminServiceAccountsByIdRolesData = {
     url: '/api/service-accounts/{id}/roles';
 };
 
-export type GetApiAdminServiceAccountsByIdRolesErrors = {
+export type GetApiServiceAccountsByIdRolesErrors = {
     /**
      * Default Response
      */
@@ -9327,9 +9354,9 @@ export type GetApiAdminServiceAccountsByIdRolesErrors = {
     };
 };
 
-export type GetApiAdminServiceAccountsByIdRolesError = GetApiAdminServiceAccountsByIdRolesErrors[keyof GetApiAdminServiceAccountsByIdRolesErrors];
+export type GetApiServiceAccountsByIdRolesError = GetApiServiceAccountsByIdRolesErrors[keyof GetApiServiceAccountsByIdRolesErrors];
 
-export type GetApiAdminServiceAccountsByIdRolesResponses = {
+export type GetApiServiceAccountsByIdRolesResponses = {
     /**
      * Default Response
      */
@@ -9342,9 +9369,9 @@ export type GetApiAdminServiceAccountsByIdRolesResponses = {
     };
 };
 
-export type GetApiAdminServiceAccountsByIdRolesResponse = GetApiAdminServiceAccountsByIdRolesResponses[keyof GetApiAdminServiceAccountsByIdRolesResponses];
+export type GetApiServiceAccountsByIdRolesResponse = GetApiServiceAccountsByIdRolesResponses[keyof GetApiServiceAccountsByIdRolesResponses];
 
-export type PutApiAdminServiceAccountsByIdRolesData = {
+export type PutApiServiceAccountsByIdRolesData = {
     body: {
         roles: Array<string>;
     };
@@ -9355,7 +9382,7 @@ export type PutApiAdminServiceAccountsByIdRolesData = {
     url: '/api/service-accounts/{id}/roles';
 };
 
-export type PutApiAdminServiceAccountsByIdRolesErrors = {
+export type PutApiServiceAccountsByIdRolesErrors = {
     /**
      * Default Response
      */
@@ -9396,9 +9423,9 @@ export type PutApiAdminServiceAccountsByIdRolesErrors = {
     };
 };
 
-export type PutApiAdminServiceAccountsByIdRolesError = PutApiAdminServiceAccountsByIdRolesErrors[keyof PutApiAdminServiceAccountsByIdRolesErrors];
+export type PutApiServiceAccountsByIdRolesError = PutApiServiceAccountsByIdRolesErrors[keyof PutApiServiceAccountsByIdRolesErrors];
 
-export type PutApiAdminServiceAccountsByIdRolesResponses = {
+export type PutApiServiceAccountsByIdRolesResponses = {
     /**
      * Default Response
      */
@@ -9413,16 +9440,16 @@ export type PutApiAdminServiceAccountsByIdRolesResponses = {
     };
 };
 
-export type PutApiAdminServiceAccountsByIdRolesResponse = PutApiAdminServiceAccountsByIdRolesResponses[keyof PutApiAdminServiceAccountsByIdRolesResponses];
+export type PutApiServiceAccountsByIdRolesResponse = PutApiServiceAccountsByIdRolesResponses[keyof PutApiServiceAccountsByIdRolesResponses];
 
-export type GetApiAdminPlatformCorsData = {
+export type GetApiPlatformCorsData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/platform/cors';
 };
 
-export type GetApiAdminPlatformCorsResponses = {
+export type GetApiPlatformCorsResponses = {
     /**
      * Default Response
      */
@@ -9439,9 +9466,9 @@ export type GetApiAdminPlatformCorsResponses = {
     };
 };
 
-export type GetApiAdminPlatformCorsResponse = GetApiAdminPlatformCorsResponses[keyof GetApiAdminPlatformCorsResponses];
+export type GetApiPlatformCorsResponse = GetApiPlatformCorsResponses[keyof GetApiPlatformCorsResponses];
 
-export type PostApiAdminPlatformCorsData = {
+export type PostApiPlatformCorsData = {
     body: {
         origin: string;
         description?: string;
@@ -9451,7 +9478,7 @@ export type PostApiAdminPlatformCorsData = {
     url: '/api/platform/cors';
 };
 
-export type PostApiAdminPlatformCorsErrors = {
+export type PostApiPlatformCorsErrors = {
     /**
      * Default Response
      */
@@ -9492,9 +9519,9 @@ export type PostApiAdminPlatformCorsErrors = {
     };
 };
 
-export type PostApiAdminPlatformCorsError = PostApiAdminPlatformCorsErrors[keyof PostApiAdminPlatformCorsErrors];
+export type PostApiPlatformCorsError = PostApiPlatformCorsErrors[keyof PostApiPlatformCorsErrors];
 
-export type PostApiAdminPlatformCorsResponses = {
+export type PostApiPlatformCorsResponses = {
     /**
      * Default Response
      */
@@ -9508,16 +9535,16 @@ export type PostApiAdminPlatformCorsResponses = {
     };
 };
 
-export type PostApiAdminPlatformCorsResponse = PostApiAdminPlatformCorsResponses[keyof PostApiAdminPlatformCorsResponses];
+export type PostApiPlatformCorsResponse = PostApiPlatformCorsResponses[keyof PostApiPlatformCorsResponses];
 
-export type GetApiAdminPlatformCorsAllowedData = {
+export type GetApiPlatformCorsAllowedData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/platform/cors/allowed';
 };
 
-export type GetApiAdminPlatformCorsAllowedResponses = {
+export type GetApiPlatformCorsAllowedResponses = {
     /**
      * Default Response
      */
@@ -9526,9 +9553,9 @@ export type GetApiAdminPlatformCorsAllowedResponses = {
     };
 };
 
-export type GetApiAdminPlatformCorsAllowedResponse = GetApiAdminPlatformCorsAllowedResponses[keyof GetApiAdminPlatformCorsAllowedResponses];
+export type GetApiPlatformCorsAllowedResponse = GetApiPlatformCorsAllowedResponses[keyof GetApiPlatformCorsAllowedResponses];
 
-export type DeleteApiAdminPlatformCorsByIdData = {
+export type DeleteApiPlatformCorsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -9537,7 +9564,7 @@ export type DeleteApiAdminPlatformCorsByIdData = {
     url: '/api/platform/cors/{id}';
 };
 
-export type DeleteApiAdminPlatformCorsByIdErrors = {
+export type DeleteApiPlatformCorsByIdErrors = {
     /**
      * Default Response
      */
@@ -9559,18 +9586,18 @@ export type DeleteApiAdminPlatformCorsByIdErrors = {
     };
 };
 
-export type DeleteApiAdminPlatformCorsByIdError = DeleteApiAdminPlatformCorsByIdErrors[keyof DeleteApiAdminPlatformCorsByIdErrors];
+export type DeleteApiPlatformCorsByIdError = DeleteApiPlatformCorsByIdErrors[keyof DeleteApiPlatformCorsByIdErrors];
 
-export type DeleteApiAdminPlatformCorsByIdResponses = {
+export type DeleteApiPlatformCorsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminPlatformCorsByIdResponse = DeleteApiAdminPlatformCorsByIdResponses[keyof DeleteApiAdminPlatformCorsByIdResponses];
+export type DeleteApiPlatformCorsByIdResponse = DeleteApiPlatformCorsByIdResponses[keyof DeleteApiPlatformCorsByIdResponses];
 
-export type GetApiAdminPlatformCorsByIdData = {
+export type GetApiPlatformCorsByIdData = {
     body?: never;
     path: {
         id: string;
@@ -9579,7 +9606,7 @@ export type GetApiAdminPlatformCorsByIdData = {
     url: '/api/platform/cors/{id}';
 };
 
-export type GetApiAdminPlatformCorsByIdErrors = {
+export type GetApiPlatformCorsByIdErrors = {
     /**
      * Default Response
      */
@@ -9601,9 +9628,9 @@ export type GetApiAdminPlatformCorsByIdErrors = {
     };
 };
 
-export type GetApiAdminPlatformCorsByIdError = GetApiAdminPlatformCorsByIdErrors[keyof GetApiAdminPlatformCorsByIdErrors];
+export type GetApiPlatformCorsByIdError = GetApiPlatformCorsByIdErrors[keyof GetApiPlatformCorsByIdErrors];
 
-export type GetApiAdminPlatformCorsByIdResponses = {
+export type GetApiPlatformCorsByIdResponses = {
     /**
      * Default Response
      */
@@ -9617,9 +9644,9 @@ export type GetApiAdminPlatformCorsByIdResponses = {
     };
 };
 
-export type GetApiAdminPlatformCorsByIdResponse = GetApiAdminPlatformCorsByIdResponses[keyof GetApiAdminPlatformCorsByIdResponses];
+export type GetApiPlatformCorsByIdResponse = GetApiPlatformCorsByIdResponses[keyof GetApiPlatformCorsByIdResponses];
 
-export type GetApiAdminConfigByAppCodeData = {
+export type GetApiConfigByAppCodeData = {
     body?: never;
     path: {
         appCode: string;
@@ -9631,7 +9658,7 @@ export type GetApiAdminConfigByAppCodeData = {
     url: '/api/config/{appCode}';
 };
 
-export type GetApiAdminConfigByAppCodeErrors = {
+export type GetApiConfigByAppCodeErrors = {
     /**
      * Default Response
      */
@@ -9653,9 +9680,9 @@ export type GetApiAdminConfigByAppCodeErrors = {
     };
 };
 
-export type GetApiAdminConfigByAppCodeError = GetApiAdminConfigByAppCodeErrors[keyof GetApiAdminConfigByAppCodeErrors];
+export type GetApiConfigByAppCodeError = GetApiConfigByAppCodeErrors[keyof GetApiConfigByAppCodeErrors];
 
-export type GetApiAdminConfigByAppCodeResponses = {
+export type GetApiConfigByAppCodeResponses = {
     /**
      * Default Response
      */
@@ -9676,9 +9703,9 @@ export type GetApiAdminConfigByAppCodeResponses = {
     };
 };
 
-export type GetApiAdminConfigByAppCodeResponse = GetApiAdminConfigByAppCodeResponses[keyof GetApiAdminConfigByAppCodeResponses];
+export type GetApiConfigByAppCodeResponse = GetApiConfigByAppCodeResponses[keyof GetApiConfigByAppCodeResponses];
 
-export type GetApiAdminConfigByAppCodeBySectionData = {
+export type GetApiConfigByAppCodeBySectionData = {
     body?: never;
     path: {
         appCode: string;
@@ -9691,7 +9718,7 @@ export type GetApiAdminConfigByAppCodeBySectionData = {
     url: '/api/config/{appCode}/{section}';
 };
 
-export type GetApiAdminConfigByAppCodeBySectionErrors = {
+export type GetApiConfigByAppCodeBySectionErrors = {
     /**
      * Default Response
      */
@@ -9713,9 +9740,9 @@ export type GetApiAdminConfigByAppCodeBySectionErrors = {
     };
 };
 
-export type GetApiAdminConfigByAppCodeBySectionError = GetApiAdminConfigByAppCodeBySectionErrors[keyof GetApiAdminConfigByAppCodeBySectionErrors];
+export type GetApiConfigByAppCodeBySectionError = GetApiConfigByAppCodeBySectionErrors[keyof GetApiConfigByAppCodeBySectionErrors];
 
-export type GetApiAdminConfigByAppCodeBySectionResponses = {
+export type GetApiConfigByAppCodeBySectionResponses = {
     /**
      * Default Response
      */
@@ -9730,9 +9757,9 @@ export type GetApiAdminConfigByAppCodeBySectionResponses = {
     };
 };
 
-export type GetApiAdminConfigByAppCodeBySectionResponse = GetApiAdminConfigByAppCodeBySectionResponses[keyof GetApiAdminConfigByAppCodeBySectionResponses];
+export type GetApiConfigByAppCodeBySectionResponse = GetApiConfigByAppCodeBySectionResponses[keyof GetApiConfigByAppCodeBySectionResponses];
 
-export type DeleteApiAdminConfigByAppCodeBySectionByPropertyData = {
+export type DeleteApiConfigByAppCodeBySectionByPropertyData = {
     body?: never;
     path: {
         appCode: string;
@@ -9746,7 +9773,7 @@ export type DeleteApiAdminConfigByAppCodeBySectionByPropertyData = {
     url: '/api/config/{appCode}/{section}/{property}';
 };
 
-export type DeleteApiAdminConfigByAppCodeBySectionByPropertyErrors = {
+export type DeleteApiConfigByAppCodeBySectionByPropertyErrors = {
     /**
      * Default Response
      */
@@ -9787,18 +9814,18 @@ export type DeleteApiAdminConfigByAppCodeBySectionByPropertyErrors = {
     };
 };
 
-export type DeleteApiAdminConfigByAppCodeBySectionByPropertyError = DeleteApiAdminConfigByAppCodeBySectionByPropertyErrors[keyof DeleteApiAdminConfigByAppCodeBySectionByPropertyErrors];
+export type DeleteApiConfigByAppCodeBySectionByPropertyError = DeleteApiConfigByAppCodeBySectionByPropertyErrors[keyof DeleteApiConfigByAppCodeBySectionByPropertyErrors];
 
-export type DeleteApiAdminConfigByAppCodeBySectionByPropertyResponses = {
+export type DeleteApiConfigByAppCodeBySectionByPropertyResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminConfigByAppCodeBySectionByPropertyResponse = DeleteApiAdminConfigByAppCodeBySectionByPropertyResponses[keyof DeleteApiAdminConfigByAppCodeBySectionByPropertyResponses];
+export type DeleteApiConfigByAppCodeBySectionByPropertyResponse = DeleteApiConfigByAppCodeBySectionByPropertyResponses[keyof DeleteApiConfigByAppCodeBySectionByPropertyResponses];
 
-export type GetApiAdminConfigByAppCodeBySectionByPropertyData = {
+export type GetApiConfigByAppCodeBySectionByPropertyData = {
     body?: never;
     path: {
         appCode: string;
@@ -9812,7 +9839,7 @@ export type GetApiAdminConfigByAppCodeBySectionByPropertyData = {
     url: '/api/config/{appCode}/{section}/{property}';
 };
 
-export type GetApiAdminConfigByAppCodeBySectionByPropertyErrors = {
+export type GetApiConfigByAppCodeBySectionByPropertyErrors = {
     /**
      * Default Response
      */
@@ -9853,9 +9880,9 @@ export type GetApiAdminConfigByAppCodeBySectionByPropertyErrors = {
     };
 };
 
-export type GetApiAdminConfigByAppCodeBySectionByPropertyError = GetApiAdminConfigByAppCodeBySectionByPropertyErrors[keyof GetApiAdminConfigByAppCodeBySectionByPropertyErrors];
+export type GetApiConfigByAppCodeBySectionByPropertyError = GetApiConfigByAppCodeBySectionByPropertyErrors[keyof GetApiConfigByAppCodeBySectionByPropertyErrors];
 
-export type GetApiAdminConfigByAppCodeBySectionByPropertyResponses = {
+export type GetApiConfigByAppCodeBySectionByPropertyResponses = {
     /**
      * Default Response
      */
@@ -9869,9 +9896,9 @@ export type GetApiAdminConfigByAppCodeBySectionByPropertyResponses = {
     };
 };
 
-export type GetApiAdminConfigByAppCodeBySectionByPropertyResponse = GetApiAdminConfigByAppCodeBySectionByPropertyResponses[keyof GetApiAdminConfigByAppCodeBySectionByPropertyResponses];
+export type GetApiConfigByAppCodeBySectionByPropertyResponse = GetApiConfigByAppCodeBySectionByPropertyResponses[keyof GetApiConfigByAppCodeBySectionByPropertyResponses];
 
-export type PutApiAdminConfigByAppCodeBySectionByPropertyData = {
+export type PutApiConfigByAppCodeBySectionByPropertyData = {
     body: {
         value: string;
         valueType?: 'PLAIN' | 'SECRET';
@@ -9889,7 +9916,7 @@ export type PutApiAdminConfigByAppCodeBySectionByPropertyData = {
     url: '/api/config/{appCode}/{section}/{property}';
 };
 
-export type PutApiAdminConfigByAppCodeBySectionByPropertyErrors = {
+export type PutApiConfigByAppCodeBySectionByPropertyErrors = {
     /**
      * Default Response
      */
@@ -9930,9 +9957,9 @@ export type PutApiAdminConfigByAppCodeBySectionByPropertyErrors = {
     };
 };
 
-export type PutApiAdminConfigByAppCodeBySectionByPropertyError = PutApiAdminConfigByAppCodeBySectionByPropertyErrors[keyof PutApiAdminConfigByAppCodeBySectionByPropertyErrors];
+export type PutApiConfigByAppCodeBySectionByPropertyError = PutApiConfigByAppCodeBySectionByPropertyErrors[keyof PutApiConfigByAppCodeBySectionByPropertyErrors];
 
-export type PutApiAdminConfigByAppCodeBySectionByPropertyResponses = {
+export type PutApiConfigByAppCodeBySectionByPropertyResponses = {
     /**
      * Default Response
      */
@@ -9967,9 +9994,9 @@ export type PutApiAdminConfigByAppCodeBySectionByPropertyResponses = {
     };
 };
 
-export type PutApiAdminConfigByAppCodeBySectionByPropertyResponse = PutApiAdminConfigByAppCodeBySectionByPropertyResponses[keyof PutApiAdminConfigByAppCodeBySectionByPropertyResponses];
+export type PutApiConfigByAppCodeBySectionByPropertyResponse = PutApiConfigByAppCodeBySectionByPropertyResponses[keyof PutApiConfigByAppCodeBySectionByPropertyResponses];
 
-export type GetApiAdminConfigAccessByAppCodeData = {
+export type GetApiConfigAccessByAppCodeData = {
     body?: never;
     path: {
         appCode: string;
@@ -9978,7 +10005,7 @@ export type GetApiAdminConfigAccessByAppCodeData = {
     url: '/api/config-access/{appCode}';
 };
 
-export type GetApiAdminConfigAccessByAppCodeResponses = {
+export type GetApiConfigAccessByAppCodeResponses = {
     /**
      * Default Response
      */
@@ -9994,9 +10021,9 @@ export type GetApiAdminConfigAccessByAppCodeResponses = {
     };
 };
 
-export type GetApiAdminConfigAccessByAppCodeResponse = GetApiAdminConfigAccessByAppCodeResponses[keyof GetApiAdminConfigAccessByAppCodeResponses];
+export type GetApiConfigAccessByAppCodeResponse = GetApiConfigAccessByAppCodeResponses[keyof GetApiConfigAccessByAppCodeResponses];
 
-export type PostApiAdminConfigAccessByAppCodeData = {
+export type PostApiConfigAccessByAppCodeData = {
     body: {
         roleCode: string;
         canRead?: boolean;
@@ -10009,7 +10036,7 @@ export type PostApiAdminConfigAccessByAppCodeData = {
     url: '/api/config-access/{appCode}';
 };
 
-export type PostApiAdminConfigAccessByAppCodeErrors = {
+export type PostApiConfigAccessByAppCodeErrors = {
     /**
      * Default Response
      */
@@ -10031,9 +10058,9 @@ export type PostApiAdminConfigAccessByAppCodeErrors = {
     };
 };
 
-export type PostApiAdminConfigAccessByAppCodeError = PostApiAdminConfigAccessByAppCodeErrors[keyof PostApiAdminConfigAccessByAppCodeErrors];
+export type PostApiConfigAccessByAppCodeError = PostApiConfigAccessByAppCodeErrors[keyof PostApiConfigAccessByAppCodeErrors];
 
-export type PostApiAdminConfigAccessByAppCodeResponses = {
+export type PostApiConfigAccessByAppCodeResponses = {
     /**
      * Default Response
      */
@@ -10047,9 +10074,9 @@ export type PostApiAdminConfigAccessByAppCodeResponses = {
     };
 };
 
-export type PostApiAdminConfigAccessByAppCodeResponse = PostApiAdminConfigAccessByAppCodeResponses[keyof PostApiAdminConfigAccessByAppCodeResponses];
+export type PostApiConfigAccessByAppCodeResponse = PostApiConfigAccessByAppCodeResponses[keyof PostApiConfigAccessByAppCodeResponses];
 
-export type DeleteApiAdminConfigAccessByAppCodeByRoleCodeData = {
+export type DeleteApiConfigAccessByAppCodeByRoleCodeData = {
     body?: never;
     path: {
         appCode: string;
@@ -10059,7 +10086,7 @@ export type DeleteApiAdminConfigAccessByAppCodeByRoleCodeData = {
     url: '/api/config-access/{appCode}/{roleCode}';
 };
 
-export type DeleteApiAdminConfigAccessByAppCodeByRoleCodeErrors = {
+export type DeleteApiConfigAccessByAppCodeByRoleCodeErrors = {
     /**
      * Default Response
      */
@@ -10081,18 +10108,18 @@ export type DeleteApiAdminConfigAccessByAppCodeByRoleCodeErrors = {
     };
 };
 
-export type DeleteApiAdminConfigAccessByAppCodeByRoleCodeError = DeleteApiAdminConfigAccessByAppCodeByRoleCodeErrors[keyof DeleteApiAdminConfigAccessByAppCodeByRoleCodeErrors];
+export type DeleteApiConfigAccessByAppCodeByRoleCodeError = DeleteApiConfigAccessByAppCodeByRoleCodeErrors[keyof DeleteApiConfigAccessByAppCodeByRoleCodeErrors];
 
-export type DeleteApiAdminConfigAccessByAppCodeByRoleCodeResponses = {
+export type DeleteApiConfigAccessByAppCodeByRoleCodeResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiAdminConfigAccessByAppCodeByRoleCodeResponse = DeleteApiAdminConfigAccessByAppCodeByRoleCodeResponses[keyof DeleteApiAdminConfigAccessByAppCodeByRoleCodeResponses];
+export type DeleteApiConfigAccessByAppCodeByRoleCodeResponse = DeleteApiConfigAccessByAppCodeByRoleCodeResponses[keyof DeleteApiConfigAccessByAppCodeByRoleCodeResponses];
 
-export type PutApiAdminConfigAccessByAppCodeByRoleCodeData = {
+export type PutApiConfigAccessByAppCodeByRoleCodeData = {
     body: {
         canRead?: boolean;
         canWrite?: boolean;
@@ -10105,7 +10132,7 @@ export type PutApiAdminConfigAccessByAppCodeByRoleCodeData = {
     url: '/api/config-access/{appCode}/{roleCode}';
 };
 
-export type PutApiAdminConfigAccessByAppCodeByRoleCodeErrors = {
+export type PutApiConfigAccessByAppCodeByRoleCodeErrors = {
     /**
      * Default Response
      */
@@ -10127,9 +10154,9 @@ export type PutApiAdminConfigAccessByAppCodeByRoleCodeErrors = {
     };
 };
 
-export type PutApiAdminConfigAccessByAppCodeByRoleCodeError = PutApiAdminConfigAccessByAppCodeByRoleCodeErrors[keyof PutApiAdminConfigAccessByAppCodeByRoleCodeErrors];
+export type PutApiConfigAccessByAppCodeByRoleCodeError = PutApiConfigAccessByAppCodeByRoleCodeErrors[keyof PutApiConfigAccessByAppCodeByRoleCodeErrors];
 
-export type PutApiAdminConfigAccessByAppCodeByRoleCodeResponses = {
+export type PutApiConfigAccessByAppCodeByRoleCodeResponses = {
     /**
      * Default Response
      */
@@ -10143,9 +10170,9 @@ export type PutApiAdminConfigAccessByAppCodeByRoleCodeResponses = {
     };
 };
 
-export type PutApiAdminConfigAccessByAppCodeByRoleCodeResponse = PutApiAdminConfigAccessByAppCodeByRoleCodeResponses[keyof PutApiAdminConfigAccessByAppCodeByRoleCodeResponses];
+export type PutApiConfigAccessByAppCodeByRoleCodeResponse = PutApiConfigAccessByAppCodeByRoleCodeResponses[keyof PutApiConfigAccessByAppCodeByRoleCodeResponses];
 
-export type GetApiAdminLoginAttemptsData = {
+export type GetApiLoginAttemptsData = {
     body?: never;
     path?: never;
     query?: {
@@ -10163,7 +10190,7 @@ export type GetApiAdminLoginAttemptsData = {
     url: '/api/login-attempts';
 };
 
-export type GetApiAdminLoginAttemptsResponses = {
+export type GetApiLoginAttemptsResponses = {
     /**
      * Default Response
      */
@@ -10179,896 +10206,82 @@ export type GetApiAdminLoginAttemptsResponses = {
             userAgent: string | null;
             attemptedAt: string;
         }>;
-        total: number;
+        hasMore: boolean;
         page: number;
         pageSize: number;
     };
 };
 
-export type GetApiAdminLoginAttemptsResponse = GetApiAdminLoginAttemptsResponses[keyof GetApiAdminLoginAttemptsResponses];
+export type GetApiLoginAttemptsResponse = GetApiLoginAttemptsResponses[keyof GetApiLoginAttemptsResponses];
 
-export type GetApiSdkClientsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/clients';
-};
-
-export type GetApiSdkClientsResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        clients: Array<{
-            id: string;
-            name: string;
-            identifier: string;
-            status: string;
-            statusReason: string | null;
-            statusChangedAt: string | null;
-            createdAt: string;
-            updatedAt: string;
-        }>;
-        total: number;
-    };
-};
-
-export type GetApiSdkClientsResponse = GetApiSdkClientsResponses[keyof GetApiSdkClientsResponses];
-
-export type PostApiSdkClientsData = {
-    body: {
-        name: string;
-        identifier: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/api/clients';
-};
-
-export type PostApiSdkClientsErrors = {
-    /**
-     * Default Response
-     */
-    400: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    409: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type PostApiSdkClientsError = PostApiSdkClientsErrors[keyof PostApiSdkClientsErrors];
-
-export type PostApiSdkClientsResponses = {
-    /**
-     * Default Response
-     */
-    201: {
-        id: string;
-        name: string;
-        identifier: string;
-        status: string;
-        statusReason: string | null;
-        statusChangedAt: string | null;
-        createdAt: string;
-        updatedAt: string;
-    };
-};
-
-export type PostApiSdkClientsResponse = PostApiSdkClientsResponses[keyof PostApiSdkClientsResponses];
-
-export type GetApiSdkClientsByIdData = {
-    body?: never;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/clients/{id}';
-};
-
-export type GetApiSdkClientsByIdErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type GetApiSdkClientsByIdError = GetApiSdkClientsByIdErrors[keyof GetApiSdkClientsByIdErrors];
-
-export type GetApiSdkClientsByIdResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        id: string;
-        name: string;
-        identifier: string;
-        status: string;
-        statusReason: string | null;
-        statusChangedAt: string | null;
-        createdAt: string;
-        updatedAt: string;
-    };
-};
-
-export type GetApiSdkClientsByIdResponse = GetApiSdkClientsByIdResponses[keyof GetApiSdkClientsByIdResponses];
-
-export type PutApiSdkClientsByIdData = {
-    body: {
-        name: string;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/clients/{id}';
-};
-
-export type PutApiSdkClientsByIdErrors = {
-    /**
-     * Default Response
-     */
-    400: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type PutApiSdkClientsByIdError = PutApiSdkClientsByIdErrors[keyof PutApiSdkClientsByIdErrors];
-
-export type PutApiSdkClientsByIdResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        id: string;
-        name: string;
-        identifier: string;
-        status: string;
-        statusReason: string | null;
-        statusChangedAt: string | null;
-        createdAt: string;
-        updatedAt: string;
-    };
-};
-
-export type PutApiSdkClientsByIdResponse = PutApiSdkClientsByIdResponses[keyof PutApiSdkClientsByIdResponses];
-
-export type PostApiSdkClientsByIdActivateData = {
-    body: {
-        reason?: string | null;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/clients/{id}/activate';
-};
-
-export type PostApiSdkClientsByIdActivateErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    409: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type PostApiSdkClientsByIdActivateError = PostApiSdkClientsByIdActivateErrors[keyof PostApiSdkClientsByIdActivateErrors];
-
-export type PostApiSdkClientsByIdActivateResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        message: string;
-    };
-};
-
-export type PostApiSdkClientsByIdActivateResponse = PostApiSdkClientsByIdActivateResponses[keyof PostApiSdkClientsByIdActivateResponses];
-
-export type PostApiSdkClientsByIdSuspendData = {
-    body: {
-        reason?: string | null;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/clients/{id}/suspend';
-};
-
-export type PostApiSdkClientsByIdSuspendErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    409: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type PostApiSdkClientsByIdSuspendError = PostApiSdkClientsByIdSuspendErrors[keyof PostApiSdkClientsByIdSuspendErrors];
-
-export type PostApiSdkClientsByIdSuspendResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        message: string;
-    };
-};
-
-export type PostApiSdkClientsByIdSuspendResponse = PostApiSdkClientsByIdSuspendResponses[keyof PostApiSdkClientsByIdSuspendResponses];
-
-export type PostApiSdkClientsByIdDeactivateData = {
-    body: {
-        reason?: string | null;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/clients/{id}/deactivate';
-};
-
-export type PostApiSdkClientsByIdDeactivateErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    409: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type PostApiSdkClientsByIdDeactivateError = PostApiSdkClientsByIdDeactivateErrors[keyof PostApiSdkClientsByIdDeactivateErrors];
-
-export type PostApiSdkClientsByIdDeactivateResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        message: string;
-    };
-};
-
-export type PostApiSdkClientsByIdDeactivateResponse = PostApiSdkClientsByIdDeactivateResponses[keyof PostApiSdkClientsByIdDeactivateResponses];
-
-export type GetApiSdkRolesData = {
-    body?: never;
-    path?: never;
-    query?: {
-        application?: string;
-        source?: string;
-    };
-    url: '/api/roles';
-};
-
-export type GetApiSdkRolesResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        roles: Array<{
-            name: string;
-            applicationCode: string;
-            displayName: string;
-            shortName: string;
-            description: string | null;
-            permissions: Array<string>;
-            source: string;
-            clientManaged: boolean;
-            createdAt: string;
-            updatedAt: string;
-        }>;
-        total: number;
-    };
-};
-
-export type GetApiSdkRolesResponse = GetApiSdkRolesResponses[keyof GetApiSdkRolesResponses];
-
-export type PostApiSdkRolesData = {
-    body: {
-        applicationCode: string;
-        name: string;
-        displayName?: string;
-        description?: string;
-        permissions?: Array<string>;
-        clientManaged?: boolean;
-    };
-    path?: never;
-    query?: never;
-    url: '/api/roles';
-};
-
-export type PostApiSdkRolesErrors = {
-    /**
-     * Default Response
-     */
-    400: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    409: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type PostApiSdkRolesError = PostApiSdkRolesErrors[keyof PostApiSdkRolesErrors];
-
-export type PostApiSdkRolesResponses = {
-    /**
-     * Default Response
-     */
-    201: {
-        name: string;
-        applicationCode: string;
-        displayName: string;
-        shortName: string;
-        description: string | null;
-        permissions: Array<string>;
-        source: string;
-        clientManaged: boolean;
-        createdAt: string;
-        updatedAt: string;
-    };
-};
-
-export type PostApiSdkRolesResponse = PostApiSdkRolesResponses[keyof PostApiSdkRolesResponses];
-
-export type DeleteApiSdkRolesByRoleNameData = {
-    body?: never;
-    path: {
-        roleName: string;
-    };
-    query?: never;
-    url: '/api/roles/{roleName}';
-};
-
-export type DeleteApiSdkRolesByRoleNameErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type DeleteApiSdkRolesByRoleNameError = DeleteApiSdkRolesByRoleNameErrors[keyof DeleteApiSdkRolesByRoleNameErrors];
-
-export type DeleteApiSdkRolesByRoleNameResponses = {
-    /**
-     * Default Response
-     */
-    204: void;
-};
-
-export type DeleteApiSdkRolesByRoleNameResponse = DeleteApiSdkRolesByRoleNameResponses[keyof DeleteApiSdkRolesByRoleNameResponses];
-
-export type GetApiSdkRolesByRoleNameData = {
-    body?: never;
-    path: {
-        roleName: string;
-    };
-    query?: never;
-    url: '/api/roles/{roleName}';
-};
-
-export type GetApiSdkRolesByRoleNameErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type GetApiSdkRolesByRoleNameError = GetApiSdkRolesByRoleNameErrors[keyof GetApiSdkRolesByRoleNameErrors];
-
-export type GetApiSdkRolesByRoleNameResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        name: string;
-        applicationCode: string;
-        displayName: string;
-        shortName: string;
-        description: string | null;
-        permissions: Array<string>;
-        source: string;
-        clientManaged: boolean;
-        createdAt: string;
-        updatedAt: string;
-    };
-};
-
-export type GetApiSdkRolesByRoleNameResponse = GetApiSdkRolesByRoleNameResponses[keyof GetApiSdkRolesByRoleNameResponses];
-
-export type PutApiSdkRolesByRoleNameData = {
-    body: {
-        displayName?: string;
-        description?: string;
-        permissions?: Array<string>;
-        clientManaged?: boolean;
-    };
-    path: {
-        roleName: string;
-    };
-    query?: never;
-    url: '/api/roles/{roleName}';
-};
-
-export type PutApiSdkRolesByRoleNameErrors = {
-    /**
-     * Default Response
-     */
-    400: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type PutApiSdkRolesByRoleNameError = PutApiSdkRolesByRoleNameErrors[keyof PutApiSdkRolesByRoleNameErrors];
-
-export type PutApiSdkRolesByRoleNameResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        name: string;
-        applicationCode: string;
-        displayName: string;
-        shortName: string;
-        description: string | null;
-        permissions: Array<string>;
-        source: string;
-        clientManaged: boolean;
-        createdAt: string;
-        updatedAt: string;
-    };
-};
-
-export type PutApiSdkRolesByRoleNameResponse = PutApiSdkRolesByRoleNameResponses[keyof PutApiSdkRolesByRoleNameResponses];
-
-export type GetApiSdkPrincipalsData = {
+export type GetApiScheduledJobsData = {
     body?: never;
     path?: never;
     query?: {
         clientId?: string;
-        type?: string;
-        active?: string;
-        email?: string;
+        platformScoped?: boolean;
+        status?: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+        search?: string;
+        limit?: number;
+        offset?: number;
     };
-    url: '/api/principals';
+    url: '/api/scheduled-jobs';
 };
 
-export type GetApiSdkPrincipalsResponses = {
+export type GetApiScheduledJobsResponses = {
     /**
      * Default Response
      */
     200: {
-        principals: Array<{
+        scheduledJobs: Array<{
             id: string;
-            type: string;
-            scope: string | null;
             clientId: string | null;
+            code: string;
             name: string;
-            active: boolean;
-            email: string | null;
-            idpType: string | null;
-            roles: Array<string>;
-            grantedClientIds: Array<string>;
+            description: string | null;
+            status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+            crons: Array<string>;
+            timezone: string;
+            payload: unknown;
+            concurrent: boolean;
+            tracksCompletion: boolean;
+            timeoutSeconds: number | null;
+            deliveryMaxAttempts: number;
+            targetUrl: string | null;
+            lastFiredAt: string | null;
             createdAt: string;
             updatedAt: string;
+            createdBy: string | null;
+            updatedBy: string | null;
+            version: number;
         }>;
         total: number;
     };
 };
 
-export type GetApiSdkPrincipalsResponse = GetApiSdkPrincipalsResponses[keyof GetApiSdkPrincipalsResponses];
+export type GetApiScheduledJobsResponse = GetApiScheduledJobsResponses[keyof GetApiScheduledJobsResponses];
 
-export type GetApiSdkPrincipalsByIdData = {
-    body?: never;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/principals/{id}';
-};
-
-export type GetApiSdkPrincipalsByIdErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type GetApiSdkPrincipalsByIdError = GetApiSdkPrincipalsByIdErrors[keyof GetApiSdkPrincipalsByIdErrors];
-
-export type GetApiSdkPrincipalsByIdResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        id: string;
-        type: string;
-        scope: string | null;
-        clientId: string | null;
-        name: string;
-        active: boolean;
-        email: string | null;
-        idpType: string | null;
-        roles: Array<string>;
-        grantedClientIds: Array<string>;
-        createdAt: string;
-        updatedAt: string;
-    };
-};
-
-export type GetApiSdkPrincipalsByIdResponse = GetApiSdkPrincipalsByIdResponses[keyof GetApiSdkPrincipalsByIdResponses];
-
-export type PutApiSdkPrincipalsByIdData = {
+export type PostApiScheduledJobsData = {
     body: {
-        name: string;
-        scope?: string;
         clientId?: string | null;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/principals/{id}';
-};
-
-export type PutApiSdkPrincipalsByIdErrors = {
-    /**
-     * Default Response
-     */
-    400: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
         code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type PutApiSdkPrincipalsByIdError = PutApiSdkPrincipalsByIdErrors[keyof PutApiSdkPrincipalsByIdErrors];
-
-export type PutApiSdkPrincipalsByIdResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        id: string;
-        type: string;
-        scope: string | null;
-        clientId: string | null;
         name: string;
-        active: boolean;
-        email: string | null;
-        idpType: string | null;
-        roles: Array<string>;
-        grantedClientIds: Array<string>;
-        createdAt: string;
-        updatedAt: string;
-    };
-};
-
-export type PutApiSdkPrincipalsByIdResponse = PutApiSdkPrincipalsByIdResponses[keyof PutApiSdkPrincipalsByIdResponses];
-
-export type PostApiSdkPrincipalsUserData = {
-    body: {
-        email: string;
-        password?: string | null;
-        name: string;
-        clientId?: string | null;
+        description?: string | null;
+        crons: Array<string>;
+        timezone?: string;
+        payload?: unknown;
+        concurrent?: boolean;
+        tracksCompletion?: boolean;
+        timeoutSeconds?: number | null;
+        deliveryMaxAttempts?: number;
+        targetUrl?: string | null;
     };
     path?: never;
     query?: never;
-    url: '/api/principals/users';
+    url: '/api/scheduled-jobs';
 };
 
-export type PostApiSdkPrincipalsUserErrors = {
+export type PostApiScheduledJobsErrors = {
     /**
      * Default Response
      */
@@ -11109,40 +10322,48 @@ export type PostApiSdkPrincipalsUserErrors = {
     };
 };
 
-export type PostApiSdkPrincipalsUserError = PostApiSdkPrincipalsUserErrors[keyof PostApiSdkPrincipalsUserErrors];
+export type PostApiScheduledJobsError = PostApiScheduledJobsErrors[keyof PostApiScheduledJobsErrors];
 
-export type PostApiSdkPrincipalsUserResponses = {
+export type PostApiScheduledJobsResponses = {
     /**
      * Default Response
      */
     201: {
         id: string;
-        type: string;
-        scope: string | null;
         clientId: string | null;
+        code: string;
         name: string;
-        active: boolean;
-        email: string | null;
-        idpType: string | null;
-        roles: Array<string>;
-        grantedClientIds: Array<string>;
+        description: string | null;
+        status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+        crons: Array<string>;
+        timezone: string;
+        payload: unknown;
+        concurrent: boolean;
+        tracksCompletion: boolean;
+        timeoutSeconds: number | null;
+        deliveryMaxAttempts: number;
+        targetUrl: string | null;
+        lastFiredAt: string | null;
         createdAt: string;
         updatedAt: string;
+        createdBy: string | null;
+        updatedBy: string | null;
+        version: number;
     };
 };
 
-export type PostApiSdkPrincipalsUserResponse = PostApiSdkPrincipalsUserResponses[keyof PostApiSdkPrincipalsUserResponses];
+export type PostApiScheduledJobsResponse = PostApiScheduledJobsResponses[keyof PostApiScheduledJobsResponses];
 
-export type PostApiSdkPrincipalsByIdActivateData = {
+export type DeleteApiScheduledJobsByIdData = {
     body?: never;
     path: {
         id: string;
     };
     query?: never;
-    url: '/api/principals/{id}/activate';
+    url: '/api/scheduled-jobs/{id}';
 };
 
-export type PostApiSdkPrincipalsByIdActivateErrors = {
+export type DeleteApiScheduledJobsByIdErrors = {
     /**
      * Default Response
      */
@@ -11164,282 +10385,183 @@ export type PostApiSdkPrincipalsByIdActivateErrors = {
     };
 };
 
-export type PostApiSdkPrincipalsByIdActivateError = PostApiSdkPrincipalsByIdActivateErrors[keyof PostApiSdkPrincipalsByIdActivateErrors];
+export type DeleteApiScheduledJobsByIdError = DeleteApiScheduledJobsByIdErrors[keyof DeleteApiScheduledJobsByIdErrors];
 
-export type PostApiSdkPrincipalsByIdActivateResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        message: string;
-    };
-};
-
-export type PostApiSdkPrincipalsByIdActivateResponse = PostApiSdkPrincipalsByIdActivateResponses[keyof PostApiSdkPrincipalsByIdActivateResponses];
-
-export type PostApiSdkPrincipalsByIdDeactivateData = {
-    body?: never;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/principals/{id}/deactivate';
-};
-
-export type PostApiSdkPrincipalsByIdDeactivateErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type PostApiSdkPrincipalsByIdDeactivateError = PostApiSdkPrincipalsByIdDeactivateErrors[keyof PostApiSdkPrincipalsByIdDeactivateErrors];
-
-export type PostApiSdkPrincipalsByIdDeactivateResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        message: string;
-    };
-};
-
-export type PostApiSdkPrincipalsByIdDeactivateResponse = PostApiSdkPrincipalsByIdDeactivateResponses[keyof PostApiSdkPrincipalsByIdDeactivateResponses];
-
-export type GetApiSdkPrincipalsByIdRolesData = {
-    body?: never;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/principals/{id}/roles';
-};
-
-export type GetApiSdkPrincipalsByIdRolesErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type GetApiSdkPrincipalsByIdRolesError = GetApiSdkPrincipalsByIdRolesErrors[keyof GetApiSdkPrincipalsByIdRolesErrors];
-
-export type GetApiSdkPrincipalsByIdRolesResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        roles: Array<{
-            roleName: string;
-            assignmentSource: string;
-            assignedAt: string;
-        }>;
-    };
-};
-
-export type GetApiSdkPrincipalsByIdRolesResponse = GetApiSdkPrincipalsByIdRolesResponses[keyof GetApiSdkPrincipalsByIdRolesResponses];
-
-export type PutApiSdkPrincipalsByIdRolesData = {
-    body: {
-        roles: Array<string>;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/principals/{id}/roles';
-};
-
-export type PutApiSdkPrincipalsByIdRolesErrors = {
-    /**
-     * Default Response
-     */
-    400: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type PutApiSdkPrincipalsByIdRolesError = PutApiSdkPrincipalsByIdRolesErrors[keyof PutApiSdkPrincipalsByIdRolesErrors];
-
-export type PutApiSdkPrincipalsByIdRolesResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        roles: Array<{
-            roleName: string;
-            assignmentSource: string;
-            assignedAt: string;
-        }>;
-    };
-};
-
-export type PutApiSdkPrincipalsByIdRolesResponse = PutApiSdkPrincipalsByIdRolesResponses[keyof PutApiSdkPrincipalsByIdRolesResponses];
-
-export type GetApiSdkPrincipalsByIdClientsData = {
-    body?: never;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/api/principals/{id}/clients';
-};
-
-export type GetApiSdkPrincipalsByIdClientsErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type GetApiSdkPrincipalsByIdClientsError = GetApiSdkPrincipalsByIdClientsErrors[keyof GetApiSdkPrincipalsByIdClientsErrors];
-
-export type GetApiSdkPrincipalsByIdClientsResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        grants: Array<{
-            id: string;
-            clientId: string;
-            grantedAt: string;
-        }>;
-    };
-};
-
-export type GetApiSdkPrincipalsByIdClientsResponse = GetApiSdkPrincipalsByIdClientsResponses[keyof GetApiSdkPrincipalsByIdClientsResponses];
-
-export type DeleteApiSdkPrincipalsByIdClientsByClientIdData = {
-    body?: never;
-    path: {
-        id: string;
-        clientId: string;
-    };
-    query?: never;
-    url: '/api/principals/{id}/clients/{clientId}';
-};
-
-export type DeleteApiSdkPrincipalsByIdClientsByClientIdErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        /**
-         * Human-readable error message
-         */
-        message: string;
-        /**
-         * Machine-readable error code
-         */
-        code: string;
-        /**
-         * Additional error details
-         */
-        details?: {
-            [key: string]: unknown;
-        };
-    };
-};
-
-export type DeleteApiSdkPrincipalsByIdClientsByClientIdError = DeleteApiSdkPrincipalsByIdClientsByClientIdErrors[keyof DeleteApiSdkPrincipalsByIdClientsByClientIdErrors];
-
-export type DeleteApiSdkPrincipalsByIdClientsByClientIdResponses = {
+export type DeleteApiScheduledJobsByIdResponses = {
     /**
      * Default Response
      */
     204: void;
 };
 
-export type DeleteApiSdkPrincipalsByIdClientsByClientIdResponse = DeleteApiSdkPrincipalsByIdClientsByClientIdResponses[keyof DeleteApiSdkPrincipalsByIdClientsByClientIdResponses];
+export type DeleteApiScheduledJobsByIdResponse = DeleteApiScheduledJobsByIdResponses[keyof DeleteApiScheduledJobsByIdResponses];
 
-export type PostApiSdkPrincipalsByIdClientsByClientIdData = {
+export type GetApiScheduledJobsByIdData = {
     body?: never;
     path: {
         id: string;
-        clientId: string;
     };
     query?: never;
-    url: '/api/principals/{id}/clients/{clientId}';
+    url: '/api/scheduled-jobs/{id}';
 };
 
-export type PostApiSdkPrincipalsByIdClientsByClientIdErrors = {
+export type GetApiScheduledJobsByIdErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type GetApiScheduledJobsByIdError = GetApiScheduledJobsByIdErrors[keyof GetApiScheduledJobsByIdErrors];
+
+export type GetApiScheduledJobsByIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        id: string;
+        clientId: string | null;
+        code: string;
+        name: string;
+        description: string | null;
+        status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+        crons: Array<string>;
+        timezone: string;
+        payload: unknown;
+        concurrent: boolean;
+        tracksCompletion: boolean;
+        timeoutSeconds: number | null;
+        deliveryMaxAttempts: number;
+        targetUrl: string | null;
+        lastFiredAt: string | null;
+        createdAt: string;
+        updatedAt: string;
+        createdBy: string | null;
+        updatedBy: string | null;
+        version: number;
+    };
+};
+
+export type GetApiScheduledJobsByIdResponse = GetApiScheduledJobsByIdResponses[keyof GetApiScheduledJobsByIdResponses];
+
+export type PatchApiScheduledJobsByIdData = {
+    body: {
+        name?: string;
+        description?: string | null;
+        crons?: Array<string>;
+        timezone?: string;
+        payload?: unknown;
+        concurrent?: boolean;
+        tracksCompletion?: boolean;
+        timeoutSeconds?: number | null;
+        deliveryMaxAttempts?: number;
+        targetUrl?: string | null;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/scheduled-jobs/{id}';
+};
+
+export type PatchApiScheduledJobsByIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PatchApiScheduledJobsByIdError = PatchApiScheduledJobsByIdErrors[keyof PatchApiScheduledJobsByIdErrors];
+
+export type PatchApiScheduledJobsByIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        id: string;
+        clientId: string | null;
+        code: string;
+        name: string;
+        description: string | null;
+        status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+        crons: Array<string>;
+        timezone: string;
+        payload: unknown;
+        concurrent: boolean;
+        tracksCompletion: boolean;
+        timeoutSeconds: number | null;
+        deliveryMaxAttempts: number;
+        targetUrl: string | null;
+        lastFiredAt: string | null;
+        createdAt: string;
+        updatedAt: string;
+        createdBy: string | null;
+        updatedBy: string | null;
+        version: number;
+    };
+};
+
+export type PatchApiScheduledJobsByIdResponse = PatchApiScheduledJobsByIdResponses[keyof PatchApiScheduledJobsByIdResponses];
+
+export type PostApiScheduledJobsByIdPauseData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/scheduled-jobs/{id}/pause';
+};
+
+export type PostApiScheduledJobsByIdPauseErrors = {
     /**
      * Default Response
      */
@@ -11480,20 +10602,1345 @@ export type PostApiSdkPrincipalsByIdClientsByClientIdErrors = {
     };
 };
 
-export type PostApiSdkPrincipalsByIdClientsByClientIdError = PostApiSdkPrincipalsByIdClientsByClientIdErrors[keyof PostApiSdkPrincipalsByIdClientsByClientIdErrors];
+export type PostApiScheduledJobsByIdPauseError = PostApiScheduledJobsByIdPauseErrors[keyof PostApiScheduledJobsByIdPauseErrors];
 
-export type PostApiSdkPrincipalsByIdClientsByClientIdResponses = {
+export type PostApiScheduledJobsByIdPauseResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        id: string;
+        clientId: string | null;
+        code: string;
+        name: string;
+        description: string | null;
+        status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+        crons: Array<string>;
+        timezone: string;
+        payload: unknown;
+        concurrent: boolean;
+        tracksCompletion: boolean;
+        timeoutSeconds: number | null;
+        deliveryMaxAttempts: number;
+        targetUrl: string | null;
+        lastFiredAt: string | null;
+        createdAt: string;
+        updatedAt: string;
+        createdBy: string | null;
+        updatedBy: string | null;
+        version: number;
+    };
+};
+
+export type PostApiScheduledJobsByIdPauseResponse = PostApiScheduledJobsByIdPauseResponses[keyof PostApiScheduledJobsByIdPauseResponses];
+
+export type PostApiScheduledJobsByIdResumeData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/scheduled-jobs/{id}/resume';
+};
+
+export type PostApiScheduledJobsByIdResumeErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiScheduledJobsByIdResumeError = PostApiScheduledJobsByIdResumeErrors[keyof PostApiScheduledJobsByIdResumeErrors];
+
+export type PostApiScheduledJobsByIdResumeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        id: string;
+        clientId: string | null;
+        code: string;
+        name: string;
+        description: string | null;
+        status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+        crons: Array<string>;
+        timezone: string;
+        payload: unknown;
+        concurrent: boolean;
+        tracksCompletion: boolean;
+        timeoutSeconds: number | null;
+        deliveryMaxAttempts: number;
+        targetUrl: string | null;
+        lastFiredAt: string | null;
+        createdAt: string;
+        updatedAt: string;
+        createdBy: string | null;
+        updatedBy: string | null;
+        version: number;
+    };
+};
+
+export type PostApiScheduledJobsByIdResumeResponse = PostApiScheduledJobsByIdResumeResponses[keyof PostApiScheduledJobsByIdResumeResponses];
+
+export type PostApiScheduledJobsByIdArchiveData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/scheduled-jobs/{id}/archive';
+};
+
+export type PostApiScheduledJobsByIdArchiveErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiScheduledJobsByIdArchiveError = PostApiScheduledJobsByIdArchiveErrors[keyof PostApiScheduledJobsByIdArchiveErrors];
+
+export type PostApiScheduledJobsByIdArchiveResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        id: string;
+        clientId: string | null;
+        code: string;
+        name: string;
+        description: string | null;
+        status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+        crons: Array<string>;
+        timezone: string;
+        payload: unknown;
+        concurrent: boolean;
+        tracksCompletion: boolean;
+        timeoutSeconds: number | null;
+        deliveryMaxAttempts: number;
+        targetUrl: string | null;
+        lastFiredAt: string | null;
+        createdAt: string;
+        updatedAt: string;
+        createdBy: string | null;
+        updatedBy: string | null;
+        version: number;
+    };
+};
+
+export type PostApiScheduledJobsByIdArchiveResponse = PostApiScheduledJobsByIdArchiveResponses[keyof PostApiScheduledJobsByIdArchiveResponses];
+
+export type PostApiScheduledJobsByIdFireData = {
+    body: {
+        correlationId?: string | null;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/scheduled-jobs/{id}/fire';
+};
+
+export type PostApiScheduledJobsByIdFireErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiScheduledJobsByIdFireError = PostApiScheduledJobsByIdFireErrors[keyof PostApiScheduledJobsByIdFireErrors];
+
+export type PostApiScheduledJobsByIdFireResponses = {
+    /**
+     * Default Response
+     */
+    202: {
+        instanceId: string;
+    };
+};
+
+export type PostApiScheduledJobsByIdFireResponse = PostApiScheduledJobsByIdFireResponses[keyof PostApiScheduledJobsByIdFireResponses];
+
+export type PostApiScheduledJobsSyncData = {
+    body: {
+        clientId: string | null;
+        scheduledJobs: Array<{
+            code: string;
+            name: string;
+            description?: string | null;
+            crons: Array<string>;
+            timezone?: string;
+            payload?: unknown;
+            concurrent?: boolean;
+            tracksCompletion?: boolean;
+            timeoutSeconds?: number | null;
+            deliveryMaxAttempts?: number;
+            targetUrl?: string | null;
+        }>;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/scheduled-jobs/sync';
+};
+
+export type PostApiScheduledJobsSyncErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiScheduledJobsSyncError = PostApiScheduledJobsSyncErrors[keyof PostApiScheduledJobsSyncErrors];
+
+export type PostApiScheduledJobsSyncResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        clientId: string | null;
+        synced: number;
+        created: number;
+        updated: number;
+    };
+};
+
+export type PostApiScheduledJobsSyncResponse = PostApiScheduledJobsSyncResponses[keyof PostApiScheduledJobsSyncResponses];
+
+export type GetApiScheduledJobsInstancesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        scheduledJobId?: string;
+        clientId?: string;
+        status?: 'QUEUED' | 'IN_FLIGHT' | 'DELIVERED' | 'COMPLETED' | 'FAILED' | 'DELIVERY_FAILED';
+        triggerKind?: 'CRON' | 'MANUAL';
+        from?: string;
+        to?: string;
+        limit?: number;
+        offset?: number;
+    };
+    url: '/api/scheduled-jobs/instances';
+};
+
+export type GetApiScheduledJobsInstancesErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type GetApiScheduledJobsInstancesError = GetApiScheduledJobsInstancesErrors[keyof GetApiScheduledJobsInstancesErrors];
+
+export type GetApiScheduledJobsInstancesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        instances: Array<{
+            id: string;
+            scheduledJobId: string;
+            clientId: string | null;
+            jobCode: string;
+            triggerKind: 'CRON' | 'MANUAL';
+            scheduledFor: string | null;
+            firedAt: string;
+            deliveredAt: string | null;
+            completedAt: string | null;
+            status: 'QUEUED' | 'IN_FLIGHT' | 'DELIVERED' | 'COMPLETED' | 'FAILED' | 'DELIVERY_FAILED';
+            deliveryAttempts: number;
+            deliveryError: string | null;
+            completionStatus: 'SUCCESS' | 'FAILURE' | null;
+            completionResult: unknown;
+            correlationId: string | null;
+            createdAt: string;
+        }>;
+        total: number;
+    };
+};
+
+export type GetApiScheduledJobsInstancesResponse = GetApiScheduledJobsInstancesResponses[keyof GetApiScheduledJobsInstancesResponses];
+
+export type GetApiScheduledJobsInstancesByInstanceIdData = {
+    body?: never;
+    path: {
+        instanceId: string;
+    };
+    query?: never;
+    url: '/api/scheduled-jobs/instances/{instanceId}';
+};
+
+export type GetApiScheduledJobsInstancesByInstanceIdErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type GetApiScheduledJobsInstancesByInstanceIdError = GetApiScheduledJobsInstancesByInstanceIdErrors[keyof GetApiScheduledJobsInstancesByInstanceIdErrors];
+
+export type GetApiScheduledJobsInstancesByInstanceIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        id: string;
+        scheduledJobId: string;
+        clientId: string | null;
+        jobCode: string;
+        triggerKind: 'CRON' | 'MANUAL';
+        scheduledFor: string | null;
+        firedAt: string;
+        deliveredAt: string | null;
+        completedAt: string | null;
+        status: 'QUEUED' | 'IN_FLIGHT' | 'DELIVERED' | 'COMPLETED' | 'FAILED' | 'DELIVERY_FAILED';
+        deliveryAttempts: number;
+        deliveryError: string | null;
+        completionStatus: 'SUCCESS' | 'FAILURE' | null;
+        completionResult: unknown;
+        correlationId: string | null;
+        createdAt: string;
+    };
+};
+
+export type GetApiScheduledJobsInstancesByInstanceIdResponse = GetApiScheduledJobsInstancesByInstanceIdResponses[keyof GetApiScheduledJobsInstancesByInstanceIdResponses];
+
+export type GetApiScheduledJobsInstancesByInstanceIdLogsData = {
+    body?: never;
+    path: {
+        instanceId: string;
+    };
+    query?: {
+        limit?: number;
+    };
+    url: '/api/scheduled-jobs/instances/{instanceId}/logs';
+};
+
+export type GetApiScheduledJobsInstancesByInstanceIdLogsErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type GetApiScheduledJobsInstancesByInstanceIdLogsError = GetApiScheduledJobsInstancesByInstanceIdLogsErrors[keyof GetApiScheduledJobsInstancesByInstanceIdLogsErrors];
+
+export type GetApiScheduledJobsInstancesByInstanceIdLogsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        logs: Array<{
+            id: string;
+            instanceId: string;
+            scheduledJobId: string | null;
+            clientId: string | null;
+            level: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+            message: string;
+            metadata: unknown;
+            createdAt: string;
+        }>;
+    };
+};
+
+export type GetApiScheduledJobsInstancesByInstanceIdLogsResponse = GetApiScheduledJobsInstancesByInstanceIdLogsResponses[keyof GetApiScheduledJobsInstancesByInstanceIdLogsResponses];
+
+export type PostApiScheduledJobsInstancesByInstanceIdLogData = {
+    body: {
+        level?: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+        message: string;
+        metadata?: unknown;
+    };
+    path: {
+        instanceId: string;
+    };
+    query?: never;
+    url: '/api/scheduled-jobs/instances/{instanceId}/log';
+};
+
+export type PostApiScheduledJobsInstancesByInstanceIdLogErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiScheduledJobsInstancesByInstanceIdLogError = PostApiScheduledJobsInstancesByInstanceIdLogErrors[keyof PostApiScheduledJobsInstancesByInstanceIdLogErrors];
+
+export type PostApiScheduledJobsInstancesByInstanceIdLogResponses = {
     /**
      * Default Response
      */
     201: {
         id: string;
-        clientId: string;
-        grantedAt: string;
+        instanceId: string;
+        scheduledJobId: string | null;
+        clientId: string | null;
+        level: 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+        message: string;
+        metadata: unknown;
+        createdAt: string;
     };
 };
 
-export type PostApiSdkPrincipalsByIdClientsByClientIdResponse = PostApiSdkPrincipalsByIdClientsByClientIdResponses[keyof PostApiSdkPrincipalsByIdClientsByClientIdResponses];
+export type PostApiScheduledJobsInstancesByInstanceIdLogResponse = PostApiScheduledJobsInstancesByInstanceIdLogResponses[keyof PostApiScheduledJobsInstancesByInstanceIdLogResponses];
+
+export type PostApiScheduledJobsInstancesByInstanceIdCompleteData = {
+    body: {
+        status: 'SUCCESS' | 'FAILURE';
+        result?: unknown;
+    };
+    path: {
+        instanceId: string;
+    };
+    query?: never;
+    url: '/api/scheduled-jobs/instances/{instanceId}/complete';
+};
+
+export type PostApiScheduledJobsInstancesByInstanceIdCompleteErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiScheduledJobsInstancesByInstanceIdCompleteError = PostApiScheduledJobsInstancesByInstanceIdCompleteErrors[keyof PostApiScheduledJobsInstancesByInstanceIdCompleteErrors];
+
+export type PostApiScheduledJobsInstancesByInstanceIdCompleteResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type PostApiScheduledJobsInstancesByInstanceIdCompleteResponse = PostApiScheduledJobsInstancesByInstanceIdCompleteResponses[keyof PostApiScheduledJobsInstancesByInstanceIdCompleteResponses];
+
+export type GetApiProcessesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        application?: string;
+        subdomain?: string;
+        status?: string;
+        search?: string;
+    };
+    url: '/api/processes';
+};
+
+export type GetApiProcessesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        items: Array<{
+            id: string;
+            code: string;
+            name: string;
+            description: string | null;
+            status: string;
+            source: string;
+            application: string;
+            subdomain: string;
+            processName: string;
+            body: string;
+            diagramType: string;
+            tags: Array<string>;
+            createdAt: string;
+            updatedAt: string;
+        }>;
+    };
+};
+
+export type GetApiProcessesResponse = GetApiProcessesResponses[keyof GetApiProcessesResponses];
+
+export type PostApiProcessesData = {
+    body: {
+        code: string;
+        name: string;
+        description?: string | null;
+        body?: string;
+        diagramType?: string;
+        tags?: Array<string>;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/processes';
+};
+
+export type PostApiProcessesErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiProcessesError = PostApiProcessesErrors[keyof PostApiProcessesErrors];
+
+export type PostApiProcessesResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        id: string;
+    };
+};
+
+export type PostApiProcessesResponse = PostApiProcessesResponses[keyof PostApiProcessesResponses];
+
+export type DeleteApiProcessesByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/processes/{id}';
+};
+
+export type DeleteApiProcessesByIdErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type DeleteApiProcessesByIdError = DeleteApiProcessesByIdErrors[keyof DeleteApiProcessesByIdErrors];
+
+export type DeleteApiProcessesByIdResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type DeleteApiProcessesByIdResponse = DeleteApiProcessesByIdResponses[keyof DeleteApiProcessesByIdResponses];
+
+export type GetApiProcessesByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/processes/{id}';
+};
+
+export type GetApiProcessesByIdErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type GetApiProcessesByIdError = GetApiProcessesByIdErrors[keyof GetApiProcessesByIdErrors];
+
+export type GetApiProcessesByIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        id: string;
+        code: string;
+        name: string;
+        description: string | null;
+        status: string;
+        source: string;
+        application: string;
+        subdomain: string;
+        processName: string;
+        body: string;
+        diagramType: string;
+        tags: Array<string>;
+        createdAt: string;
+        updatedAt: string;
+    };
+};
+
+export type GetApiProcessesByIdResponse = GetApiProcessesByIdResponses[keyof GetApiProcessesByIdResponses];
+
+export type PutApiProcessesByIdData = {
+    body: {
+        name?: string;
+        description?: string | null;
+        body?: string;
+        diagramType?: string;
+        tags?: Array<string>;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/processes/{id}';
+};
+
+export type PutApiProcessesByIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PutApiProcessesByIdError = PutApiProcessesByIdErrors[keyof PutApiProcessesByIdErrors];
+
+export type PutApiProcessesByIdResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type PutApiProcessesByIdResponse = PutApiProcessesByIdResponses[keyof PutApiProcessesByIdResponses];
+
+export type GetApiProcessesByCodeByCodeData = {
+    body?: never;
+    path: {
+        code: string;
+    };
+    query?: never;
+    url: '/api/processes/by-code/{code}';
+};
+
+export type GetApiProcessesByCodeByCodeErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type GetApiProcessesByCodeByCodeError = GetApiProcessesByCodeByCodeErrors[keyof GetApiProcessesByCodeByCodeErrors];
+
+export type GetApiProcessesByCodeByCodeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        id: string;
+        code: string;
+        name: string;
+        description: string | null;
+        status: string;
+        source: string;
+        application: string;
+        subdomain: string;
+        processName: string;
+        body: string;
+        diagramType: string;
+        tags: Array<string>;
+        createdAt: string;
+        updatedAt: string;
+    };
+};
+
+export type GetApiProcessesByCodeByCodeResponse = GetApiProcessesByCodeByCodeResponses[keyof GetApiProcessesByCodeByCodeResponses];
+
+export type PostApiProcessesByIdArchiveData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/processes/{id}/archive';
+};
+
+export type PostApiProcessesByIdArchiveErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiProcessesByIdArchiveError = PostApiProcessesByIdArchiveErrors[keyof PostApiProcessesByIdArchiveErrors];
+
+export type PostApiProcessesByIdArchiveResponses = {
+    /**
+     * Default Response
+     */
+    204: void;
+};
+
+export type PostApiProcessesByIdArchiveResponse = PostApiProcessesByIdArchiveResponses[keyof PostApiProcessesByIdArchiveResponses];
+
+export type PostApiApplicationsByAppCodeRolesSyncData = {
+    body: {
+        roles: Array<{
+            name: string;
+            displayName?: string;
+            description?: string | null;
+            permissions?: Array<{
+                application: string;
+                context: string;
+                aggregate: string;
+                action: string;
+            }>;
+            clientManaged?: boolean;
+        }>;
+    };
+    path: {
+        appCode: string;
+    };
+    query?: {
+        removeUnlisted?: boolean;
+    };
+    url: '/api/applications/{appCode}/roles/sync';
+};
+
+export type PostApiApplicationsByAppCodeRolesSyncErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiApplicationsByAppCodeRolesSyncError = PostApiApplicationsByAppCodeRolesSyncErrors[keyof PostApiApplicationsByAppCodeRolesSyncErrors];
+
+export type PostApiApplicationsByAppCodeRolesSyncResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        applicationCode: string;
+        created: number;
+        updated: number;
+        deleted: number;
+        syncedCodes: Array<string>;
+    };
+};
+
+export type PostApiApplicationsByAppCodeRolesSyncResponse = PostApiApplicationsByAppCodeRolesSyncResponses[keyof PostApiApplicationsByAppCodeRolesSyncResponses];
+
+export type PostApiApplicationsByAppCodeEventTypesSyncData = {
+    body: {
+        eventTypes: Array<{
+            name: string;
+            application?: string;
+            subdomain: string;
+            aggregate: string;
+            event: string;
+            description?: string | null;
+            clientScoped?: boolean;
+        }>;
+    };
+    path: {
+        appCode: string;
+    };
+    query?: {
+        removeUnlisted?: boolean;
+    };
+    url: '/api/applications/{appCode}/event-types/sync';
+};
+
+export type PostApiApplicationsByAppCodeEventTypesSyncErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiApplicationsByAppCodeEventTypesSyncError = PostApiApplicationsByAppCodeEventTypesSyncErrors[keyof PostApiApplicationsByAppCodeEventTypesSyncErrors];
+
+export type PostApiApplicationsByAppCodeEventTypesSyncResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        applicationCode: string;
+        created: number;
+        updated: number;
+        deleted: number;
+        syncedCodes: Array<string>;
+    };
+};
+
+export type PostApiApplicationsByAppCodeEventTypesSyncResponse = PostApiApplicationsByAppCodeEventTypesSyncResponses[keyof PostApiApplicationsByAppCodeEventTypesSyncResponses];
+
+export type PostApiApplicationsByAppCodeSubscriptionsSyncData = {
+    body: {
+        subscriptions: Array<{
+            code: string;
+            name: string;
+            target?: string;
+            endpoint?: string;
+            connectionId?: string | null;
+            queue: string;
+            dispatchPoolCode: string;
+            clientScoped?: boolean;
+            maxRetries?: number;
+            retryDelaySeconds?: number;
+            timeoutSeconds?: number;
+            active?: boolean;
+            applicationCode?: string | null;
+            description?: string | null;
+            eventTypeCode?: string | null;
+        }>;
+    };
+    path: {
+        appCode: string;
+    };
+    query?: {
+        removeUnlisted?: boolean;
+    };
+    url: '/api/applications/{appCode}/subscriptions/sync';
+};
+
+export type PostApiApplicationsByAppCodeSubscriptionsSyncErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiApplicationsByAppCodeSubscriptionsSyncError = PostApiApplicationsByAppCodeSubscriptionsSyncErrors[keyof PostApiApplicationsByAppCodeSubscriptionsSyncErrors];
+
+export type PostApiApplicationsByAppCodeSubscriptionsSyncResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        applicationCode: string;
+        created: number;
+        updated: number;
+        deleted: number;
+        syncedCodes: Array<string>;
+    };
+};
+
+export type PostApiApplicationsByAppCodeSubscriptionsSyncResponse = PostApiApplicationsByAppCodeSubscriptionsSyncResponses[keyof PostApiApplicationsByAppCodeSubscriptionsSyncResponses];
+
+export type PostApiApplicationsByAppCodeDispatchPoolsSyncData = {
+    body: {
+        pools: Array<{
+            code: string;
+            name?: string;
+            description?: string | null;
+            rateLimit?: number;
+            concurrency?: number;
+        }>;
+    };
+    path: {
+        appCode: string;
+    };
+    query?: {
+        removeUnlisted?: boolean;
+    };
+    url: '/api/applications/{appCode}/dispatch-pools/sync';
+};
+
+export type PostApiApplicationsByAppCodeDispatchPoolsSyncErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiApplicationsByAppCodeDispatchPoolsSyncError = PostApiApplicationsByAppCodeDispatchPoolsSyncErrors[keyof PostApiApplicationsByAppCodeDispatchPoolsSyncErrors];
+
+export type PostApiApplicationsByAppCodeDispatchPoolsSyncResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        applicationCode: string;
+        created: number;
+        updated: number;
+        deleted: number;
+        syncedCodes: Array<string>;
+    };
+};
+
+export type PostApiApplicationsByAppCodeDispatchPoolsSyncResponse = PostApiApplicationsByAppCodeDispatchPoolsSyncResponses[keyof PostApiApplicationsByAppCodeDispatchPoolsSyncResponses];
+
+export type PostApiApplicationsByAppCodePrincipalsSyncData = {
+    body: {
+        principals: Array<{
+            email: string;
+            name: string;
+            roles?: Array<string>;
+            active?: boolean;
+        }>;
+    };
+    path: {
+        appCode: string;
+    };
+    query?: {
+        removeUnlisted?: boolean;
+    };
+    url: '/api/applications/{appCode}/principals/sync';
+};
+
+export type PostApiApplicationsByAppCodePrincipalsSyncErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiApplicationsByAppCodePrincipalsSyncError = PostApiApplicationsByAppCodePrincipalsSyncErrors[keyof PostApiApplicationsByAppCodePrincipalsSyncErrors];
+
+export type PostApiApplicationsByAppCodePrincipalsSyncResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        applicationCode: string;
+        created: number;
+        updated: number;
+        deleted: number;
+        syncedCodes: Array<string>;
+    };
+};
+
+export type PostApiApplicationsByAppCodePrincipalsSyncResponse = PostApiApplicationsByAppCodePrincipalsSyncResponses[keyof PostApiApplicationsByAppCodePrincipalsSyncResponses];
+
+export type PostApiApplicationsByAppCodeProcessesSyncData = {
+    body: {
+        processes: Array<{
+            code: string;
+            name: string;
+            description?: string | null;
+            body?: string;
+            diagramType?: string;
+            tags?: Array<string>;
+        }>;
+    };
+    path: {
+        appCode: string;
+    };
+    query?: {
+        removeUnlisted?: boolean;
+    };
+    url: '/api/applications/{appCode}/processes/sync';
+};
+
+export type PostApiApplicationsByAppCodeProcessesSyncErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        /**
+         * Human-readable error message
+         */
+        message: string;
+        /**
+         * Machine-readable error code
+         */
+        code: string;
+        /**
+         * Additional error details
+         */
+        details?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiApplicationsByAppCodeProcessesSyncError = PostApiApplicationsByAppCodeProcessesSyncErrors[keyof PostApiApplicationsByAppCodeProcessesSyncErrors];
+
+export type PostApiApplicationsByAppCodeProcessesSyncResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        applicationCode: string;
+        created: number;
+        updated: number;
+        deleted: number;
+        syncedCodes: Array<string>;
+    };
+};
+
+export type PostApiApplicationsByAppCodeProcessesSyncResponse = PostApiApplicationsByAppCodeProcessesSyncResponses[keyof PostApiApplicationsByAppCodeProcessesSyncResponses];
 
 export type GetApiMeClientsData = {
     body?: never;

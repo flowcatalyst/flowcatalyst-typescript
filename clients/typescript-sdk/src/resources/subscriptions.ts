@@ -9,20 +9,20 @@ import type { SdkError } from "../errors";
 import type { FlowCatalystClient } from "../client";
 import * as sdk from "../generated/sdk.gen";
 import type {
-	GetApiAdminSubscriptionsResponse,
-	GetApiAdminSubscriptionsByIdResponse,
-	PostApiAdminSubscriptionsData,
-	PutApiAdminSubscriptionsByIdData,
-	PostApiAdminSubscriptionsSyncData,
-	PostApiAdminSubscriptionsSyncResponse,
+	GetApiSubscriptionsResponse,
+	GetApiSubscriptionsByIdResponse,
+	PostApiSubscriptionsData,
+	PutApiSubscriptionsByIdData,
+	PostApiSubscriptionsSyncData,
+	PostApiSubscriptionsSyncResponse,
 } from "../generated/types.gen";
 
-export type SubscriptionListResponse = GetApiAdminSubscriptionsResponse;
-export type SubscriptionDto = GetApiAdminSubscriptionsByIdResponse;
-export type CreateSubscriptionRequest = PostApiAdminSubscriptionsData["body"];
+export type SubscriptionListResponse = GetApiSubscriptionsResponse;
+export type SubscriptionDto = GetApiSubscriptionsByIdResponse;
+export type CreateSubscriptionRequest = PostApiSubscriptionsData["body"];
 export type UpdateSubscriptionRequest =
-	PutApiAdminSubscriptionsByIdData["body"];
-export type SyncSubscriptionsResponse = PostApiAdminSubscriptionsSyncResponse;
+	PutApiSubscriptionsByIdData["body"];
+export type SyncSubscriptionsResponse = PostApiSubscriptionsSyncResponse;
 
 export interface SubscriptionFilters {
 	clientId?: string;
@@ -50,7 +50,7 @@ export class SubscriptionsResource {
 	): ResultAsync<SubscriptionListResponse, SdkError> {
 		return this.client.request<SubscriptionListResponse>(
 			(httpClient, headers) =>
-				sdk.getApiAdminSubscriptions({
+				sdk.getApiSubscriptions({
 					client: httpClient,
 					headers,
 					query: filters,
@@ -63,7 +63,7 @@ export class SubscriptionsResource {
 	 */
 	get(id: string): ResultAsync<SubscriptionDto, SdkError> {
 		return this.client.request<SubscriptionDto>((httpClient, headers) =>
-			sdk.getApiAdminSubscriptionsById({
+			sdk.getApiSubscriptionsById({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -78,7 +78,7 @@ export class SubscriptionsResource {
 		data: CreateSubscriptionRequest,
 	): ResultAsync<SubscriptionDto, SdkError> {
 		return this.client.request<SubscriptionDto>((httpClient, headers) =>
-			sdk.postApiAdminSubscriptions({
+			sdk.postApiSubscriptions({
 				client: httpClient,
 				headers,
 				body: data,
@@ -94,7 +94,7 @@ export class SubscriptionsResource {
 		data: UpdateSubscriptionRequest,
 	): ResultAsync<SubscriptionDto, SdkError> {
 		return this.client.request<SubscriptionDto>((httpClient, headers) =>
-			sdk.putApiAdminSubscriptionsById({
+			sdk.putApiSubscriptionsById({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -108,7 +108,7 @@ export class SubscriptionsResource {
 	 */
 	delete(id: string): ResultAsync<unknown, SdkError> {
 		return this.client.request<unknown>((httpClient, headers) =>
-			sdk.deleteApiAdminSubscriptionsById({
+			sdk.deleteApiSubscriptionsById({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -121,7 +121,7 @@ export class SubscriptionsResource {
 	 */
 	pause(id: string): ResultAsync<SubscriptionDto, SdkError> {
 		return this.client.request<SubscriptionDto>((httpClient, headers) =>
-			sdk.postApiAdminSubscriptionsByIdPause({
+			sdk.postApiSubscriptionsByIdPause({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -134,7 +134,7 @@ export class SubscriptionsResource {
 	 */
 	resume(id: string): ResultAsync<SubscriptionDto, SdkError> {
 		return this.client.request<SubscriptionDto>((httpClient, headers) =>
-			sdk.postApiAdminSubscriptionsByIdResume({
+			sdk.postApiSubscriptionsByIdResume({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -147,12 +147,12 @@ export class SubscriptionsResource {
 	 */
 	sync(
 		applicationCode: string,
-		subscriptions: PostApiAdminSubscriptionsSyncData["body"]["subscriptions"],
+		subscriptions: PostApiSubscriptionsSyncData["body"]["subscriptions"],
 		removeUnlisted = false,
 	): ResultAsync<SyncSubscriptionsResponse, SdkError> {
 		return this.client.request<SyncSubscriptionsResponse>(
 			(httpClient, headers) =>
-				sdk.postApiAdminSubscriptionsSync({
+				sdk.postApiSubscriptionsSync({
 					client: httpClient,
 					headers,
 					body: { applicationCode, subscriptions, removeUnlisted },

@@ -1,0 +1,125 @@
+<?php
+
+namespace FlowCatalyst\Generated\Model;
+
+class ApiProcessesIdPutBody extends \ArrayObject
+{
+    /**
+     * @var array
+     */
+    protected $initialized = [];
+    public function isInitialized($property): bool
+    {
+        return array_key_exists($property, $this->initialized);
+    }
+    /**
+     * @var string|null
+     */
+    protected $name;
+    /**
+     * @var mixed|null
+     */
+    protected $description;
+    /**
+     * @var string|null
+     */
+    protected $body;
+    /**
+     * @var string|null
+     */
+    protected $diagramType;
+    /**
+     * @var list<string>|null
+     */
+    protected $tags;
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+    /**
+     * @param string|null $name
+     *
+     * @return self
+     */
+    public function setName(?string $name): self
+    {
+        $this->initialized['name'] = true;
+        $this->name = $name;
+        return $this;
+    }
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    /**
+     * @param mixed $description
+     *
+     * @return self
+     */
+    public function setDescription($description): self
+    {
+        $this->initialized['description'] = true;
+        $this->description = $description;
+        return $this;
+    }
+    /**
+     * @return string|null
+     */
+    public function getBody(): ?string
+    {
+        return $this->body;
+    }
+    /**
+     * @param string|null $body
+     *
+     * @return self
+     */
+    public function setBody(?string $body): self
+    {
+        $this->initialized['body'] = true;
+        $this->body = $body;
+        return $this;
+    }
+    /**
+     * @return string|null
+     */
+    public function getDiagramType(): ?string
+    {
+        return $this->diagramType;
+    }
+    /**
+     * @param string|null $diagramType
+     *
+     * @return self
+     */
+    public function setDiagramType(?string $diagramType): self
+    {
+        $this->initialized['diagramType'] = true;
+        $this->diagramType = $diagramType;
+        return $this;
+    }
+    /**
+     * @return list<string>|null
+     */
+    public function getTags(): ?array
+    {
+        return $this->tags;
+    }
+    /**
+     * @param list<string>|null $tags
+     *
+     * @return self
+     */
+    public function setTags(?array $tags): self
+    {
+        $this->initialized['tags'] = true;
+        $this->tags = $tags;
+        return $this;
+    }
+}

@@ -72,7 +72,7 @@ const UpdateRoleSchema = Type.Object({
 	clientManaged: Type.Optional(Type.Boolean()),
 });
 
-const NameParam = Type.Object({ name: Type.String() });
+const NameParam = Type.Object({ roleName: Type.String() });
 const SourceParam = Type.Object({ source: Type.String() });
 const ApplicationIdParam = Type.Object({ applicationId: Type.String() });
 const PermissionParam = Type.Object({ permission: Type.String() });
@@ -242,7 +242,7 @@ export async function registerRolesRoutes(
 
 	// GET /api/roles/:name - Get role by name (Java parity: /roles/{roleName})
 	f.get(
-		"/roles/:name",
+		"/roles/:roleName",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.READ),
 			schema: {
@@ -254,7 +254,7 @@ export async function registerRolesRoutes(
 			},
 		},
 		async (request, reply) => {
-			const { name } = request.params as Static<typeof NameParam>;
+			const { roleName: name } = request.params as Static<typeof NameParam>;
 			const role = await roleRepository.findByName(name);
 
 			if (!role) {
@@ -325,7 +325,7 @@ export async function registerRolesRoutes(
 
 	// PUT /api/roles/:name - Update role by name (Java parity: /roles/{roleName})
 	f.put(
-		"/roles/:name",
+		"/roles/:roleName",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.UPDATE),
 			schema: {
@@ -340,7 +340,7 @@ export async function registerRolesRoutes(
 			},
 		},
 		async (request, reply) => {
-			const { name } = request.params as Static<typeof NameParam>;
+			const { roleName: name } = request.params as Static<typeof NameParam>;
 			const body = request.body as UpdateRoleBody;
 			const ctx = request.executionContext;
 
@@ -376,7 +376,7 @@ export async function registerRolesRoutes(
 
 	// DELETE /api/roles/:name - Delete role by name (Java parity: /roles/{roleName})
 	f.delete(
-		"/roles/:name",
+		"/roles/:roleName",
 		{
 			preHandler: requirePermission(ROLE_PERMISSIONS.DELETE),
 			schema: {
@@ -388,7 +388,7 @@ export async function registerRolesRoutes(
 			},
 		},
 		async (request, reply) => {
-			const { name } = request.params as Static<typeof NameParam>;
+			const { roleName: name } = request.params as Static<typeof NameParam>;
 			const ctx = request.executionContext;
 
 			const role = await roleRepository.findByName(name);

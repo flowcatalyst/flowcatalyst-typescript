@@ -111,7 +111,7 @@ const IdClientParam = Type.Object({
 	id: Type.String(),
 	clientId: Type.String(),
 });
-const IdRoleParam = Type.Object({ id: Type.String(), roleName: Type.String() });
+const IdRoleParam = Type.Object({ id: Type.String(), role: Type.String() });
 
 // ─── Query Schemas ──────────────────────────────────────────────────────────
 
@@ -755,9 +755,9 @@ export async function registerPrincipalsRoutes(
 		},
 	);
 
-	// DELETE /api/principals/:id/roles/:roleName - Remove single role
+	// DELETE /api/principals/:id/roles/:role - Remove single role
 	f.delete(
-		"/principals/:id/roles/:roleName",
+		"/principals/:id/roles/:role",
 		{
 			preHandler: requirePermission(USER_PERMISSIONS.ASSIGN_ROLES),
 			schema: {
@@ -769,7 +769,7 @@ export async function registerPrincipalsRoutes(
 			},
 		},
 		async (request, reply) => {
-			const { id, roleName } = request.params as Static<typeof IdRoleParam>;
+			const { id, role: roleName } = request.params as Static<typeof IdRoleParam>;
 			const ctx = request.executionContext;
 
 			const principal = await principalRepository.findById(id);

@@ -9,19 +9,19 @@ import type { SdkError } from "../errors";
 import type { FlowCatalystClient } from "../client";
 import * as sdk from "../generated/sdk.gen";
 import type {
-	GetApiAdminRolesResponse,
-	GetApiAdminRolesByNameResponse,
-	PostApiAdminRolesData,
-	PutApiAdminRolesByNameData,
-	GetApiAdminRolesByApplicationByApplicationIdResponse,
+	GetApiRolesResponse,
+	GetApiRolesByRoleNameResponse,
+	PostApiRolesData,
+	PutApiRolesByRoleNameData,
+	GetApiRolesByApplicationByApplicationIdResponse,
 } from "../generated/types.gen";
 
-export type RoleListResponse = GetApiAdminRolesResponse;
-export type RoleDto = GetApiAdminRolesByNameResponse;
-export type CreateRoleRequest = PostApiAdminRolesData["body"];
-export type UpdateRoleRequest = PutApiAdminRolesByNameData["body"];
+export type RoleListResponse = GetApiRolesResponse;
+export type RoleDto = GetApiRolesByRoleNameResponse;
+export type CreateRoleRequest = PostApiRolesData["body"];
+export type UpdateRoleRequest = PutApiRolesByRoleNameData["body"];
 export type RoleListByApplicationResponse =
-	GetApiAdminRolesByApplicationByApplicationIdResponse;
+	GetApiRolesByApplicationByApplicationIdResponse;
 
 /**
  * Roles resource for managing role-based access control.
@@ -38,7 +38,7 @@ export class RolesResource {
 	 */
 	list(): ResultAsync<RoleListResponse, SdkError> {
 		return this.client.request<RoleListResponse>((httpClient, headers) =>
-			sdk.getApiAdminRoles({
+			sdk.getApiRoles({
 				client: httpClient,
 				headers,
 			}),
@@ -50,10 +50,10 @@ export class RolesResource {
 	 */
 	get(roleName: string): ResultAsync<RoleDto, SdkError> {
 		return this.client.request<RoleDto>((httpClient, headers) =>
-			sdk.getApiAdminRolesByName({
+			sdk.getApiRolesByRoleName({
 				client: httpClient,
 				headers,
-				path: { name: roleName },
+				path: { roleName },
 			}),
 		);
 	}
@@ -63,7 +63,7 @@ export class RolesResource {
 	 */
 	create(data: CreateRoleRequest): ResultAsync<RoleDto, SdkError> {
 		return this.client.request<RoleDto>((httpClient, headers) =>
-			sdk.postApiAdminRoles({
+			sdk.postApiRoles({
 				client: httpClient,
 				headers,
 				body: data,
@@ -79,10 +79,10 @@ export class RolesResource {
 		data: UpdateRoleRequest,
 	): ResultAsync<RoleDto, SdkError> {
 		return this.client.request<RoleDto>((httpClient, headers) =>
-			sdk.putApiAdminRolesByName({
+			sdk.putApiRolesByRoleName({
 				client: httpClient,
 				headers,
-				path: { name: roleName },
+				path: { roleName },
 				body: data,
 			}),
 		);
@@ -93,10 +93,10 @@ export class RolesResource {
 	 */
 	delete(roleName: string): ResultAsync<unknown, SdkError> {
 		return this.client.request<unknown>((httpClient, headers) =>
-			sdk.deleteApiAdminRolesByName({
+			sdk.deleteApiRolesByRoleName({
 				client: httpClient,
 				headers,
-				path: { name: roleName },
+				path: { roleName },
 			}),
 		);
 	}
@@ -109,7 +109,7 @@ export class RolesResource {
 	): ResultAsync<RoleListByApplicationResponse, SdkError> {
 		return this.client.request<RoleListByApplicationResponse>(
 			(httpClient, headers) =>
-				sdk.getApiAdminRolesByApplicationByApplicationId({
+				sdk.getApiRolesByApplicationByApplicationId({
 					client: httpClient,
 					headers,
 					path: { applicationId },

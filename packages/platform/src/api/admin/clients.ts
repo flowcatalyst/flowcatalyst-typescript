@@ -678,13 +678,13 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// POST /api/clients/:id/applications/:appId/enable - Enable application for client
+	// POST /api/clients/:id/applications/:applicationId/enable - Enable application for client
 	f.post(
-		"/clients/:id/applications/:appId/enable",
+		"/clients/:id/applications/:applicationId/enable",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.UPDATE),
 			schema: {
-				params: Type.Object({ id: Type.String(), appId: Type.String() }),
+				params: Type.Object({ id: Type.String(), applicationId: Type.String() }),
 				response: {
 					200: MessageResponseSchema,
 					404: ErrorResponseSchema,
@@ -692,11 +692,11 @@ export async function registerClientsRoutes(
 			},
 		},
 		async (request, reply) => {
-			const { id, appId } = request.params as { id: string; appId: string };
+			const { id, applicationId } = request.params as { id: string; applicationId: string };
 			const ctx = request.executionContext;
 
 			const command: EnableApplicationForClientCommand = {
-				applicationId: appId,
+				applicationId,
 				clientId: id,
 			};
 
@@ -715,13 +715,13 @@ export async function registerClientsRoutes(
 		},
 	);
 
-	// POST /api/clients/:id/applications/:appId/disable - Disable application for client
+	// POST /api/clients/:id/applications/:applicationId/disable - Disable application for client
 	f.post(
-		"/clients/:id/applications/:appId/disable",
+		"/clients/:id/applications/:applicationId/disable",
 		{
 			preHandler: requirePermission(CLIENT_PERMISSIONS.UPDATE),
 			schema: {
-				params: Type.Object({ id: Type.String(), appId: Type.String() }),
+				params: Type.Object({ id: Type.String(), applicationId: Type.String() }),
 				response: {
 					200: MessageResponseSchema,
 					404: ErrorResponseSchema,
@@ -729,11 +729,11 @@ export async function registerClientsRoutes(
 			},
 		},
 		async (request, reply) => {
-			const { id, appId } = request.params as { id: string; appId: string };
+			const { id, applicationId } = request.params as { id: string; applicationId: string };
 			const ctx = request.executionContext;
 
 			const command: DisableApplicationForClientCommand = {
-				applicationId: appId,
+				applicationId,
 				clientId: id,
 			};
 

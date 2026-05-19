@@ -69,6 +69,14 @@
               "type": "string"
             },
             "in": "query",
+            "name": "roles",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
             "name": "page",
             "required": false
           },
@@ -698,8 +706,7 @@
                       {
                         "type": "null"
                       }
-                    ],
-                    "description": "When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true."
+                    ]
                   }
                 }
               }
@@ -1020,8 +1027,7 @@
                       {
                         "type": "null"
                       }
-                    ],
-                    "description": "When false, the platform skips its password complexity rules (uppercase/lowercase/digit/special) and only enforces a 2-character minimum. Intended for SDK callers that apply their own policy. Defaults to true."
+                    ]
                   }
                 }
               }
@@ -1464,7 +1470,7 @@
         }
       }
     },
-    "/api/principals/{id}/roles/{roleName}": {
+    "/api/principals/{id}/roles/{role}": {
       "delete": {
         "parameters": [
           {
@@ -1480,7 +1486,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "roleName",
+            "name": "role",
             "required": true
           }
         ],
@@ -4355,7 +4361,7 @@
         }
       }
     },
-    "/api/clients/{id}/applications/{appId}/enable": {
+    "/api/clients/{id}/applications/{applicationId}/enable": {
       "post": {
         "parameters": [
           {
@@ -4371,7 +4377,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "appId",
+            "name": "applicationId",
             "required": true
           }
         ],
@@ -4427,7 +4433,7 @@
         }
       }
     },
-    "/api/clients/{id}/applications/{appId}/disable": {
+    "/api/clients/{id}/applications/{applicationId}/disable": {
       "post": {
         "parameters": [
           {
@@ -4443,7 +4449,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "appId",
+            "name": "applicationId",
             "required": true
           }
         ],
@@ -7420,7 +7426,7 @@
         }
       }
     },
-    "/api/roles/{name}": {
+    "/api/roles/{roleName}": {
       "get": {
         "parameters": [
           {
@@ -7428,7 +7434,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "name",
+            "name": "roleName",
             "required": true
           }
         ],
@@ -7595,7 +7601,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "name",
+            "name": "roleName",
             "required": true
           }
         ],
@@ -7780,7 +7786,7 @@
               "type": "string"
             },
             "in": "path",
-            "name": "name",
+            "name": "roleName",
             "required": true
           }
         ],
@@ -10409,109 +10415,121 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "id",
-                    "clientId",
-                    "clientName",
-                    "clientType",
-                    "hasClientSecret",
-                    "redirectUris",
-                    "allowedOrigins",
-                    "grantTypes",
-                    "defaultScopes",
-                    "pkceRequired",
-                    "applicationIds",
-                    "applications",
-                    "serviceAccountPrincipalId",
-                    "active",
-                    "createdAt",
-                    "updatedAt"
+                    "client"
                   ],
                   "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "clientId": {
-                      "type": "string"
-                    },
-                    "clientName": {
-                      "type": "string"
-                    },
-                    "clientType": {
-                      "type": "string"
-                    },
-                    "hasClientSecret": {
-                      "type": "boolean"
-                    },
-                    "redirectUris": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "allowedOrigins": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "grantTypes": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "defaultScopes": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "pkceRequired": {
-                      "type": "boolean"
-                    },
-                    "applicationIds": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "applications": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "required": [
-                          "id",
-                          "name"
-                        ],
-                        "properties": {
-                          "id": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    },
-                    "serviceAccountPrincipalId": {
-                      "anyOf": [
-                        {
+                    "client": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "clientId",
+                        "clientName",
+                        "clientType",
+                        "hasClientSecret",
+                        "redirectUris",
+                        "allowedOrigins",
+                        "grantTypes",
+                        "defaultScopes",
+                        "pkceRequired",
+                        "applicationIds",
+                        "applications",
+                        "serviceAccountPrincipalId",
+                        "active",
+                        "createdAt",
+                        "updatedAt"
+                      ],
+                      "properties": {
+                        "id": {
                           "type": "string"
                         },
-                        {
-                          "type": "null"
+                        "clientId": {
+                          "type": "string"
+                        },
+                        "clientName": {
+                          "type": "string"
+                        },
+                        "clientType": {
+                          "type": "string"
+                        },
+                        "hasClientSecret": {
+                          "type": "boolean"
+                        },
+                        "redirectUris": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "allowedOrigins": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "grantTypes": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "defaultScopes": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "pkceRequired": {
+                          "type": "boolean"
+                        },
+                        "applicationIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "applications": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "serviceAccountPrincipalId": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "createdAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "format": "date-time",
+                          "type": "string"
                         }
-                      ]
+                      }
                     },
-                    "active": {
-                      "type": "boolean"
-                    },
-                    "createdAt": {
-                      "format": "date-time",
-                      "type": "string"
-                    },
-                    "updatedAt": {
-                      "format": "date-time",
+                    "clientSecret": {
+                      "description": "Auto-generated plaintext client secret for CONFIDENTIAL clients (shown only once)",
                       "type": "string"
                     }
                   }
@@ -11884,7 +11902,7 @@
                   "type": "object",
                   "required": [
                     "auditLogs",
-                    "total",
+                    "hasMore",
                     "page",
                     "pageSize"
                   ],
@@ -11973,8 +11991,8 @@
                         }
                       }
                     },
-                    "total": {
-                      "type": "integer"
+                    "hasMore": {
+                      "type": "boolean"
                     },
                     "page": {
                       "type": "integer"
@@ -12168,7 +12186,7 @@
                   "type": "object",
                   "required": [
                     "auditLogs",
-                    "total",
+                    "hasMore",
                     "page",
                     "pageSize"
                   ],
@@ -12257,8 +12275,8 @@
                         }
                       }
                     },
-                    "total": {
-                      "type": "integer"
+                    "hasMore": {
+                      "type": "boolean"
                     },
                     "page": {
                       "type": "integer"
@@ -14787,7 +14805,14 @@
                             ]
                           },
                           "rateLimit": {
-                            "type": "integer"
+                            "anyOf": [
+                              {
+                                "type": "integer"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "concurrency": {
                             "type": "integer"
@@ -14934,7 +14959,14 @@
                       ]
                     },
                     "rateLimit": {
-                      "type": "integer"
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "concurrency": {
                       "type": "integer"
@@ -15089,7 +15121,14 @@
                       ]
                     },
                     "rateLimit": {
-                      "type": "integer"
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "concurrency": {
                       "type": "integer"
@@ -15265,7 +15304,14 @@
                       ]
                     },
                     "rateLimit": {
-                      "type": "integer"
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "concurrency": {
                       "type": "integer"
@@ -15466,7 +15512,14 @@
                       ]
                     },
                     "rateLimit": {
-                      "type": "integer"
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "concurrency": {
                       "type": "integer"
@@ -15592,7 +15645,14 @@
                       ]
                     },
                     "rateLimit": {
-                      "type": "integer"
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "concurrency": {
                       "type": "integer"
@@ -15847,7 +15907,6 @@
                           "code",
                           "name",
                           "description",
-                          "endpoint",
                           "externalId",
                           "status",
                           "serviceAccountId",
@@ -15875,9 +15934,6 @@
                                 "type": "null"
                               }
                             ]
-                          },
-                          "endpoint": {
-                            "type": "string"
                           },
                           "externalId": {
                             "anyOf": [
@@ -15946,7 +16002,6 @@
                 "required": [
                   "code",
                   "name",
-                  "endpoint",
                   "serviceAccountId"
                 ],
                 "properties": {
@@ -15971,11 +16026,6 @@
                         "type": "null"
                       }
                     ]
-                  },
-                  "endpoint": {
-                    "minLength": 1,
-                    "maxLength": 500,
-                    "type": "string"
                   },
                   "externalId": {
                     "anyOf": [
@@ -16019,7 +16069,6 @@
                     "code",
                     "name",
                     "description",
-                    "endpoint",
                     "externalId",
                     "status",
                     "serviceAccountId",
@@ -16047,9 +16096,6 @@
                           "type": "null"
                         }
                       ]
-                    },
-                    "endpoint": {
-                      "type": "string"
                     },
                     "externalId": {
                       "anyOf": [
@@ -16185,7 +16231,6 @@
                     "code",
                     "name",
                     "description",
-                    "endpoint",
                     "externalId",
                     "status",
                     "serviceAccountId",
@@ -16213,9 +16258,6 @@
                           "type": "null"
                         }
                       ]
-                    },
-                    "endpoint": {
-                      "type": "string"
                     },
                     "externalId": {
                       "anyOf": [
@@ -16321,11 +16363,6 @@
                       }
                     ]
                   },
-                  "endpoint": {
-                    "minLength": 1,
-                    "maxLength": 500,
-                    "type": "string"
-                  },
                   "externalId": {
                     "anyOf": [
                       {
@@ -16380,7 +16417,6 @@
                     "code",
                     "name",
                     "description",
-                    "endpoint",
                     "externalId",
                     "status",
                     "serviceAccountId",
@@ -16408,9 +16444,6 @@
                           "type": "null"
                         }
                       ]
-                    },
-                    "endpoint": {
-                      "type": "string"
                     },
                     "externalId": {
                       "anyOf": [
@@ -16621,7 +16654,6 @@
                     "code",
                     "name",
                     "description",
-                    "endpoint",
                     "externalId",
                     "status",
                     "serviceAccountId",
@@ -16649,9 +16681,6 @@
                           "type": "null"
                         }
                       ]
-                    },
-                    "endpoint": {
-                      "type": "string"
                     },
                     "externalId": {
                       "anyOf": [
@@ -16758,7 +16787,6 @@
                     "code",
                     "name",
                     "description",
-                    "endpoint",
                     "externalId",
                     "status",
                     "serviceAccountId",
@@ -16786,9 +16814,6 @@
                           "type": "null"
                         }
                       ]
-                    },
-                    "endpoint": {
-                      "type": "string"
                     },
                     "externalId": {
                       "anyOf": [
@@ -16940,6 +16965,7 @@
                           "clientId",
                           "clientIdentifier",
                           "clientScoped",
+                          "endpoint",
                           "eventTypes",
                           "connectionId",
                           "queue",
@@ -17011,6 +17037,9 @@
                           "clientScoped": {
                             "type": "boolean"
                           },
+                          "endpoint": {
+                            "type": "string"
+                          },
                           "eventTypes": {
                             "type": "array",
                             "items": {
@@ -17048,7 +17077,14 @@
                             }
                           },
                           "connectionId": {
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "queue": {
                             "anyOf": [
@@ -17156,8 +17192,8 @@
                 "required": [
                   "code",
                   "name",
-                  "eventTypes",
-                  "connectionId"
+                  "endpoint",
+                  "eventTypes"
                 ],
                 "properties": {
                   "code": {
@@ -17204,6 +17240,11 @@
                   "clientScoped": {
                     "type": "boolean"
                   },
+                  "endpoint": {
+                    "minLength": 1,
+                    "maxLength": 2048,
+                    "type": "string"
+                  },
                   "eventTypes": {
                     "minItems": 1,
                     "type": "array",
@@ -17241,8 +17282,14 @@
                     }
                   },
                   "connectionId": {
-                    "minLength": 1,
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "queue": {
                     "anyOf": [
@@ -17356,6 +17403,7 @@
                     "clientId",
                     "clientIdentifier",
                     "clientScoped",
+                    "endpoint",
                     "eventTypes",
                     "connectionId",
                     "queue",
@@ -17427,6 +17475,9 @@
                     "clientScoped": {
                       "type": "boolean"
                     },
+                    "endpoint": {
+                      "type": "string"
+                    },
                     "eventTypes": {
                       "type": "array",
                       "items": {
@@ -17464,7 +17515,14 @@
                       }
                     },
                     "connectionId": {
-                      "type": "string"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "queue": {
                       "anyOf": [
@@ -17643,6 +17701,7 @@
                     "clientId",
                     "clientIdentifier",
                     "clientScoped",
+                    "endpoint",
                     "eventTypes",
                     "connectionId",
                     "queue",
@@ -17714,6 +17773,9 @@
                     "clientScoped": {
                       "type": "boolean"
                     },
+                    "endpoint": {
+                      "type": "string"
+                    },
                     "eventTypes": {
                       "type": "array",
                       "items": {
@@ -17751,7 +17813,14 @@
                       }
                     },
                     "connectionId": {
-                      "type": "string"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "queue": {
                       "anyOf": [
@@ -17895,6 +17964,11 @@
                       }
                     ]
                   },
+                  "endpoint": {
+                    "minLength": 1,
+                    "maxLength": 2048,
+                    "type": "string"
+                  },
                   "eventTypes": {
                     "minItems": 1,
                     "type": "array",
@@ -17932,8 +18006,14 @@
                     }
                   },
                   "connectionId": {
-                    "minLength": 1,
-                    "type": "string"
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
                   "queue": {
                     "anyOf": [
@@ -18073,6 +18153,7 @@
                     "clientId",
                     "clientIdentifier",
                     "clientScoped",
+                    "endpoint",
                     "eventTypes",
                     "connectionId",
                     "queue",
@@ -18144,6 +18225,9 @@
                     "clientScoped": {
                       "type": "boolean"
                     },
+                    "endpoint": {
+                      "type": "string"
+                    },
                     "eventTypes": {
                       "type": "array",
                       "items": {
@@ -18181,7 +18265,14 @@
                       }
                     },
                     "connectionId": {
-                      "type": "string"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "queue": {
                       "anyOf": [
@@ -18406,6 +18497,7 @@
                     "clientId",
                     "clientIdentifier",
                     "clientScoped",
+                    "endpoint",
                     "eventTypes",
                     "connectionId",
                     "queue",
@@ -18477,6 +18569,9 @@
                     "clientScoped": {
                       "type": "boolean"
                     },
+                    "endpoint": {
+                      "type": "string"
+                    },
                     "eventTypes": {
                       "type": "array",
                       "items": {
@@ -18514,7 +18609,14 @@
                       }
                     },
                     "connectionId": {
-                      "type": "string"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "queue": {
                       "anyOf": [
@@ -18664,6 +18766,7 @@
                     "clientId",
                     "clientIdentifier",
                     "clientScoped",
+                    "endpoint",
                     "eventTypes",
                     "connectionId",
                     "queue",
@@ -18735,6 +18838,9 @@
                     "clientScoped": {
                       "type": "boolean"
                     },
+                    "endpoint": {
+                      "type": "string"
+                    },
                     "eventTypes": {
                       "type": "array",
                       "items": {
@@ -18772,7 +18878,14 @@
                       }
                     },
                     "connectionId": {
-                      "type": "string"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     },
                     "queue": {
                       "anyOf": [
@@ -18918,8 +19031,8 @@
                       "required": [
                         "code",
                         "name",
-                        "eventTypes",
-                        "connectionId"
+                        "endpoint",
+                        "eventTypes"
                       ],
                       "properties": {
                         "code": {
@@ -18942,6 +19055,11 @@
                         },
                         "clientScoped": {
                           "type": "boolean"
+                        },
+                        "endpoint": {
+                          "minLength": 1,
+                          "maxLength": 2048,
+                          "type": "string"
                         },
                         "eventTypes": {
                           "minItems": 1,
@@ -18980,8 +19098,14 @@
                           }
                         },
                         "connectionId": {
-                          "minLength": 1,
-                          "type": "string"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "queue": {
                           "anyOf": [
@@ -19280,8 +19404,7 @@
                     "items",
                     "page",
                     "size",
-                    "totalItems",
-                    "totalPages"
+                    "hasMore"
                   ],
                   "properties": {
                     "items": {
@@ -19443,11 +19566,8 @@
                     "size": {
                       "type": "integer"
                     },
-                    "totalItems": {
-                      "type": "integer"
-                    },
-                    "totalPages": {
-                      "type": "integer"
+                    "hasMore": {
+                      "type": "boolean"
                     }
                   }
                 }
@@ -19510,25 +19630,73 @@
                     "applications": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "required": [
+                          "value",
+                          "label"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        }
                       }
                     },
                     "subdomains": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "required": [
+                          "value",
+                          "label"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        }
                       }
                     },
                     "aggregates": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "required": [
+                          "value",
+                          "label"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        }
                       }
                     },
                     "types": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "required": [
+                          "value",
+                          "label"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   }
@@ -19919,8 +20087,7 @@
                     "items",
                     "page",
                     "size",
-                    "totalItems",
-                    "totalPages"
+                    "hasMore"
                   ],
                   "properties": {
                     "items": {
@@ -20276,11 +20443,8 @@
                     "size": {
                       "type": "integer"
                     },
-                    "totalItems": {
-                      "type": "integer"
-                    },
-                    "totalPages": {
-                      "type": "integer"
+                    "hasMore": {
+                      "type": "boolean"
                     }
                   }
                 }
@@ -20344,31 +20508,91 @@
                     "applications": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "required": [
+                          "value",
+                          "label"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        }
                       }
                     },
                     "subdomains": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "required": [
+                          "value",
+                          "label"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        }
                       }
                     },
                     "aggregates": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "required": [
+                          "value",
+                          "label"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        }
                       }
                     },
                     "codes": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "required": [
+                          "value",
+                          "label"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        }
                       }
                     },
                     "statuses": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "required": [
+                          "value",
+                          "label"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   }
@@ -26335,7 +26559,7 @@
                   "type": "object",
                   "required": [
                     "items",
-                    "total",
+                    "hasMore",
                     "page",
                     "pageSize"
                   ],
@@ -26415,14 +26639,4834 @@
                         }
                       }
                     },
-                    "total": {
-                      "type": "integer"
+                    "hasMore": {
+                      "type": "boolean"
                     },
                     "page": {
                       "type": "integer"
                     },
                     "pageSize": {
                       "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "code",
+                  "name",
+                  "crons"
+                ],
+                "properties": {
+                  "clientId": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "code": {
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "type": "string"
+                  },
+                  "name": {
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "type": "string"
+                  },
+                  "description": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "crons": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "timezone": {
+                    "maxLength": 64,
+                    "type": "string"
+                  },
+                  "payload": {},
+                  "concurrent": {
+                    "type": "boolean"
+                  },
+                  "tracksCompletion": {
+                    "type": "boolean"
+                  },
+                  "timeoutSeconds": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "deliveryMaxAttempts": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "targetUrl": {
+                    "anyOf": [
+                      {
+                        "maxLength": 500,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "clientId",
+                    "code",
+                    "name",
+                    "description",
+                    "status",
+                    "crons",
+                    "timezone",
+                    "payload",
+                    "concurrent",
+                    "tracksCompletion",
+                    "timeoutSeconds",
+                    "deliveryMaxAttempts",
+                    "targetUrl",
+                    "lastFiredAt",
+                    "createdAt",
+                    "updatedAt",
+                    "createdBy",
+                    "updatedBy",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "clientId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACTIVE"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "PAUSED"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ARCHIVED"
+                          ]
+                        }
+                      ]
+                    },
+                    "crons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "payload": {},
+                    "concurrent": {
+                      "type": "boolean"
+                    },
+                    "tracksCompletion": {
+                      "type": "boolean"
+                    },
+                    "timeoutSeconds": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "deliveryMaxAttempts": {
+                      "type": "integer"
+                    },
+                    "targetUrl": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "lastFiredAt": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "createdBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "updatedBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "version": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "clientId",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "platformScoped",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "ACTIVE"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "PAUSED"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "ARCHIVED"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "status",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "search",
+            "required": false
+          },
+          {
+            "schema": {
+              "minimum": 1,
+              "maximum": 500,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "scheduledJobs",
+                    "total"
+                  ],
+                  "properties": {
+                    "scheduledJobs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "clientId",
+                          "code",
+                          "name",
+                          "description",
+                          "status",
+                          "crons",
+                          "timezone",
+                          "payload",
+                          "concurrent",
+                          "tracksCompletion",
+                          "timeoutSeconds",
+                          "deliveryMaxAttempts",
+                          "targetUrl",
+                          "lastFiredAt",
+                          "createdAt",
+                          "updatedAt",
+                          "createdBy",
+                          "updatedBy",
+                          "version"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "clientId": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "status": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "ACTIVE"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "PAUSED"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "ARCHIVED"
+                                ]
+                              }
+                            ]
+                          },
+                          "crons": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "timezone": {
+                            "type": "string"
+                          },
+                          "payload": {},
+                          "concurrent": {
+                            "type": "boolean"
+                          },
+                          "tracksCompletion": {
+                            "type": "boolean"
+                          },
+                          "timeoutSeconds": {
+                            "anyOf": [
+                              {
+                                "type": "integer"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "deliveryMaxAttempts": {
+                            "type": "integer"
+                          },
+                          "targetUrl": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "lastFiredAt": {
+                            "anyOf": [
+                              {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "createdBy": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "updatedBy": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "version": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "clientId",
+                    "code",
+                    "name",
+                    "description",
+                    "status",
+                    "crons",
+                    "timezone",
+                    "payload",
+                    "concurrent",
+                    "tracksCompletion",
+                    "timeoutSeconds",
+                    "deliveryMaxAttempts",
+                    "targetUrl",
+                    "lastFiredAt",
+                    "createdAt",
+                    "updatedAt",
+                    "createdBy",
+                    "updatedBy",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "clientId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACTIVE"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "PAUSED"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ARCHIVED"
+                          ]
+                        }
+                      ]
+                    },
+                    "crons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "payload": {},
+                    "concurrent": {
+                      "type": "boolean"
+                    },
+                    "tracksCompletion": {
+                      "type": "boolean"
+                    },
+                    "timeoutSeconds": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "deliveryMaxAttempts": {
+                      "type": "integer"
+                    },
+                    "targetUrl": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "lastFiredAt": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "createdBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "updatedBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "version": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "type": "string"
+                  },
+                  "description": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "crons": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "timezone": {
+                    "maxLength": 64,
+                    "type": "string"
+                  },
+                  "payload": {},
+                  "concurrent": {
+                    "type": "boolean"
+                  },
+                  "tracksCompletion": {
+                    "type": "boolean"
+                  },
+                  "timeoutSeconds": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "deliveryMaxAttempts": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "targetUrl": {
+                    "anyOf": [
+                      {
+                        "maxLength": 500,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "clientId",
+                    "code",
+                    "name",
+                    "description",
+                    "status",
+                    "crons",
+                    "timezone",
+                    "payload",
+                    "concurrent",
+                    "tracksCompletion",
+                    "timeoutSeconds",
+                    "deliveryMaxAttempts",
+                    "targetUrl",
+                    "lastFiredAt",
+                    "createdAt",
+                    "updatedAt",
+                    "createdBy",
+                    "updatedBy",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "clientId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACTIVE"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "PAUSED"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ARCHIVED"
+                          ]
+                        }
+                      ]
+                    },
+                    "crons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "payload": {},
+                    "concurrent": {
+                      "type": "boolean"
+                    },
+                    "tracksCompletion": {
+                      "type": "boolean"
+                    },
+                    "timeoutSeconds": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "deliveryMaxAttempts": {
+                      "type": "integer"
+                    },
+                    "targetUrl": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "lastFiredAt": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "createdBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "updatedBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "version": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Default Response"
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/{id}/pause": {
+      "post": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "clientId",
+                    "code",
+                    "name",
+                    "description",
+                    "status",
+                    "crons",
+                    "timezone",
+                    "payload",
+                    "concurrent",
+                    "tracksCompletion",
+                    "timeoutSeconds",
+                    "deliveryMaxAttempts",
+                    "targetUrl",
+                    "lastFiredAt",
+                    "createdAt",
+                    "updatedAt",
+                    "createdBy",
+                    "updatedBy",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "clientId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACTIVE"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "PAUSED"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ARCHIVED"
+                          ]
+                        }
+                      ]
+                    },
+                    "crons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "payload": {},
+                    "concurrent": {
+                      "type": "boolean"
+                    },
+                    "tracksCompletion": {
+                      "type": "boolean"
+                    },
+                    "timeoutSeconds": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "deliveryMaxAttempts": {
+                      "type": "integer"
+                    },
+                    "targetUrl": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "lastFiredAt": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "createdBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "updatedBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "version": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/{id}/resume": {
+      "post": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "clientId",
+                    "code",
+                    "name",
+                    "description",
+                    "status",
+                    "crons",
+                    "timezone",
+                    "payload",
+                    "concurrent",
+                    "tracksCompletion",
+                    "timeoutSeconds",
+                    "deliveryMaxAttempts",
+                    "targetUrl",
+                    "lastFiredAt",
+                    "createdAt",
+                    "updatedAt",
+                    "createdBy",
+                    "updatedBy",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "clientId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACTIVE"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "PAUSED"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ARCHIVED"
+                          ]
+                        }
+                      ]
+                    },
+                    "crons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "payload": {},
+                    "concurrent": {
+                      "type": "boolean"
+                    },
+                    "tracksCompletion": {
+                      "type": "boolean"
+                    },
+                    "timeoutSeconds": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "deliveryMaxAttempts": {
+                      "type": "integer"
+                    },
+                    "targetUrl": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "lastFiredAt": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "createdBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "updatedBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "version": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/{id}/archive": {
+      "post": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "clientId",
+                    "code",
+                    "name",
+                    "description",
+                    "status",
+                    "crons",
+                    "timezone",
+                    "payload",
+                    "concurrent",
+                    "tracksCompletion",
+                    "timeoutSeconds",
+                    "deliveryMaxAttempts",
+                    "targetUrl",
+                    "lastFiredAt",
+                    "createdAt",
+                    "updatedAt",
+                    "createdBy",
+                    "updatedBy",
+                    "version"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "clientId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ACTIVE"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "PAUSED"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ARCHIVED"
+                          ]
+                        }
+                      ]
+                    },
+                    "crons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "payload": {},
+                    "concurrent": {
+                      "type": "boolean"
+                    },
+                    "tracksCompletion": {
+                      "type": "boolean"
+                    },
+                    "timeoutSeconds": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "deliveryMaxAttempts": {
+                      "type": "integer"
+                    },
+                    "targetUrl": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "lastFiredAt": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "createdBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "updatedBy": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "version": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/{id}/fire": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "correlationId": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "instanceId"
+                  ],
+                  "properties": {
+                    "instanceId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/sync": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "clientId",
+                  "scheduledJobs"
+                ],
+                "properties": {
+                  "clientId": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "scheduledJobs": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "name",
+                        "crons"
+                      ],
+                      "properties": {
+                        "code": {
+                          "minLength": 1,
+                          "maxLength": 200,
+                          "type": "string"
+                        },
+                        "name": {
+                          "minLength": 1,
+                          "maxLength": 200,
+                          "type": "string"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "crons": {
+                          "minItems": 1,
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "timezone": {
+                          "type": "string"
+                        },
+                        "payload": {},
+                        "concurrent": {
+                          "type": "boolean"
+                        },
+                        "tracksCompletion": {
+                          "type": "boolean"
+                        },
+                        "timeoutSeconds": {
+                          "anyOf": [
+                            {
+                              "type": "integer"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "deliveryMaxAttempts": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "targetUrl": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "clientId",
+                    "synced",
+                    "created",
+                    "updated"
+                  ],
+                  "properties": {
+                    "clientId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "synced": {
+                      "type": "integer"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "updated": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/instances": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "scheduledJobId",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "clientId",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "QUEUED"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "IN_FLIGHT"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "DELIVERED"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "COMPLETED"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "FAILED"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "DELIVERY_FAILED"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "status",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "CRON"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "MANUAL"
+                  ]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "triggerKind",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query",
+            "name": "from",
+            "required": false
+          },
+          {
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query",
+            "name": "to",
+            "required": false
+          },
+          {
+            "schema": {
+              "minimum": 1,
+              "maximum": 500,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "instances",
+                    "total"
+                  ],
+                  "properties": {
+                    "instances": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "scheduledJobId",
+                          "clientId",
+                          "jobCode",
+                          "triggerKind",
+                          "scheduledFor",
+                          "firedAt",
+                          "deliveredAt",
+                          "completedAt",
+                          "status",
+                          "deliveryAttempts",
+                          "deliveryError",
+                          "completionStatus",
+                          "completionResult",
+                          "correlationId",
+                          "createdAt"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "scheduledJobId": {
+                            "type": "string"
+                          },
+                          "clientId": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "jobCode": {
+                            "type": "string"
+                          },
+                          "triggerKind": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "CRON"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "MANUAL"
+                                ]
+                              }
+                            ]
+                          },
+                          "scheduledFor": {
+                            "anyOf": [
+                              {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "firedAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "deliveredAt": {
+                            "anyOf": [
+                              {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "completedAt": {
+                            "anyOf": [
+                              {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "status": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "QUEUED"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "IN_FLIGHT"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "DELIVERED"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "COMPLETED"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "FAILED"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "DELIVERY_FAILED"
+                                ]
+                              }
+                            ]
+                          },
+                          "deliveryAttempts": {
+                            "type": "integer"
+                          },
+                          "deliveryError": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "completionStatus": {
+                            "anyOf": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "SUCCESS"
+                                    ]
+                                  },
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "FAILURE"
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "completionResult": {},
+                          "correlationId": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/instances/{instanceId}": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "instanceId",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "scheduledJobId",
+                    "clientId",
+                    "jobCode",
+                    "triggerKind",
+                    "scheduledFor",
+                    "firedAt",
+                    "deliveredAt",
+                    "completedAt",
+                    "status",
+                    "deliveryAttempts",
+                    "deliveryError",
+                    "completionStatus",
+                    "completionResult",
+                    "correlationId",
+                    "createdAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "scheduledJobId": {
+                      "type": "string"
+                    },
+                    "clientId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "jobCode": {
+                      "type": "string"
+                    },
+                    "triggerKind": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "CRON"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "MANUAL"
+                          ]
+                        }
+                      ]
+                    },
+                    "scheduledFor": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "firedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "deliveredAt": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "completedAt": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "QUEUED"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "IN_FLIGHT"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "DELIVERED"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "COMPLETED"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "FAILED"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "DELIVERY_FAILED"
+                          ]
+                        }
+                      ]
+                    },
+                    "deliveryAttempts": {
+                      "type": "integer"
+                    },
+                    "deliveryError": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "completionStatus": {
+                      "anyOf": [
+                        {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "SUCCESS"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "FAILURE"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "completionResult": {},
+                    "correlationId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/instances/{instanceId}/logs": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "minimum": 1,
+              "maximum": 1000,
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "instanceId",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "logs"
+                  ],
+                  "properties": {
+                    "logs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "instanceId",
+                          "scheduledJobId",
+                          "clientId",
+                          "level",
+                          "message",
+                          "metadata",
+                          "createdAt"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "instanceId": {
+                            "type": "string"
+                          },
+                          "scheduledJobId": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "clientId": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "level": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "DEBUG"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "INFO"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "WARN"
+                                ]
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "ERROR"
+                                ]
+                              }
+                            ]
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "metadata": {},
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/instances/{instanceId}/log": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "message"
+                ],
+                "properties": {
+                  "level": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "DEBUG"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "INFO"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "WARN"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "ERROR"
+                        ]
+                      }
+                    ]
+                  },
+                  "message": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "metadata": {}
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "instanceId",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "instanceId",
+                    "scheduledJobId",
+                    "clientId",
+                    "level",
+                    "message",
+                    "metadata",
+                    "createdAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "instanceId": {
+                      "type": "string"
+                    },
+                    "scheduledJobId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "clientId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "level": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "DEBUG"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "INFO"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "WARN"
+                          ]
+                        },
+                        {
+                          "type": "string",
+                          "enum": [
+                            "ERROR"
+                          ]
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "metadata": {},
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scheduled-jobs/instances/{instanceId}/complete": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "SUCCESS"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "FAILURE"
+                        ]
+                      }
+                    ]
+                  },
+                  "result": {}
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "instanceId",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Default Response"
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/processes": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "code",
+                  "name"
+                ],
+                "properties": {
+                  "code": {
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "type": "string"
+                  },
+                  "name": {
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "type": "string"
+                  },
+                  "description": {
+                    "anyOf": [
+                      {
+                        "maxLength": 1000,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "diagramType": {
+                    "maxLength": 20,
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "application",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "subdomain",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "status",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "search",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "code",
+                          "name",
+                          "description",
+                          "status",
+                          "source",
+                          "application",
+                          "subdomain",
+                          "processName",
+                          "body",
+                          "diagramType",
+                          "tags",
+                          "createdAt",
+                          "updatedAt"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "application": {
+                            "type": "string"
+                          },
+                          "subdomain": {
+                            "type": "string"
+                          },
+                          "processName": {
+                            "type": "string"
+                          },
+                          "body": {
+                            "type": "string"
+                          },
+                          "diagramType": {
+                            "type": "string"
+                          },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/processes/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "code",
+                    "name",
+                    "description",
+                    "status",
+                    "source",
+                    "application",
+                    "subdomain",
+                    "processName",
+                    "body",
+                    "diagramType",
+                    "tags",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": "string"
+                    },
+                    "application": {
+                      "type": "string"
+                    },
+                    "subdomain": {
+                      "type": "string"
+                    },
+                    "processName": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "diagramType": {
+                      "type": "string"
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "minLength": 1,
+                    "maxLength": 255,
+                    "type": "string"
+                  },
+                  "description": {
+                    "anyOf": [
+                      {
+                        "maxLength": 1000,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "diagramType": {
+                    "maxLength": 20,
+                    "type": "string"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Default Response"
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Default Response"
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/processes/by-code/{code}": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "code",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "code",
+                    "name",
+                    "description",
+                    "status",
+                    "source",
+                    "application",
+                    "subdomain",
+                    "processName",
+                    "body",
+                    "diagramType",
+                    "tags",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": "string"
+                    },
+                    "application": {
+                      "type": "string"
+                    },
+                    "subdomain": {
+                      "type": "string"
+                    },
+                    "processName": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "diagramType": {
+                      "type": "string"
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/processes/{id}/archive": {
+      "post": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Default Response"
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{appCode}/roles/sync": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "roles"
+                ],
+                "properties": {
+                  "roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "name"
+                      ],
+                      "properties": {
+                        "name": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "displayName": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "permissions": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "application",
+                              "context",
+                              "aggregate",
+                              "action"
+                            ],
+                            "properties": {
+                              "application": {
+                                "type": "string"
+                              },
+                              "context": {
+                                "type": "string"
+                              },
+                              "aggregate": {
+                                "type": "string"
+                              },
+                              "action": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "clientManaged": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "removeUnlisted",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "appCode",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "applicationCode",
+                    "created",
+                    "updated",
+                    "deleted",
+                    "syncedCodes"
+                  ],
+                  "properties": {
+                    "applicationCode": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "updated": {
+                      "type": "integer"
+                    },
+                    "deleted": {
+                      "type": "integer"
+                    },
+                    "syncedCodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{appCode}/event-types/sync": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "eventTypes"
+                ],
+                "properties": {
+                  "eventTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "subdomain",
+                        "aggregate",
+                        "event"
+                      ],
+                      "properties": {
+                        "name": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "application": {
+                          "type": "string"
+                        },
+                        "subdomain": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "aggregate": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "event": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "clientScoped": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "removeUnlisted",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "appCode",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "applicationCode",
+                    "created",
+                    "updated",
+                    "deleted",
+                    "syncedCodes"
+                  ],
+                  "properties": {
+                    "applicationCode": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "updated": {
+                      "type": "integer"
+                    },
+                    "deleted": {
+                      "type": "integer"
+                    },
+                    "syncedCodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{appCode}/subscriptions/sync": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "subscriptions"
+                ],
+                "properties": {
+                  "subscriptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "name",
+                        "queue",
+                        "dispatchPoolCode"
+                      ],
+                      "properties": {
+                        "code": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "name": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "target": {
+                          "minLength": 1,
+                          "maxLength": 2048,
+                          "type": "string"
+                        },
+                        "endpoint": {
+                          "minLength": 1,
+                          "maxLength": 2048,
+                          "type": "string"
+                        },
+                        "connectionId": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "queue": {
+                          "type": "string"
+                        },
+                        "dispatchPoolCode": {
+                          "type": "string"
+                        },
+                        "clientScoped": {
+                          "type": "boolean"
+                        },
+                        "maxRetries": {
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "retryDelaySeconds": {
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "timeoutSeconds": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "active": {
+                          "type": "boolean"
+                        },
+                        "applicationCode": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "eventTypeCode": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "removeUnlisted",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "appCode",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "applicationCode",
+                    "created",
+                    "updated",
+                    "deleted",
+                    "syncedCodes"
+                  ],
+                  "properties": {
+                    "applicationCode": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "updated": {
+                      "type": "integer"
+                    },
+                    "deleted": {
+                      "type": "integer"
+                    },
+                    "syncedCodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{appCode}/dispatch-pools/sync": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "pools"
+                ],
+                "properties": {
+                  "pools": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "code"
+                      ],
+                      "properties": {
+                        "code": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "rateLimit": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "concurrency": {
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "removeUnlisted",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "appCode",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "applicationCode",
+                    "created",
+                    "updated",
+                    "deleted",
+                    "syncedCodes"
+                  ],
+                  "properties": {
+                    "applicationCode": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "updated": {
+                      "type": "integer"
+                    },
+                    "deleted": {
+                      "type": "integer"
+                    },
+                    "syncedCodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{appCode}/principals/sync": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "principals"
+                ],
+                "properties": {
+                  "principals": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "email",
+                        "name"
+                      ],
+                      "properties": {
+                        "email": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "name": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "roles": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "active": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "removeUnlisted",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "appCode",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "applicationCode",
+                    "created",
+                    "updated",
+                    "deleted",
+                    "syncedCodes"
+                  ],
+                  "properties": {
+                    "applicationCode": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "updated": {
+                      "type": "integer"
+                    },
+                    "deleted": {
+                      "type": "integer"
+                    },
+                    "syncedCodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/applications/{appCode}/processes/sync": {
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "processes"
+                ],
+                "properties": {
+                  "processes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "code",
+                        "name"
+                      ],
+                      "properties": {
+                        "code": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "name": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "body": {
+                          "type": "string"
+                        },
+                        "diagramType": {
+                          "type": "string"
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "removeUnlisted",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "appCode",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "applicationCode",
+                    "created",
+                    "updated",
+                    "deleted",
+                    "syncedCodes"
+                  ],
+                  "properties": {
+                    "applicationCode": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "updated": {
+                      "type": "integer"
+                    },
+                    "deleted": {
+                      "type": "integer"
+                    },
+                    "syncedCodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "code"
+                  ],
+                  "properties": {
+                    "message": {
+                      "description": "Human-readable error message",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "Machine-readable error code",
+                      "type": "string"
+                    },
+                    "details": {
+                      "description": "Additional error details",
+                      "type": "object",
+                      "additionalProperties": {}
                     }
                   }
                 }

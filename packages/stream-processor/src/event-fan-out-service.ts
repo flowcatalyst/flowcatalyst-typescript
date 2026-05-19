@@ -33,6 +33,7 @@
 import type postgres from "postgres";
 import type { Logger } from "@flowcatalyst/logging";
 import { generateRaw } from "@flowcatalyst/tsid";
+import { StreamHealth } from "./stream-health.js";
 
 export interface EventFanOutConfig {
 	readonly enabled: boolean;
@@ -46,6 +47,7 @@ export interface EventFanOutService {
 	start(): void;
 	stop(): void;
 	isRunning(): boolean;
+	readonly health: StreamHealth;
 }
 
 interface SubscriptionMatch {
@@ -81,6 +83,7 @@ export function createEventFanOutService(
 	logger: Logger,
 ): EventFanOutService {
 	let running = false;
+	const health = new StreamHealth("event-fan-out");
 	const subsCache: { subs: SubscriptionMatch[]; refreshedAt: number } = {
 		subs: [],
 		refreshedAt: 0,
@@ -157,7 +160,9 @@ export function createEventFanOutService(
 	}
 
 	function matches(sub: SubscriptionMatch, event: ClaimedEvent): boolean {
-		if (!sub.eventTypeCodes.includes(event.type)) return false;
+		if (!sub.eventTypeCodes.some((p) => patternMatches(p, event.type))) {
+			return false;
+		}
 		// Subscription with a clientId only fires for events from that client.
 		// Subscription without a clientId fires for any client.
 		if (sub.clientId !== null && sub.clientId !== event.clientId) return false;
@@ -396,6 +401,7 @@ export function createEventFanOutService(
 			try {
 				const { events, jobs } = await pollOnce();
 				if (events > 0) {
+					health.addProcessed(jobs);
 					logger.debug({ events, jobs }, "Fan-out cycle");
 				}
 				if (events === 0) {
@@ -406,6 +412,7 @@ export function createEventFanOutService(
 				// Full batch: no sleep, immediately poll again.
 			} catch (err) {
 				if (!running) break;
+				health.recordError();
 				logger.error({ err }, "Error in event fan-out poll loop");
 				await sleep(5000);
 			}
@@ -418,9 +425,11 @@ export function createEventFanOutService(
 			return;
 		}
 		running = true;
+		health.setRunning(true);
 		pollLoop().catch((err) => {
 			logger.error({ err }, "Event fan-out poll loop exited unexpectedly");
 			running = false;
+			health.setRunning(false);
 		});
 		logger.info(
 			{ batchSize: config.batchSize },
@@ -432,12 +441,31 @@ export function createEventFanOutService(
 		if (!running) return;
 		logger.info("Stopping event fan-out service...");
 		running = false;
+		health.setRunning(false);
 		logger.info("Event fan-out service stopped");
 	}
 
-	return { start, stop, isRunning: () => running };
+	return { start, stop, isRunning: () => running, health };
 }
 
 function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * `:`-separated wildcard match. Segment counts must agree and `*`
+ * matches any single segment — e.g. `orders:*:shipped` matches
+ * `orders:fulfillment:shipped` but not `orders:shipped` or
+ * `orders:fulfillment:warehouse:shipped`. Mirrors Rust
+ * `crates/fc-stream/src/event_fan_out.rs::pattern_matches`.
+ */
+function patternMatches(pattern: string, code: string): boolean {
+	if (pattern === code) return true;
+	const pp = pattern.split(":");
+	const cp = code.split(":");
+	if (pp.length !== cp.length) return false;
+	for (let i = 0; i < pp.length; i++) {
+		if (pp[i] !== "*" && pp[i] !== cp[i]) return false;
+	}
+	return true;
 }

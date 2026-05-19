@@ -195,6 +195,39 @@ export const envSchema = z.object({
 	 */
 	OIDC_AUDIENCE: z.string().optional(),
 
+	/**
+	 * Enable the OIDC Authorization Code login flow (`/auth/login`,
+	 * `/auth/callback`, `/auth/logout`). When enabled, the router can
+	 * accept either a Bearer token (machine clients) or an `fc_session`
+	 * cookie (interactive users) on protected routes.
+	 */
+	OIDC_FLOW_ENABLED: z
+		.string()
+		.transform((v) => v === "true")
+		.prefault("false"),
+
+	/**
+	 * OIDC client secret for confidential clients. Optional — public
+	 * clients (PKCE-only) omit this.
+	 */
+	OIDC_CLIENT_SECRET: z.string().optional(),
+
+	/**
+	 * Redirect URI registered with the identity provider. Must match
+	 * exactly. Typically `https://router.example.com/auth/callback`.
+	 */
+	OIDC_REDIRECT_URI: z.string().optional(),
+
+	/**
+	 * Space-separated scopes to request. Defaults to `openid profile email`.
+	 */
+	OIDC_SCOPES: z.string().default("openid profile email"),
+
+	/**
+	 * Session cookie TTL in seconds. Default: 3600 (1 hour).
+	 */
+	OIDC_SESSION_TTL_SECONDS: z.coerce.number().int().positive().default(3600),
+
 	// Notification Configuration
 	/**
 	 * Enable notifications globally.

@@ -15,7 +15,7 @@ import Fastify from "fastify";
 import swagger from "@fastify/swagger";
 import {
 	registerAdminRoutes,
-	registerSdkRoutes,
+	registerApplicationSyncApiRoutes,
 	registerMeApiRoutes,
 	registerPublicApiRoutes,
 	registerPlatformConfigApiRoutes,
@@ -82,7 +82,7 @@ async function main() {
 	const stub = createStub();
 
 	await registerAdminRoutes(fastify, stub);
-	await registerSdkRoutes(fastify, stub);
+	await registerApplicationSyncApiRoutes(fastify, stub);
 	await registerMeApiRoutes(fastify, stub);
 	await registerPublicApiRoutes(fastify, stub);
 	await registerPlatformConfigApiRoutes(fastify, stub);

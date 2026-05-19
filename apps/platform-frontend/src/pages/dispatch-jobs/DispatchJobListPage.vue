@@ -2,8 +2,8 @@
 import { ref, computed, onMounted } from "vue";
 import { useListState } from "@/composables/useListState";
 import {
-	getApiAdminDispatchJobs,
-	getApiAdminDispatchJobsFilterOptions,
+	getApiDispatchJobs,
+	getApiDispatchJobsFilterOptions,
 } from "@/api/generated";
 
 interface DispatchJob {
@@ -90,7 +90,7 @@ onMounted(async () => {
 
 async function loadFilterOptions() {
 	try {
-		const response = await getApiAdminDispatchJobsFilterOptions({
+		const response = await getApiDispatchJobsFilterOptions({
 			query: {
 				clientIds:
 					selectedClients.value.length > 0
@@ -134,7 +134,7 @@ async function loadFilterOptions() {
 async function loadDispatchJobs() {
 	loading.value = true;
 	try {
-		const response = await getApiAdminDispatchJobs({
+		const response = await getApiDispatchJobs({
 			query: {
 				page: String(page.value),
 				size: String(pageSize.value),

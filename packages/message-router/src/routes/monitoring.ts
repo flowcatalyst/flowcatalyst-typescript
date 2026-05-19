@@ -83,6 +83,56 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 		},
 	);
 
+	// PUT /monitoring/pools/:poolCode — update a pool's concurrency/rate
+	// limit at runtime. Mirrors Rust `PUT /monitoring/pools/{pool_code}`.
+	f.put<{
+		Params: { poolCode: string };
+		Body: {
+			concurrency?: number;
+			rateLimitPerMinute?: number | null;
+		};
+	}>(
+		"/pools/:poolCode",
+		{
+			schema: {
+				tags: ["Monitoring"],
+				summary: "Update pool configuration at runtime",
+				params: Type.Object({ poolCode: Type.String() }),
+				body: Type.Object({
+					concurrency: Type.Optional(Type.Number({ minimum: 1 })),
+					rateLimitPerMinute: Type.Optional(
+						Type.Union([Type.Number({ minimum: 1 }), Type.Null()]),
+					),
+				}),
+				response: {
+					200: Type.Object({
+						success: Type.Boolean(),
+						poolCode: Type.String(),
+						newConfig: Type.Object({
+							concurrency: Type.Number(),
+							rateLimitPerMinute: Type.Union([
+								Type.Number(),
+								Type.Null(),
+							]),
+						}),
+					}),
+				},
+			},
+		},
+		async (request) => {
+			const { poolCode } = request.params;
+			const updated = await request.services.queueManager.updatePoolConfig(
+				poolCode,
+				request.body,
+			);
+			return {
+				success: true,
+				poolCode,
+				newConfig: updated,
+			};
+		},
+	);
+
 	// GET /monitoring/warnings
 	f.get(
 		"/warnings",

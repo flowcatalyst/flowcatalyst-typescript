@@ -1555,6 +1555,66 @@ export class QueueManagerService {
 	}
 
 	/**
+	 * Reload configuration from a request payload. Returns the before/after
+	 * pool counts so the admin caller can confirm what changed. Mirrors
+	 * Rust `POST /config/reload`.
+	 */
+	async reloadConfig(config: MessageRouterConfig): Promise<{
+		poolsBefore: number;
+		poolsAfter: number;
+		poolsCreated: number;
+		poolsRemoved: number;
+	}> {
+		const poolsBefore = this.processPools.size;
+		await this.applyConfiguration(config);
+		const poolsAfter = this.processPools.size;
+		return {
+			poolsBefore,
+			poolsAfter,
+			poolsCreated: Math.max(0, poolsAfter - poolsBefore),
+			poolsRemoved: Math.max(0, poolsBefore - poolsAfter),
+		};
+	}
+
+	/**
+	 * Update a single pool's runtime configuration (concurrency,
+	 * rate limit). If the pool isn't in the current config, it's added
+	 * with sane defaults. Mirrors Rust `PUT /monitoring/pools/{pool_code}`.
+	 */
+	async updatePoolConfig(
+		poolCode: string,
+		patch: {
+			concurrency?: number | undefined;
+			rateLimitPerMinute?: number | null | undefined;
+		},
+	): Promise<{ concurrency: number; rateLimitPerMinute: number | null }> {
+		const currentPools = this.currentConfig?.processingPools ?? [];
+		const existing = currentPools.find((p) => p.code === poolCode);
+		const concurrency = patch.concurrency ?? existing?.concurrency ?? 10;
+		const rateLimitPerMinute =
+			patch.rateLimitPerMinute !== undefined
+				? patch.rateLimitPerMinute
+				: (existing?.rateLimitPerMinute ?? null);
+
+		const nextPools: PoolConfig[] = existing
+			? currentPools.map((p) =>
+					p.code === poolCode ? { code: poolCode, concurrency, rateLimitPerMinute } : p,
+				)
+			: [...currentPools, { code: poolCode, concurrency, rateLimitPerMinute }];
+
+		const nextConfig: MessageRouterConfig = this.currentConfig
+			? { ...this.currentConfig, processingPools: nextPools }
+			: {
+					queues: [],
+					connections: env.DEFAULT_CONNECTIONS,
+					processingPools: nextPools,
+				};
+
+		await this.applyConfiguration(nextConfig);
+		return { concurrency, rateLimitPerMinute };
+	}
+
+	/**
 	 * Force all consumers to refresh their metrics from the broker.
 	 * Called when the dashboard user clicks Refresh.
 	 */

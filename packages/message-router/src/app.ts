@@ -3,6 +3,12 @@ import type { Logger } from "@flowcatalyst/logging";
 import { createServices, type Services } from "./services/index.js";
 import { servicesPlugin } from "./plugins/services-plugin.js";
 import { authPlugin, type AuthConfig } from "./plugins/auth-plugin.js";
+import {
+	oidcFlowPlugin,
+	SessionStore,
+	PendingOidcStateStore,
+	type OidcFlowConfig,
+} from "./plugins/oidc-flow.js";
 import { healthRoutes } from "./routes/health.js";
 import { configRoutes } from "./routes/config.js";
 import { monitoringRoutes } from "./routes/monitoring.js";
@@ -28,6 +34,42 @@ export async function createApp(
 	// Register plugins
 	await app.register(servicesPlugin, { services });
 
+	// OIDC Authorization Code Flow (login/callback/logout for interactive users).
+	// When enabled, the session store also satisfies auth for protected routes
+	// via the `fc_session` cookie; machine clients keep using Bearer tokens.
+	const oidcFlowEnabled =
+		env.OIDC_FLOW_ENABLED &&
+		env.AUTHENTICATION_MODE === "OIDC" &&
+		!!env.OIDC_ISSUER_URL &&
+		!!env.OIDC_CLIENT_ID &&
+		!!env.OIDC_REDIRECT_URI;
+
+	let sessionStore: SessionStore | undefined;
+	if (oidcFlowEnabled) {
+		sessionStore = new SessionStore(env.OIDC_SESSION_TTL_SECONDS);
+		const pendingStates = new PendingOidcStateStore();
+		const oidcFlowConfig: OidcFlowConfig = {
+			issuerUrl: env.OIDC_ISSUER_URL!,
+			clientId: env.OIDC_CLIENT_ID!,
+			clientSecret: env.OIDC_CLIENT_SECRET,
+			redirectUri: env.OIDC_REDIRECT_URI!,
+			scopes: env.OIDC_SCOPES.split(/\s+/).filter(Boolean),
+			sessionTtlSeconds: env.OIDC_SESSION_TTL_SECONDS,
+			audience: env.OIDC_AUDIENCE || env.OIDC_CLIENT_ID,
+		};
+		await app.register(
+			async (instance) => {
+				await instance.register(oidcFlowPlugin, {
+					config: oidcFlowConfig,
+					sessionStore: sessionStore!,
+					pendingStates,
+					logger,
+				});
+			},
+			{ prefix: "/auth" },
+		);
+	}
+
 	// Auth plugin
 	const authConfig: AuthConfig = {
 		enabled: env.AUTHENTICATION_ENABLED,
@@ -47,7 +89,7 @@ export async function createApp(
 				}
 			: undefined,
 	};
-	await app.register(authPlugin, { config: authConfig, logger });
+	await app.register(authPlugin, { config: authConfig, logger, sessionStore });
 
 	// Request logging hook
 	app.addHook("onResponse", (request, reply, done) => {

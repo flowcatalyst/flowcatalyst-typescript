@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import { request, Agent } from "undici";
 import type { Dispatcher } from "undici";
 import type { Logger } from "@flowcatalyst/logging";
@@ -7,6 +8,29 @@ import type {
 	QueueMessage,
 } from "@flowcatalyst/contracts";
 import type { CircuitBreakerManager } from "./circuit-breaker.js";
+
+/** Webhook signature header — matches Rust `SIGNATURE_HEADER`. */
+export const SIGNATURE_HEADER = "X-FLOWCATALYST-SIGNATURE";
+/** Webhook timestamp header — matches Rust `TIMESTAMP_HEADER`. */
+export const TIMESTAMP_HEADER = "X-FLOWCATALYST-TIMESTAMP";
+
+/**
+ * Compute the HMAC-SHA256 signature over `timestamp + body` using
+ * `signingSecret`. Returns lowercase hex (matches Java's
+ * `HexFormat.of().formatHex()` and Rust's `hex::encode`). The
+ * timestamp is ISO8601 with millisecond precision — what
+ * `Date.prototype.toISOString()` already returns.
+ */
+export function signWebhook(
+	body: string,
+	signingSecret: string,
+): { signature: string; timestamp: string } {
+	const timestamp = new Date().toISOString();
+	const signature = createHmac("sha256", signingSecret)
+		.update(timestamp + body)
+		.digest("hex");
+	return { signature, timestamp };
+}
 
 /**
  * HTTP Mediator configuration
@@ -217,6 +241,15 @@ export class HttpMediator {
 			}
 
 			const body = JSON.stringify({ messageId: message.messageId });
+
+			if (message.pointer.signingSecret) {
+				const { signature, timestamp } = signWebhook(
+					body,
+					message.pointer.signingSecret,
+				);
+				headers[SIGNATURE_HEADER] = signature;
+				headers[TIMESTAMP_HEADER] = timestamp;
+			}
 
 			const response = await request(callbackUrl, {
 				method: "POST",

@@ -9,20 +9,20 @@ import type { SdkError } from "../errors";
 import type { FlowCatalystClient } from "../client";
 import * as sdk from "../generated/sdk.gen";
 import type {
-	GetApiAdminDispatchPoolsResponse,
-	GetApiAdminDispatchPoolsByIdResponse,
-	PostApiAdminDispatchPoolsData,
-	PutApiAdminDispatchPoolsByIdData,
-	PostApiAdminDispatchPoolsSyncData,
-	PostApiAdminDispatchPoolsSyncResponse,
+	GetApiDispatchPoolsResponse,
+	GetApiDispatchPoolsByIdResponse,
+	PostApiDispatchPoolsData,
+	PutApiDispatchPoolsByIdData,
+	PostApiDispatchPoolsSyncData,
+	PostApiDispatchPoolsSyncResponse,
 } from "../generated/types.gen";
 
-export type DispatchPoolListResponse = GetApiAdminDispatchPoolsResponse;
-export type DispatchPoolDto = GetApiAdminDispatchPoolsByIdResponse;
-export type CreateDispatchPoolRequest = PostApiAdminDispatchPoolsData["body"];
+export type DispatchPoolListResponse = GetApiDispatchPoolsResponse;
+export type DispatchPoolDto = GetApiDispatchPoolsByIdResponse;
+export type CreateDispatchPoolRequest = PostApiDispatchPoolsData["body"];
 export type UpdateDispatchPoolRequest =
-	PutApiAdminDispatchPoolsByIdData["body"];
-export type SyncDispatchPoolsResponse = PostApiAdminDispatchPoolsSyncResponse;
+	PutApiDispatchPoolsByIdData["body"];
+export type SyncDispatchPoolsResponse = PostApiDispatchPoolsSyncResponse;
 
 export interface DispatchPoolFilters {
 	clientId?: string;
@@ -47,7 +47,7 @@ export class DispatchPoolsResource {
 	): ResultAsync<DispatchPoolListResponse, SdkError> {
 		return this.client.request<DispatchPoolListResponse>(
 			(httpClient, headers) =>
-				sdk.getApiAdminDispatchPools({
+				sdk.getApiDispatchPools({
 					client: httpClient,
 					headers,
 					query: filters,
@@ -60,7 +60,7 @@ export class DispatchPoolsResource {
 	 */
 	get(id: string): ResultAsync<DispatchPoolDto, SdkError> {
 		return this.client.request<DispatchPoolDto>((httpClient, headers) =>
-			sdk.getApiAdminDispatchPoolsById({
+			sdk.getApiDispatchPoolsById({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -75,7 +75,7 @@ export class DispatchPoolsResource {
 		data: CreateDispatchPoolRequest,
 	): ResultAsync<DispatchPoolDto, SdkError> {
 		return this.client.request<DispatchPoolDto>((httpClient, headers) =>
-			sdk.postApiAdminDispatchPools({
+			sdk.postApiDispatchPools({
 				client: httpClient,
 				headers,
 				body: data,
@@ -91,7 +91,7 @@ export class DispatchPoolsResource {
 		data: UpdateDispatchPoolRequest,
 	): ResultAsync<DispatchPoolDto, SdkError> {
 		return this.client.request<DispatchPoolDto>((httpClient, headers) =>
-			sdk.putApiAdminDispatchPoolsById({
+			sdk.putApiDispatchPoolsById({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -105,7 +105,7 @@ export class DispatchPoolsResource {
 	 */
 	delete(id: string): ResultAsync<unknown, SdkError> {
 		return this.client.request<unknown>((httpClient, headers) =>
-			sdk.deleteApiAdminDispatchPoolsById({
+			sdk.deleteApiDispatchPoolsById({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -118,7 +118,7 @@ export class DispatchPoolsResource {
 	 */
 	suspend(id: string): ResultAsync<DispatchPoolDto, SdkError> {
 		return this.client.request<DispatchPoolDto>((httpClient, headers) =>
-			sdk.postApiAdminDispatchPoolsByIdSuspend({
+			sdk.postApiDispatchPoolsByIdSuspend({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -131,7 +131,7 @@ export class DispatchPoolsResource {
 	 */
 	activate(id: string): ResultAsync<DispatchPoolDto, SdkError> {
 		return this.client.request<DispatchPoolDto>((httpClient, headers) =>
-			sdk.postApiAdminDispatchPoolsByIdActivate({
+			sdk.postApiDispatchPoolsByIdActivate({
 				client: httpClient,
 				headers,
 				path: { id },
@@ -144,12 +144,12 @@ export class DispatchPoolsResource {
 	 */
 	sync(
 		applicationCode: string,
-		pools: PostApiAdminDispatchPoolsSyncData["body"]["pools"],
+		pools: PostApiDispatchPoolsSyncData["body"]["pools"],
 		removeUnlisted = false,
 	): ResultAsync<SyncDispatchPoolsResponse, SdkError> {
 		return this.client.request<SyncDispatchPoolsResponse>(
 			(httpClient, headers) =>
-				sdk.postApiAdminDispatchPoolsSync({
+				sdk.postApiDispatchPoolsSync({
 					client: httpClient,
 					headers,
 					body: { applicationCode, pools, removeUnlisted },

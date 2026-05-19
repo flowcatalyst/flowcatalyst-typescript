@@ -9,6 +9,7 @@ import type { FastifyPluginAsync, FastifyRequest, FastifyReply } from "fastify";
 import fp from "fastify-plugin";
 import type { Logger } from "@flowcatalyst/logging";
 import * as jose from "jose";
+import { extractSessionCookie, type SessionStore } from "./oidc-flow.js";
 
 // ── Types ──
 
@@ -44,6 +45,13 @@ export interface AuthUser {
 export interface AuthPluginOptions {
 	config: AuthConfig;
 	logger: Logger;
+	/**
+	 * Optional session store. When provided and the OIDC flow is in use,
+	 * a valid `fc_session` cookie satisfies authentication for protected
+	 * routes — falling back to Bearer-token verification only when the
+	 * cookie is absent or expired.
+	 */
+	sessionStore?: SessionStore | undefined;
 }
 
 declare module "fastify" {
@@ -182,6 +190,7 @@ function handleBasicAuth(
 function handleOidcAuth(
 	config: OidcConfig,
 	childLogger: Logger,
+	sessionStore?: SessionStore,
 ): (request: FastifyRequest, reply: FastifyReply) => Promise<void> {
 	// Pre-warm JWKS cache
 	getJwks(config.issuerUrl).catch((err) => {
@@ -189,6 +198,18 @@ function handleOidcAuth(
 	});
 
 	return async (request, reply) => {
+		// Session cookie path (interactive users via OIDC flow)
+		if (sessionStore) {
+			const sessionId = extractSessionCookie(request);
+			if (sessionId) {
+				const user = sessionStore.get(sessionId);
+				if (user) {
+					request.authUser = user;
+					return;
+				}
+			}
+		}
+
 		const authHeader = request.headers.authorization;
 
 		if (!authHeader) {
@@ -312,7 +333,7 @@ const authPluginAsync: FastifyPluginAsync<AuthPluginOptions> = async (
 	fastify,
 	opts,
 ) => {
-	const { config, logger } = opts;
+	const { config, logger, sessionStore } = opts;
 	const childLogger = logger.child({ component: "Auth" });
 
 	// Decorate request with authUser
@@ -345,8 +366,11 @@ const authPluginAsync: FastifyPluginAsync<AuthPluginOptions> = async (
 			if (!config.oidc?.issuerUrl) {
 				throw new Error("OIDC requires OIDC_ISSUER_URL");
 			}
-			childLogger.info({ issuer: config.oidc.issuerUrl }, "OIDC enabled");
-			authenticate = handleOidcAuth(config.oidc, childLogger);
+			childLogger.info(
+				{ issuer: config.oidc.issuerUrl, sessionAuth: !!sessionStore },
+				"OIDC enabled",
+			);
+			authenticate = handleOidcAuth(config.oidc, childLogger, sessionStore);
 			break;
 		}
 		default: {

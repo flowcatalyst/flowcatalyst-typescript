@@ -11,6 +11,7 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      *    "active"?: string,
      *    "email"?: string,
      *    "q"?: string,
+     *    "roles"?: string,
      *    "page"?: string,
      *    "pageSize"?: string,
      *    "sortField"?: string,
@@ -18,227 +19,227 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminPrincipal(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiPrincipal(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminPrincipal($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiPrincipal($queryParameters), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminPrincipalByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiPrincipalByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminPrincipalById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiPrincipalById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminPrincipalById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiPrincipalById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminPrincipalByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiPrincipalByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminPrincipalById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiPrincipalById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminPrincipalById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiPrincipalById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminPrincipalByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminPrincipalByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiPrincipalByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiPrincipalByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminPrincipalById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiPrincipalById(string $id, ?\FlowCatalyst\Generated\Model\ApiPrincipalsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminPrincipalById($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiPrincipalById($id, $requestBody), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsUsersPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiPrincipalsUsersPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsUserBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsUserConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsUserBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsUserConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsUsersPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsUsersPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminPrincipalsUser(?\FlowCatalyst\Generated\Model\ApiAdminPrincipalsUsersPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiPrincipalsUser(?\FlowCatalyst\Generated\Model\ApiPrincipalsUsersPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminPrincipalsUser($requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsByIdActivateNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminPrincipalsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminPrincipalsByIdActivate($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiPrincipalsUser($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsByIdDeactivateNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsByIdActivateNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdDeactivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminPrincipalsByIdDeactivate(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiPrincipalsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminPrincipalsByIdDeactivate($id), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdResetPasswordPostBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsByIdResetPasswordBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsByIdResetPasswordNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdResetPasswordPostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminPrincipalsByIdResetPassword(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdResetPasswordPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminPrincipalsByIdResetPassword($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiPrincipalsByIdActivate($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminPrincipalsByIdRoleNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsByIdDeactivateNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdRolesGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdDeactivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminPrincipalsByIdRole(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiPrincipalsByIdDeactivate(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminPrincipalsByIdRole($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiPrincipalsByIdDeactivate($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdRolesPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdResetPasswordPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsByIdRoleBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsByIdRoleNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsByIdResetPasswordBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsByIdResetPasswordNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdRolesPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdResetPasswordPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminPrincipalsByIdRole(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdRolesPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiPrincipalsByIdResetPassword(string $id, ?\FlowCatalyst\Generated\Model\ApiPrincipalsIdResetPasswordPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminPrincipalsByIdRole($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiPrincipalsByIdResetPassword($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdRolesPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminPrincipalsByIdRoleBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminPrincipalsByIdRoleNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiPrincipalsByIdRoleNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdRolesPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdRolesGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminPrincipalsByIdRole(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdRolesPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function getApiPrincipalsByIdRole(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminPrincipalsByIdRole($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiPrincipalsByIdRole($id), $fetch);
     }
     /**
      * @param string $id
-     * @param string $roleName
+     * @param null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdRolesPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminPrincipalsByIdRoleByRoleNameNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsByIdRoleBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsByIdRoleNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdRolesPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiPrincipalsByIdRole(string $id, ?\FlowCatalyst\Generated\Model\ApiPrincipalsIdRolesPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiPrincipalsByIdRole($id, $requestBody), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdRolesPutBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PutApiPrincipalsByIdRoleBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiPrincipalsByIdRoleNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdRolesPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function putApiPrincipalsByIdRole(string $id, ?\FlowCatalyst\Generated\Model\ApiPrincipalsIdRolesPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiPrincipalsByIdRole($id, $requestBody), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $role
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiPrincipalsByIdRoleByRoleNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminPrincipalsByIdRoleByRoleName(string $id, string $roleName, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiPrincipalsByIdRoleByRole(string $id, string $role, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminPrincipalsByIdRoleByRoleName($id, $roleName), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiPrincipalsByIdRoleByRole($id, $role), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminPrincipalsByIdClientAccessNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiPrincipalsByIdClientAccessNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdClientAccessGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdClientAccessGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminPrincipalsByIdClientAccess(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiPrincipalsByIdClientAccess(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminPrincipalsByIdClientAccess($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiPrincipalsByIdClientAccess($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdClientAccessPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdClientAccessPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsByIdClientAccessBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsByIdClientAccessNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPrincipalsByIdClientAccessConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsByIdClientAccessBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsByIdClientAccessNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPrincipalsByIdClientAccessConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdClientAccessPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdClientAccessPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminPrincipalsByIdClientAccess(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdClientAccessPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiPrincipalsByIdClientAccess(string $id, ?\FlowCatalyst\Generated\Model\ApiPrincipalsIdClientAccessPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminPrincipalsByIdClientAccess($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiPrincipalsByIdClientAccess($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $clientId
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminPrincipalsByIdClientAccessByClientIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiPrincipalsByIdClientAccessByClientIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminPrincipalsByIdClientAccessByClientId(string $id, string $clientId, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiPrincipalsByIdClientAccessByClientId(string $id, string $clientId, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminPrincipalsByIdClientAccessByClientId($id, $clientId), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiPrincipalsByIdClientAccessByClientId($id, $clientId), $fetch);
     }
     /**
      * @param array{
      *    "email"?: string,
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminPrincipalsCheckEmailDomainBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiPrincipalsCheckEmailDomainBadRequestException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsCheckEmailDomainGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsCheckEmailDomainGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminPrincipalsCheckEmailDomain(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiPrincipalsCheckEmailDomain(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminPrincipalsCheckEmailDomain($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiPrincipalsCheckEmailDomain($queryParameters), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminPrincipalsByIdApplicationAccessNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiPrincipalsByIdApplicationAccessNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdApplicationAccessGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdApplicationAccessGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminPrincipalsByIdApplicationAccess(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiPrincipalsByIdApplicationAccess(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminPrincipalsByIdApplicationAccess($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiPrincipalsByIdApplicationAccess($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdApplicationAccessPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdApplicationAccessPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminPrincipalsByIdApplicationAccessBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminPrincipalsByIdApplicationAccessNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiPrincipalsByIdApplicationAccessBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiPrincipalsByIdApplicationAccessNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdApplicationAccessPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdApplicationAccessPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminPrincipalsByIdApplicationAccess(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdApplicationAccessPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiPrincipalsByIdApplicationAccess(string $id, ?\FlowCatalyst\Generated\Model\ApiPrincipalsIdApplicationAccessPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminPrincipalsByIdApplicationAccess($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiPrincipalsByIdApplicationAccess($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminPrincipalsByIdAvailableApplicationNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiPrincipalsByIdAvailableApplicationNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPrincipalsIdAvailableApplicationsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPrincipalsIdAvailableApplicationsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminPrincipalsByIdAvailableApplication(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiPrincipalsByIdAvailableApplication(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminPrincipalsByIdAvailableApplication($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiPrincipalsByIdAvailableApplication($id), $fetch);
     }
     /**
      * @param array{
@@ -248,23 +249,23 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminClient(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiClient(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminClient($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiClient($queryParameters), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminClientsPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiClientsPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminClient(?\FlowCatalyst\Generated\Model\ApiAdminClientsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiClient(?\FlowCatalyst\Generated\Model\ApiClientsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminClient($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiClient($requestBody), $fetch);
     }
     /**
      * @param array{
@@ -274,216 +275,216 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsSearchGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsSearchGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminClientsSearch(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiClientsSearch(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminClientsSearch($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiClientsSearch($queryParameters), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminClientByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiClientByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminClientById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiClientById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminClientById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiClientById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminClientByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiClientByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminClientById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiClientById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminClientById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiClientById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiClientsIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminClientByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminClientByIdNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminClientByIdConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiClientByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiClientByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiClientByIdConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminClientById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminClientsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiClientById(string $id, ?\FlowCatalyst\Generated\Model\ApiClientsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminClientById($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiClientById($id, $requestBody), $fetch);
     }
     /**
      * @param string $identifier
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminClientsByIdentifierByIdentifierNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiClientsByIdentifierByIdentifierNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsByIdentifierIdentifierGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsByIdentifierIdentifierGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminClientsByIdentifierByIdentifier(string $identifier, string $fetch = self::FETCH_OBJECT)
+    public function getApiClientsByIdentifierByIdentifier(string $identifier, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminClientsByIdentifierByIdentifier($identifier), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiClientsByIdentifierByIdentifier($identifier), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdActivatePostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiClientsIdActivatePostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdActivateBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdActivateNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdActivateConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdActivateBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdActivateNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdActivateConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminClientsByIdActivate(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminClientsIdActivatePostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiClientsByIdActivate(string $id, ?\FlowCatalyst\Generated\Model\ApiClientsIdActivatePostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminClientsByIdActivate($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiClientsByIdActivate($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdSuspendPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiClientsIdSuspendPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdSuspendBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdSuspendNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdSuspendConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdSuspendBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdSuspendNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdSuspendConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdSuspendPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsIdSuspendPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminClientsByIdSuspend(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminClientsIdSuspendPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiClientsByIdSuspend(string $id, ?\FlowCatalyst\Generated\Model\ApiClientsIdSuspendPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminClientsByIdSuspend($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiClientsByIdSuspend($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdDeactivatePostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiClientsIdDeactivatePostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdDeactivateBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdDeactivateNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdDeactivateConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdDeactivateBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdDeactivateNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdDeactivateConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdDeactivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsIdDeactivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminClientsByIdDeactivate(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminClientsIdDeactivatePostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiClientsByIdDeactivate(string $id, ?\FlowCatalyst\Generated\Model\ApiClientsIdDeactivatePostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminClientsByIdDeactivate($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiClientsByIdDeactivate($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdNotesPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiClientsIdNotesPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdNoteBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdNoteNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdNoteBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdNoteNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdNotesPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsIdNotesPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminClientsByIdNote(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminClientsIdNotesPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiClientsByIdNote(string $id, ?\FlowCatalyst\Generated\Model\ApiClientsIdNotesPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminClientsByIdNote($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminClientsByIdApplicationNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdApplicationsGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiAdminClientsByIdApplication(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminClientsByIdApplication($id), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdApplicationsPutBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminClientsByIdApplicationNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdApplicationsPutResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function putApiAdminClientsByIdApplication(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminClientsIdApplicationsPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminClientsByIdApplication($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $appId
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdApplicationsByAppIdEnableNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdApplicationsAppIdEnablePostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminClientsByIdApplicationsByAppIdEnable(string $id, string $appId, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminClientsByIdApplicationsByAppIdEnable($id, $appId), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $appId
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminClientsByIdApplicationsByAppIdDisableNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminClientsIdApplicationsAppIdDisablePostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminClientsByIdApplicationsByAppIdDisable(string $id, string $appId, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminClientsByIdApplicationsByAppIdDisable($id, $appId), $fetch);
-    }
-    /**
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAnchorDomainsGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiAdminAnchorDomain(string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAnchorDomain(), $fetch);
-    }
-    /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminAnchorDomainsPostBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminAnchorDomainBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminAnchorDomainConflictException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAnchorDomainsPostResponse201 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminAnchorDomain(?\FlowCatalyst\Generated\Model\ApiAdminAnchorDomainsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminAnchorDomain($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiClientsByIdNote($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminAnchorDomainByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiClientsByIdApplicationNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsIdApplicationsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiClientsByIdApplication(string $id, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiClientsByIdApplication($id), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param null|\FlowCatalyst\Generated\Model\ApiClientsIdApplicationsPutBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PutApiClientsByIdApplicationNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsIdApplicationsPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function putApiClientsByIdApplication(string $id, ?\FlowCatalyst\Generated\Model\ApiClientsIdApplicationsPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiClientsByIdApplication($id, $requestBody), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $applicationId
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdApplicationsByApplicationIdEnableNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsIdApplicationsApplicationIdEnablePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiClientsByIdApplicationsByApplicationIdEnable(string $id, string $applicationId, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiClientsByIdApplicationsByApplicationIdEnable($id, $applicationId), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $applicationId
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiClientsByIdApplicationsByApplicationIdDisableNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiClientsIdApplicationsApplicationIdDisablePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiClientsByIdApplicationsByApplicationIdDisable(string $id, string $applicationId, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiClientsByIdApplicationsByApplicationIdDisable($id, $applicationId), $fetch);
+    }
+    /**
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAnchorDomainsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiAnchorDomain(string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAnchorDomain(), $fetch);
+    }
+    /**
+     * @param null|\FlowCatalyst\Generated\Model\ApiAnchorDomainsPostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiAnchorDomainBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiAnchorDomainConflictException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAnchorDomainsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiAnchorDomain(?\FlowCatalyst\Generated\Model\ApiAnchorDomainsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAnchorDomain($requestBody), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAnchorDomainByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminAnchorDomainById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiAnchorDomainById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminAnchorDomainById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAnchorDomainById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminAnchorDomainByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiAnchorDomainByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAnchorDomainsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAnchorDomainsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAnchorDomainById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiAnchorDomainById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAnchorDomainById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAnchorDomainById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminAnchorDomainsIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiAnchorDomainsIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAnchorDomainByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAnchorDomainByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAnchorDomainByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAnchorDomainByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAnchorDomainsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAnchorDomainsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminAnchorDomainById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminAnchorDomainsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiAnchorDomainById(string $id, ?\FlowCatalyst\Generated\Model\ApiAnchorDomainsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminAnchorDomainById($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAnchorDomainById($id, $requestBody), $fetch);
     }
     /**
      * @param array{
@@ -494,156 +495,156 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminApplication(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiApplication(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminApplication($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiApplication($queryParameters), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiApplicationsPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminApplication(?\FlowCatalyst\Generated\Model\ApiAdminApplicationsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiApplication(?\FlowCatalyst\Generated\Model\ApiApplicationsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminApplication($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplication($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminApplicationByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiApplicationByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminApplicationById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiApplicationById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminApplicationById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiApplicationById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminApplicationByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiApplicationByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminApplicationById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiApplicationById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminApplicationById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiApplicationById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiApplicationsIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminApplicationByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminApplicationByIdNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminApplicationByIdConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiApplicationByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiApplicationByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiApplicationByIdConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminApplicationById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiApplicationById(string $id, ?\FlowCatalyst\Generated\Model\ApiApplicationsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminApplicationById($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiApplicationById($id, $requestBody), $fetch);
     }
     /**
      * @param string $code
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminApplicationsByCodeByCodeNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiApplicationsByCodeByCodeNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsByCodeCodeGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsByCodeCodeGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminApplicationsByCodeByCode(string $code, string $fetch = self::FETCH_OBJECT)
+    public function getApiApplicationsByCodeByCode(string $code, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminApplicationsByCodeByCode($code), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiApplicationsByCodeByCode($code), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationsByIdActivateNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationsByIdActivateConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByIdActivateNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByIdActivateConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminApplicationsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiApplicationsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminApplicationsByIdActivate($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplicationsByIdActivate($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationsByIdDeactivateNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationsByIdDeactivateConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByIdDeactivateNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByIdDeactivateConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdDeactivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsIdDeactivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminApplicationsByIdDeactivate(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiApplicationsByIdDeactivate(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminApplicationsByIdDeactivate($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplicationsByIdDeactivate($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminApplicationsByIdClientNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiApplicationsByIdClientNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdClientsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsIdClientsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminApplicationsByIdClient(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiApplicationsByIdClient(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminApplicationsByIdClient($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiApplicationsByIdClient($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdClientsPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiApplicationsIdClientsPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationsByIdClientBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationsByIdClientNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationsByIdClientConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByIdClientBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByIdClientNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByIdClientConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdClientsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsIdClientsPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminApplicationsByIdClient(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdClientsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiApplicationsByIdClient(string $id, ?\FlowCatalyst\Generated\Model\ApiApplicationsIdClientsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminApplicationsByIdClient($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplicationsByIdClient($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $clientId
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminApplicationsByIdClientByClientIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiApplicationsByIdClientByClientIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminApplicationsByIdClientByClientId(string $id, string $clientId, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiApplicationsByIdClientByClientId(string $id, string $clientId, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminApplicationsByIdClientByClientId($id, $clientId), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiApplicationsByIdClientByClientId($id, $clientId), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminApplicationsByIdRoleNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiApplicationsByIdRoleNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdRolesGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsIdRolesGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminApplicationsByIdRole(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiApplicationsByIdRole(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminApplicationsByIdRole($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiApplicationsByIdRole($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdProvisionServiceAccountPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiApplicationsIdProvisionServiceAccountPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationsByIdProvisionServiceAccountBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationsByIdProvisionServiceAccountNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminApplicationsByIdProvisionServiceAccountConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByIdProvisionServiceAccountBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByIdProvisionServiceAccountNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByIdProvisionServiceAccountConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdProvisionServiceAccountPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsIdProvisionServiceAccountPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminApplicationsByIdProvisionServiceAccount(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminApplicationsIdProvisionServiceAccountPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiApplicationsByIdProvisionServiceAccount(string $id, ?\FlowCatalyst\Generated\Model\ApiApplicationsIdProvisionServiceAccountPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminApplicationsByIdProvisionServiceAccount($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplicationsByIdProvisionServiceAccount($id, $requestBody), $fetch);
     }
     /**
      * @param array{
@@ -655,100 +656,100 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminRolesGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiRolesGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminRole(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiRole(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminRole($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiRole($queryParameters), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminRolesPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiRolesPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminRoleBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminRoleConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiRoleBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiRoleConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminRolesPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiRolesPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminRole(?\FlowCatalyst\Generated\Model\ApiAdminRolesPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiRole(?\FlowCatalyst\Generated\Model\ApiRolesPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminRole($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiRole($requestBody), $fetch);
     }
     /**
-     * @param string $name
+     * @param string $roleName
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminRoleByNameNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiRoleByRoleNameNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminRoleByName(string $name, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiRoleByRoleName(string $roleName, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminRoleByName($name), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiRoleByRoleName($roleName), $fetch);
     }
     /**
-     * @param string $name
+     * @param string $roleName
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminRoleByNameNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiRoleByRoleNameNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminRolesNameGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiRolesRoleNameGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminRoleByName(string $name, string $fetch = self::FETCH_OBJECT)
+    public function getApiRoleByRoleName(string $roleName, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminRoleByName($name), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiRoleByRoleName($roleName), $fetch);
     }
     /**
-     * @param string $name
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminRolesNamePutBody $requestBody
+     * @param string $roleName
+     * @param null|\FlowCatalyst\Generated\Model\ApiRolesRoleNamePutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminRoleByNameBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminRoleByNameNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminRoleByNameConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiRoleByRoleNameBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiRoleByRoleNameNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiRoleByRoleNameConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminRolesNamePutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiRolesRoleNamePutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminRoleByName(string $name, ?\FlowCatalyst\Generated\Model\ApiAdminRolesNamePutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiRoleByRoleName(string $roleName, ?\FlowCatalyst\Generated\Model\ApiRolesRoleNamePutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminRoleByName($name, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiRoleByRoleName($roleName, $requestBody), $fetch);
     }
     /**
      * @param string $source
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminRolesBySourceBySourceBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiRolesBySourceBySourceBadRequestException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminRolesBySourceSourceGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiRolesBySourceSourceGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminRolesBySourceBySource(string $source, string $fetch = self::FETCH_OBJECT)
+    public function getApiRolesBySourceBySource(string $source, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminRolesBySourceBySource($source), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiRolesBySourceBySource($source), $fetch);
     }
     /**
      * @param string $applicationId
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminRolesByApplicationApplicationIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiRolesByApplicationApplicationIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminRolesByApplicationByApplicationId(string $applicationId, string $fetch = self::FETCH_OBJECT)
+    public function getApiRolesByApplicationByApplicationId(string $applicationId, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminRolesByApplicationByApplicationId($applicationId), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiRolesByApplicationByApplicationId($applicationId), $fetch);
     }
     /**
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminRolesPermissionsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiRolesPermissionsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminRolesPermission(string $fetch = self::FETCH_OBJECT)
+    public function getApiRolesPermission(string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminRolesPermission(), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiRolesPermission(), $fetch);
     }
     /**
      * @param string $permission
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminRolesPermissionByPermissionNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiRolesPermissionByPermissionNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminRolesPermissionsPermissionGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiRolesPermissionsPermissionGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminRolesPermissionByPermission(string $permission, string $fetch = self::FETCH_OBJECT)
+    public function getApiRolesPermissionByPermission(string $permission, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminRolesPermissionByPermission($permission), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiRolesPermissionByPermission($permission), $fetch);
     }
     /**
      * @param array{
@@ -757,122 +758,122 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuthConfigsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAuthConfig(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiAuthConfig(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAuthConfig($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAuthConfig($queryParameters), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminAuthConfigByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAuthConfigByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminAuthConfigById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiAuthConfigById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminAuthConfigById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAuthConfigById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminAuthConfigByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiAuthConfigByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuthConfigsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAuthConfigById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiAuthConfigById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAuthConfigById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAuthConfigById($id), $fetch);
     }
     /**
      * @param string $domain
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminAuthConfigsByDomainByDomainNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiAuthConfigsByDomainByDomainNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsByDomainDomainGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuthConfigsByDomainDomainGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAuthConfigsByDomainByDomain(string $domain, string $fetch = self::FETCH_OBJECT)
+    public function getApiAuthConfigsByDomainByDomain(string $domain, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAuthConfigsByDomainByDomain($domain), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAuthConfigsByDomainByDomain($domain), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsInternalPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiAuthConfigsInternalPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminAuthConfigsInternalBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminAuthConfigsInternalConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiAuthConfigsInternalBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiAuthConfigsInternalConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsInternalPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuthConfigsInternalPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminAuthConfigsInternal(?\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsInternalPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiAuthConfigsInternal(?\FlowCatalyst\Generated\Model\ApiAuthConfigsInternalPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminAuthConfigsInternal($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAuthConfigsInternal($requestBody), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsOidcPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiAuthConfigsOidcPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminAuthConfigsOidcBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminAuthConfigsOidcConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiAuthConfigsOidcBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiAuthConfigsOidcConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsOidcPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuthConfigsOidcPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminAuthConfigsOidc(?\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsOidcPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiAuthConfigsOidc(?\FlowCatalyst\Generated\Model\ApiAuthConfigsOidcPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminAuthConfigsOidc($requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdOidcPutBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAuthConfigsByIdOidcBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAuthConfigsByIdOidcNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAuthConfigsByIdOidcConflictException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdOidcPutResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function putApiAdminAuthConfigsByIdOidc(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdOidcPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminAuthConfigsByIdOidc($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAuthConfigsOidc($requestBody), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdConfigTypePutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiAuthConfigsIdOidcPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAuthConfigsByIdConfigTypeBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAuthConfigsByIdConfigTypeNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAuthConfigsByIdConfigTypeConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAuthConfigsByIdOidcBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAuthConfigsByIdOidcNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAuthConfigsByIdOidcConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdConfigTypePutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuthConfigsIdOidcPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminAuthConfigsByIdConfigType(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdConfigTypePutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiAuthConfigsByIdOidc(string $id, ?\FlowCatalyst\Generated\Model\ApiAuthConfigsIdOidcPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminAuthConfigsByIdConfigType($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAuthConfigsByIdOidc($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdAdditionalClientsPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiAuthConfigsIdConfigTypePutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAuthConfigsByIdAdditionalClientBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAuthConfigsByIdAdditionalClientNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAuthConfigsByIdConfigTypeBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAuthConfigsByIdConfigTypeNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAuthConfigsByIdConfigTypeConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdAdditionalClientsPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuthConfigsIdConfigTypePutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminAuthConfigsByIdAdditionalClient(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdAdditionalClientsPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiAuthConfigsByIdConfigType(string $id, ?\FlowCatalyst\Generated\Model\ApiAuthConfigsIdConfigTypePutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminAuthConfigsByIdAdditionalClient($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAuthConfigsByIdConfigType($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdGrantedClientsPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiAuthConfigsIdAdditionalClientsPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAuthConfigsByIdGrantedClientBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminAuthConfigsByIdGrantedClientNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAuthConfigsByIdAdditionalClientBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAuthConfigsByIdAdditionalClientNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdGrantedClientsPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuthConfigsIdAdditionalClientsPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminAuthConfigsByIdGrantedClient(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminAuthConfigsIdGrantedClientsPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiAuthConfigsByIdAdditionalClient(string $id, ?\FlowCatalyst\Generated\Model\ApiAuthConfigsIdAdditionalClientsPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminAuthConfigsByIdGrantedClient($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAuthConfigsByIdAdditionalClient($id, $requestBody), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param null|\FlowCatalyst\Generated\Model\ApiAuthConfigsIdGrantedClientsPutBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAuthConfigsByIdGrantedClientBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiAuthConfigsByIdGrantedClientNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuthConfigsIdGrantedClientsPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function putApiAuthConfigsByIdGrantedClient(string $id, ?\FlowCatalyst\Generated\Model\ApiAuthConfigsIdGrantedClientsPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAuthConfigsByIdGrantedClient($id, $requestBody), $fetch);
     }
     /**
      * @param array{
@@ -880,116 +881,116 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiOauthClientsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminOauthClient(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiOauthClient(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminOauthClient($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiOauthClient($queryParameters), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiOauthClientsPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminOauthClientBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminOauthClientConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiOauthClientBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiOauthClientConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiOauthClientsPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminOauthClient(?\FlowCatalyst\Generated\Model\ApiAdminOauthClientsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiOauthClient(?\FlowCatalyst\Generated\Model\ApiOauthClientsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminOauthClient($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiOauthClient($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminOauthClientByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiOauthClientByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminOauthClientById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiOauthClientById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminOauthClientById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiOauthClientById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminOauthClientByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiOauthClientByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiOauthClientsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminOauthClientById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiOauthClientById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminOauthClientById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiOauthClientById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiOauthClientsIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminOauthClientByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminOauthClientByIdNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminOauthClientByIdConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiOauthClientByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiOauthClientByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiOauthClientByIdConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiOauthClientsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminOauthClientById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminOauthClientsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiOauthClientById(string $id, ?\FlowCatalyst\Generated\Model\ApiOauthClientsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminOauthClientById($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiOauthClientById($id, $requestBody), $fetch);
     }
     /**
      * @param string $clientId
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminOauthClientsByClientIdByClientIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiOauthClientsByClientIdByClientIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsByClientIdClientIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiOauthClientsByClientIdClientIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminOauthClientsByClientIdByClientId(string $clientId, string $fetch = self::FETCH_OBJECT)
+    public function getApiOauthClientsByClientIdByClientId(string $clientId, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminOauthClientsByClientIdByClientId($clientId), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiOauthClientsByClientIdByClientId($clientId), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminOauthClientsByIdRegenerateSecretBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminOauthClientsByIdRegenerateSecretNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiOauthClientsByIdRegenerateSecretBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiOauthClientsByIdRegenerateSecretNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsIdRegenerateSecretPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiOauthClientsIdRegenerateSecretPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminOauthClientsByIdRegenerateSecret(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiOauthClientsByIdRegenerateSecret(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminOauthClientsByIdRegenerateSecret($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiOauthClientsByIdRegenerateSecret($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminOauthClientsByIdActivateNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiOauthClientsByIdActivateNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiOauthClientsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminOauthClientsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiOauthClientsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminOauthClientsByIdActivate($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiOauthClientsByIdActivate($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminOauthClientsByIdDeactivateNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiOauthClientsByIdDeactivateNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsIdDeactivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiOauthClientsIdDeactivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminOauthClientsByIdDeactivate(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiOauthClientsByIdDeactivate(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminOauthClientsByIdDeactivate($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiOauthClientsByIdDeactivate($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminOauthClientsByIdRotateSecretBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminOauthClientsByIdRotateSecretNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiOauthClientsByIdRotateSecretBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiOauthClientsByIdRotateSecretNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminOauthClientsIdRotateSecretPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiOauthClientsIdRotateSecretPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminOauthClientsByIdRotateSecret(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiOauthClientsByIdRotateSecret(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminOauthClientsByIdRotateSecret($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiOauthClientsByIdRotateSecret($id), $fetch);
     }
     /**
      * @param array{
@@ -1006,22 +1007,22 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuditLogsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuditLogsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAuditLog(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiAuditLog(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAuditLog($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAuditLog($queryParameters), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminAuditLogByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiAuditLogByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuditLogsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuditLogsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAuditLogById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiAuditLogById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAuditLogById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAuditLogById($id), $fetch);
     }
     /**
      * @param string $entityType
@@ -1032,47 +1033,47 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuditLogsEntityEntityTypeEntityIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuditLogsEntityEntityTypeEntityIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAuditLogsEntityByEntityTypeByEntityId(string $entityType, string $entityId, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiAuditLogsEntityByEntityTypeByEntityId(string $entityType, string $entityId, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAuditLogsEntityByEntityTypeByEntityId($entityType, $entityId, $queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAuditLogsEntityByEntityTypeByEntityId($entityType, $entityId, $queryParameters), $fetch);
     }
     /**
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuditLogsEntityTypesGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuditLogsEntityTypesGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAuditLogsEntityType(string $fetch = self::FETCH_OBJECT)
+    public function getApiAuditLogsEntityType(string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAuditLogsEntityType(), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAuditLogsEntityType(), $fetch);
     }
     /**
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuditLogsOperationsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuditLogsOperationsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAuditLogsOperation(string $fetch = self::FETCH_OBJECT)
+    public function getApiAuditLogsOperation(string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAuditLogsOperation(), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAuditLogsOperation(), $fetch);
     }
     /**
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuditLogsApplicationIdsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuditLogsApplicationIdsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAuditLogsApplicationId(string $fetch = self::FETCH_OBJECT)
+    public function getApiAuditLogsApplicationId(string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAuditLogsApplicationId(), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAuditLogsApplicationId(), $fetch);
     }
     /**
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminAuditLogsClientIdsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAuditLogsClientIdsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminAuditLogsClientId(string $fetch = self::FETCH_OBJECT)
+    public function getApiAuditLogsClientId(string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminAuditLogsClientId(), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAuditLogsClientId(), $fetch);
     }
     /**
      * @param array{
@@ -1083,139 +1084,139 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEventType(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiEventType(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEventType($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEventType($queryParameters), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiEventTypesPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEventTypeBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEventTypeConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEventTypeBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEventTypeConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminEventType(?\FlowCatalyst\Generated\Model\ApiAdminEventTypesPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiEventType(?\FlowCatalyst\Generated\Model\ApiEventTypesPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminEventType($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiEventType($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminEventTypeByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiEventTypeByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminEventTypeById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiEventTypeById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminEventTypeById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiEventTypeById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminEventTypeByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiEventTypeByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEventTypeById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiEventTypeById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEventTypeById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEventTypeById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdPatchBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiEventTypesIdPatchBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PatchApiAdminEventTypeByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PatchApiAdminEventTypeByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PatchApiEventTypeByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PatchApiEventTypeByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdPatchResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesIdPatchResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function patchApiAdminEventTypeById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdPatchBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function patchApiEventTypeById(string $id, ?\FlowCatalyst\Generated\Model\ApiEventTypesIdPatchBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PatchApiAdminEventTypeById($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PatchApiEventTypeById($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdCodegenPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiEventTypesIdCodegenPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEventTypesByIdCodegenBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEventTypesByIdCodegenNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEventTypesByIdCodegenBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEventTypesByIdCodegenNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdCodegenPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesIdCodegenPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminEventTypesByIdCodegen(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdCodegenPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiEventTypesByIdCodegen(string $id, ?\FlowCatalyst\Generated\Model\ApiEventTypesIdCodegenPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminEventTypesByIdCodegen($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiEventTypesByIdCodegen($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEventTypesByIdArchiveNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEventTypesByIdArchiveNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdArchivePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesIdArchivePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminEventTypesByIdArchive(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiEventTypesByIdArchive(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminEventTypesByIdArchive($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiEventTypesByIdArchive($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdSchemasPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiEventTypesIdSchemasPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEventTypesByIdSchemaBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEventTypesByIdSchemaNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEventTypesByIdSchemaBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEventTypesByIdSchemaNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdSchemasPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesIdSchemasPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminEventTypesByIdSchema(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdSchemasPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiEventTypesByIdSchema(string $id, ?\FlowCatalyst\Generated\Model\ApiEventTypesIdSchemasPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminEventTypesByIdSchema($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $version
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEventTypesByIdSchemasByVersionFinaliseNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdSchemasVersionFinalisePostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminEventTypesByIdSchemasByVersionFinalise(string $id, string $version, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminEventTypesByIdSchemasByVersionFinalise($id, $version), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiEventTypesByIdSchema($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $version
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEventTypesByIdSchemasByVersionDeprecateNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEventTypesByIdSchemasByVersionFinaliseNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesIdSchemasVersionDeprecatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesIdSchemasVersionFinalisePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminEventTypesByIdSchemasByVersionDeprecate(string $id, string $version, string $fetch = self::FETCH_OBJECT)
+    public function postApiEventTypesByIdSchemasByVersionFinalise(string $id, string $version, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminEventTypesByIdSchemasByVersionDeprecate($id, $version), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiEventTypesByIdSchemasByVersionFinalise($id, $version), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesSyncPostBody $requestBody
+     * @param string $id
+     * @param string $version
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEventTypesSyncBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEventTypesByIdSchemasByVersionDeprecateNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesIdSchemasVersionDeprecatePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminEventTypesSync(?\FlowCatalyst\Generated\Model\ApiAdminEventTypesSyncPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiEventTypesByIdSchemasByVersionDeprecate(string $id, string $version, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminEventTypesSync($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiEventTypesByIdSchemasByVersionDeprecate($id, $version), $fetch);
+    }
+    /**
+     * @param null|\FlowCatalyst\Generated\Model\ApiEventTypesSyncPostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEventTypesSyncBadRequestException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiEventTypesSync(?\FlowCatalyst\Generated\Model\ApiEventTypesSyncPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiEventTypesSync($requestBody), $fetch);
     }
     /**
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesFiltersApplicationsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesFiltersApplicationsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEventTypesFiltersApplication(string $fetch = self::FETCH_OBJECT)
+    public function getApiEventTypesFiltersApplication(string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEventTypesFiltersApplication(), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEventTypesFiltersApplication(), $fetch);
     }
     /**
      * @param array{
@@ -1223,11 +1224,11 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesFiltersSubdomainsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesFiltersSubdomainsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEventTypesFiltersSubdomain(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiEventTypesFiltersSubdomain(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEventTypesFiltersSubdomain($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEventTypesFiltersSubdomain($queryParameters), $fetch);
     }
     /**
      * @param array{
@@ -1236,11 +1237,11 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventTypesFiltersAggregatesGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventTypesFiltersAggregatesGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEventTypesFiltersAggregate(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiEventTypesFiltersAggregate(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEventTypesFiltersAggregate($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEventTypesFiltersAggregate($queryParameters), $fetch);
     }
     /**
      * @param array{
@@ -1250,91 +1251,91 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchPoolsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminDispatchPool(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiDispatchPool(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminDispatchPool($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiDispatchPool($queryParameters), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiDispatchPoolsPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminDispatchPoolBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminDispatchPoolConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiDispatchPoolBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiDispatchPoolConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchPoolsPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminDispatchPool(?\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiDispatchPool(?\FlowCatalyst\Generated\Model\ApiDispatchPoolsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminDispatchPool($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiDispatchPool($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminDispatchPoolByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiDispatchPoolByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminDispatchPoolById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiDispatchPoolById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminDispatchPoolById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiDispatchPoolById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminDispatchPoolByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiDispatchPoolByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchPoolsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminDispatchPoolById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiDispatchPoolById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminDispatchPoolById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiDispatchPoolById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiDispatchPoolsIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminDispatchPoolByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminDispatchPoolByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiDispatchPoolByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiDispatchPoolByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchPoolsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminDispatchPoolById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiDispatchPoolById(string $id, ?\FlowCatalyst\Generated\Model\ApiDispatchPoolsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminDispatchPoolById($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminDispatchPoolsByIdSuspendNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsIdSuspendPostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminDispatchPoolsByIdSuspend(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminDispatchPoolsByIdSuspend($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiDispatchPoolById($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminDispatchPoolsByIdActivateNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiDispatchPoolsByIdSuspendNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchPoolsIdSuspendPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminDispatchPoolsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiDispatchPoolsByIdSuspend(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminDispatchPoolsByIdActivate($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiDispatchPoolsByIdSuspend($id), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsSyncPostBody $requestBody
+     * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminDispatchPoolsSyncBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiDispatchPoolsByIdActivateNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchPoolsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminDispatchPoolsSync(?\FlowCatalyst\Generated\Model\ApiAdminDispatchPoolsSyncPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiDispatchPoolsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminDispatchPoolsSync($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiDispatchPoolsByIdActivate($id), $fetch);
+    }
+    /**
+     * @param null|\FlowCatalyst\Generated\Model\ApiDispatchPoolsSyncPostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiDispatchPoolsSyncBadRequestException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchPoolsSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiDispatchPoolsSync(?\FlowCatalyst\Generated\Model\ApiDispatchPoolsSyncPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiDispatchPoolsSync($requestBody), $fetch);
     }
     /**
      * @param array{
@@ -1344,81 +1345,81 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConnectionsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConnectionsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminConnection(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiConnection(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminConnection($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiConnection($queryParameters), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminConnectionsPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiConnectionsPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminConnectionBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminConnectionConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiConnectionBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiConnectionConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConnectionsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConnectionsPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminConnection(?\FlowCatalyst\Generated\Model\ApiAdminConnectionsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiConnection(?\FlowCatalyst\Generated\Model\ApiConnectionsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminConnection($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiConnection($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminConnectionByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminConnectionByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiConnectionByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiConnectionByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminConnectionById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiConnectionById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminConnectionById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiConnectionById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminConnectionByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiConnectionByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConnectionsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConnectionsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminConnectionById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiConnectionById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminConnectionById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiConnectionById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminConnectionsIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiConnectionsIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminConnectionByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminConnectionByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiConnectionByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiConnectionByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConnectionsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConnectionsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminConnectionById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminConnectionsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiConnectionById(string $id, ?\FlowCatalyst\Generated\Model\ApiConnectionsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminConnectionById($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminConnectionsByIdPauseNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConnectionsIdPausePostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminConnectionsByIdPause(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminConnectionsByIdPause($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiConnectionById($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminConnectionsByIdActivateNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiConnectionsByIdPauseNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConnectionsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConnectionsIdPausePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminConnectionsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiConnectionsByIdPause(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminConnectionsByIdActivate($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiConnectionsByIdPause($id), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiConnectionsByIdActivateNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConnectionsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiConnectionsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiConnectionsByIdActivate($id), $fetch);
     }
     /**
      * @param array{
@@ -1430,91 +1431,91 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSubscriptionsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminSubscription(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiSubscription(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminSubscription($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiSubscription($queryParameters), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiSubscriptionsPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminSubscriptionBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminSubscriptionConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiSubscriptionBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiSubscriptionConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSubscriptionsPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminSubscription(?\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiSubscription(?\FlowCatalyst\Generated\Model\ApiSubscriptionsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminSubscription($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSubscription($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminSubscriptionByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiSubscriptionByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminSubscriptionById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiSubscriptionById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminSubscriptionById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiSubscriptionById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminSubscriptionByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiSubscriptionByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSubscriptionsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminSubscriptionById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiSubscriptionById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminSubscriptionById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiSubscriptionById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiSubscriptionsIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminSubscriptionByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminSubscriptionByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiSubscriptionByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiSubscriptionByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSubscriptionsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminSubscriptionById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiSubscriptionById(string $id, ?\FlowCatalyst\Generated\Model\ApiSubscriptionsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminSubscriptionById($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminSubscriptionsByIdPauseNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsIdPausePostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminSubscriptionsByIdPause(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminSubscriptionsByIdPause($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiSubscriptionById($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminSubscriptionsByIdResumeNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiSubscriptionsByIdPauseNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsIdResumePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSubscriptionsIdPausePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminSubscriptionsByIdResume(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiSubscriptionsByIdPause(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminSubscriptionsByIdResume($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSubscriptionsByIdPause($id), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsSyncPostBody $requestBody
+     * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminSubscriptionsSyncBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiSubscriptionsByIdResumeNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSubscriptionsIdResumePostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminSubscriptionsSync(?\FlowCatalyst\Generated\Model\ApiAdminSubscriptionsSyncPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiSubscriptionsByIdResume(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminSubscriptionsSync($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSubscriptionsByIdResume($id), $fetch);
+    }
+    /**
+     * @param null|\FlowCatalyst\Generated\Model\ApiSubscriptionsSyncPostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiSubscriptionsSyncBadRequestException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSubscriptionsSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiSubscriptionsSync(?\FlowCatalyst\Generated\Model\ApiSubscriptionsSyncPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSubscriptionsSync($requestBody), $fetch);
     }
     /**
      * @param array{
@@ -1536,11 +1537,11 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEvent(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiEvent(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEvent($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEvent($queryParameters), $fetch);
     }
     /**
      * @param array{
@@ -1551,22 +1552,22 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventsFilterOptionsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventsFilterOptionsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEventsFilterOption(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiEventsFilterOption(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEventsFilterOption($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEventsFilterOption($queryParameters), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminEventByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiEventByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEventsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEventsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEventById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiEventById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEventById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEventById($id), $fetch);
     }
     /**
      * @param array{
@@ -1577,9 +1578,9 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEventsRaw(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiEventsRaw(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEventsRaw($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEventsRaw($queryParameters), $fetch);
     }
     /**
      * @param array{
@@ -1603,11 +1604,11 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchJobsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchJobsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminDispatchJob(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiDispatchJob(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminDispatchJob($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiDispatchJob($queryParameters), $fetch);
     }
     /**
      * @param array{
@@ -1618,33 +1619,33 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchJobsFilterOptionsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchJobsFilterOptionsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminDispatchJobsFilterOption(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiDispatchJobsFilterOption(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminDispatchJobsFilterOption($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiDispatchJobsFilterOption($queryParameters), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminDispatchJobByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiDispatchJobByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchJobsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchJobsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminDispatchJobById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiDispatchJobById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminDispatchJobById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiDispatchJobById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminDispatchJobsByIdAttemptNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiDispatchJobsByIdAttemptNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminDispatchJobsIdAttemptsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiDispatchJobsIdAttemptsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminDispatchJobsByIdAttempt(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiDispatchJobsByIdAttempt(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminDispatchJobsByIdAttempt($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiDispatchJobsByIdAttempt($id), $fetch);
     }
     /**
      * @param array{
@@ -1655,134 +1656,134 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminDispatchJobsRaw(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiDispatchJobsRaw(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminDispatchJobsRaw($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiDispatchJobsRaw($queryParameters), $fetch);
     }
     /**
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminIdentityProvidersGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiIdentityProvidersGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminIdentityProvider(string $fetch = self::FETCH_OBJECT)
+    public function getApiIdentityProvider(string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminIdentityProvider(), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiIdentityProvider(), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminIdentityProvidersPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiIdentityProvidersPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminIdentityProviderBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminIdentityProviderConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiIdentityProviderBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiIdentityProviderConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminIdentityProvidersPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiIdentityProvidersPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminIdentityProvider(?\FlowCatalyst\Generated\Model\ApiAdminIdentityProvidersPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiIdentityProvider(?\FlowCatalyst\Generated\Model\ApiIdentityProvidersPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminIdentityProvider($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiIdentityProvider($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminIdentityProviderByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiIdentityProviderByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminIdentityProviderById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiIdentityProviderById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminIdentityProviderById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiIdentityProviderById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminIdentityProviderByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiIdentityProviderByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminIdentityProvidersIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiIdentityProvidersIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminIdentityProviderById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiIdentityProviderById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminIdentityProviderById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiIdentityProviderById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminIdentityProvidersIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiIdentityProvidersIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminIdentityProviderByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminIdentityProviderByIdNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminIdentityProviderByIdConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiIdentityProviderByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiIdentityProviderByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiIdentityProviderByIdConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminIdentityProvidersIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiIdentityProvidersIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminIdentityProviderById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminIdentityProvidersIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiIdentityProviderById(string $id, ?\FlowCatalyst\Generated\Model\ApiIdentityProvidersIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminIdentityProviderById($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiIdentityProviderById($id, $requestBody), $fetch);
     }
     /**
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEmailDomainMappingsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEmailDomainMappingsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEmailDomainMapping(string $fetch = self::FETCH_OBJECT)
+    public function getApiEmailDomainMapping(string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEmailDomainMapping(), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEmailDomainMapping(), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminEmailDomainMappingsPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiEmailDomainMappingsPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEmailDomainMappingBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminEmailDomainMappingConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEmailDomainMappingBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiEmailDomainMappingConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEmailDomainMappingsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEmailDomainMappingsPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminEmailDomainMapping(?\FlowCatalyst\Generated\Model\ApiAdminEmailDomainMappingsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiEmailDomainMapping(?\FlowCatalyst\Generated\Model\ApiEmailDomainMappingsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminEmailDomainMapping($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiEmailDomainMapping($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminEmailDomainMappingByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiEmailDomainMappingByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminEmailDomainMappingById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiEmailDomainMappingById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminEmailDomainMappingById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiEmailDomainMappingById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminEmailDomainMappingByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiEmailDomainMappingByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEmailDomainMappingsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEmailDomainMappingsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEmailDomainMappingById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiEmailDomainMappingById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEmailDomainMappingById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEmailDomainMappingById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminEmailDomainMappingsIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiEmailDomainMappingsIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminEmailDomainMappingByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminEmailDomainMappingByIdNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminEmailDomainMappingByIdConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiEmailDomainMappingByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiEmailDomainMappingByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiEmailDomainMappingByIdConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEmailDomainMappingsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEmailDomainMappingsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminEmailDomainMappingById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminEmailDomainMappingsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiEmailDomainMappingById(string $id, ?\FlowCatalyst\Generated\Model\ApiEmailDomainMappingsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminEmailDomainMappingById($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiEmailDomainMappingById($id, $requestBody), $fetch);
     }
     /**
      * @param string $domain
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminEmailDomainMappingsLookupByDomainNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiEmailDomainMappingsLookupByDomainNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminEmailDomainMappingsLookupDomainGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiEmailDomainMappingsLookupDomainGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminEmailDomainMappingsLookupByDomain(string $domain, string $fetch = self::FETCH_OBJECT)
+    public function getApiEmailDomainMappingsLookupByDomain(string $domain, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminEmailDomainMappingsLookupByDomain($domain), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiEmailDomainMappingsLookupByDomain($domain), $fetch);
     }
     /**
      * @param array{
@@ -1792,202 +1793,202 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminServiceAccount(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiServiceAccount(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminServiceAccount($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiServiceAccount($queryParameters), $fetch);
     }
     /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsPostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiServiceAccountsPostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminServiceAccountBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminServiceAccountConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiServiceAccountBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiServiceAccountConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsPostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminServiceAccount(?\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiServiceAccount(?\FlowCatalyst\Generated\Model\ApiServiceAccountsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminServiceAccount($requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiServiceAccount($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminServiceAccountByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiServiceAccountByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminServiceAccountById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiServiceAccountById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminServiceAccountById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiServiceAccountById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminServiceAccountByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiServiceAccountByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminServiceAccountById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiServiceAccountById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminServiceAccountById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiServiceAccountById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminServiceAccountByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminServiceAccountByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiServiceAccountByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiServiceAccountByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminServiceAccountById(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiServiceAccountById(string $id, ?\FlowCatalyst\Generated\Model\ApiServiceAccountsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminServiceAccountById($id, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiServiceAccountById($id, $requestBody), $fetch);
     }
     /**
      * @param string $code
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminServiceAccountsCodeByCodeNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiServiceAccountsCodeByCodeNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsCodeCodeGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsCodeCodeGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminServiceAccountsCodeByCode(string $code, string $fetch = self::FETCH_OBJECT)
+    public function getApiServiceAccountsCodeByCode(string $code, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminServiceAccountsCodeByCode($code), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiServiceAccountsCodeByCode($code), $fetch);
     }
     /**
      * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdAuthTokenPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdAuthTokenPutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminServiceAccountsByIdAuthTokenBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminServiceAccountsByIdAuthTokenNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiServiceAccountsByIdAuthTokenBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiServiceAccountsByIdAuthTokenNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdAuthTokenPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdAuthTokenPutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminServiceAccountsByIdAuthToken(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdAuthTokenPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiServiceAccountsByIdAuthToken(string $id, ?\FlowCatalyst\Generated\Model\ApiServiceAccountsIdAuthTokenPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminServiceAccountsByIdAuthToken($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminServiceAccountsByIdRegenerateTokenNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdRegenerateTokenPostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminServiceAccountsByIdRegenerateToken(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminServiceAccountsByIdRegenerateToken($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiServiceAccountsByIdAuthToken($id, $requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminServiceAccountsByIdRegenerateAuthTokenNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiServiceAccountsByIdRegenerateTokenNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdRegenerateAuthTokenPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdRegenerateTokenPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminServiceAccountsByIdRegenerateAuthToken(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiServiceAccountsByIdRegenerateToken(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminServiceAccountsByIdRegenerateAuthToken($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiServiceAccountsByIdRegenerateToken($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminServiceAccountsByIdRegenerateSecretNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiServiceAccountsByIdRegenerateAuthTokenNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdRegenerateSecretPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdRegenerateAuthTokenPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminServiceAccountsByIdRegenerateSecret(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiServiceAccountsByIdRegenerateAuthToken(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminServiceAccountsByIdRegenerateSecret($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiServiceAccountsByIdRegenerateAuthToken($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminServiceAccountsByIdRegenerateSigningSecretNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiServiceAccountsByIdRegenerateSecretNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdRegenerateSigningSecretPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdRegenerateSecretPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminServiceAccountsByIdRegenerateSigningSecret(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiServiceAccountsByIdRegenerateSecret(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminServiceAccountsByIdRegenerateSigningSecret($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiServiceAccountsByIdRegenerateSecret($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminServiceAccountsByIdRoleNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiServiceAccountsByIdRegenerateSigningSecretNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdRolesGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdRegenerateSigningSecretPostResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminServiceAccountsByIdRole(string $id, string $fetch = self::FETCH_OBJECT)
+    public function postApiServiceAccountsByIdRegenerateSigningSecret(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminServiceAccountsByIdRole($id), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdRolesPutBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminServiceAccountsByIdRoleBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminServiceAccountsByIdRoleNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdRolesPutResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function putApiAdminServiceAccountsByIdRole(string $id, ?\FlowCatalyst\Generated\Model\ApiAdminServiceAccountsIdRolesPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminServiceAccountsByIdRole($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPlatformCorsGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiAdminPlatformCor(string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminPlatformCor(), $fetch);
-    }
-    /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminPlatformCorsPostBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPlatformCorBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminPlatformCorConflictException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPlatformCorsPostResponse201 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiAdminPlatformCor(?\FlowCatalyst\Generated\Model\ApiAdminPlatformCorsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminPlatformCor($requestBody), $fetch);
-    }
-    /**
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPlatformCorsAllowedGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiAdminPlatformCorsAllowed(string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminPlatformCorsAllowed(), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiServiceAccountsByIdRegenerateSigningSecret($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminPlatformCorByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiServiceAccountsByIdRoleNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdRolesGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiServiceAccountsByIdRole(string $id, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiServiceAccountsByIdRole($id), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdRolesPutBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PutApiServiceAccountsByIdRoleBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiServiceAccountsByIdRoleNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiServiceAccountsIdRolesPutResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function putApiServiceAccountsByIdRole(string $id, ?\FlowCatalyst\Generated\Model\ApiServiceAccountsIdRolesPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiServiceAccountsByIdRole($id, $requestBody), $fetch);
+    }
+    /**
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPlatformCorsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiPlatformCor(string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiPlatformCor(), $fetch);
+    }
+    /**
+     * @param null|\FlowCatalyst\Generated\Model\ApiPlatformCorsPostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPlatformCorBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiPlatformCorConflictException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPlatformCorsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiPlatformCor(?\FlowCatalyst\Generated\Model\ApiPlatformCorsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiPlatformCor($requestBody), $fetch);
+    }
+    /**
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPlatformCorsAllowedGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiPlatformCorsAllowed(string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiPlatformCorsAllowed(), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiPlatformCorByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminPlatformCorById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiPlatformCorById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminPlatformCorById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiPlatformCorById($id), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminPlatformCorByIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiPlatformCorByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminPlatformCorsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiPlatformCorsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminPlatformCorById(string $id, string $fetch = self::FETCH_OBJECT)
+    public function getApiPlatformCorById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminPlatformCorById($id), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiPlatformCorById($id), $fetch);
     }
     /**
      * @param string $appCode
@@ -1996,13 +1997,13 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      *    "clientId"?: string,
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminConfigByAppCodeForbiddenException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiConfigByAppCodeForbiddenException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConfigAppCodeGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConfigAppCodeGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminConfigByAppCode(string $appCode, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiConfigByAppCode(string $appCode, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminConfigByAppCode($appCode, $queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiConfigByAppCode($appCode, $queryParameters), $fetch);
     }
     /**
      * @param string $appCode
@@ -2012,13 +2013,13 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      *    "clientId"?: string,
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminConfigByAppCodeBySectionForbiddenException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiConfigByAppCodeBySectionForbiddenException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConfigAppCodeSectionGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConfigAppCodeSectionGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminConfigByAppCodeBySection(string $appCode, string $section, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiConfigByAppCodeBySection(string $appCode, string $section, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminConfigByAppCodeBySection($appCode, $section, $queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiConfigByAppCodeBySection($appCode, $section, $queryParameters), $fetch);
     }
     /**
      * @param string $appCode
@@ -2029,14 +2030,14 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      *    "clientId"?: string,
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminConfigByAppCodeBySectionByPropertyForbiddenException
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminConfigByAppCodeBySectionByPropertyNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiConfigByAppCodeBySectionByPropertyForbiddenException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiConfigByAppCodeBySectionByPropertyNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminConfigByAppCodeBySectionByProperty(string $appCode, string $section, string $property, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function deleteApiConfigByAppCodeBySectionByProperty(string $appCode, string $section, string $property, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminConfigByAppCodeBySectionByProperty($appCode, $section, $property, $queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiConfigByAppCodeBySectionByProperty($appCode, $section, $property, $queryParameters), $fetch);
     }
     /**
      * @param string $appCode
@@ -2047,80 +2048,80 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      *    "clientId"?: string,
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminConfigByAppCodeBySectionByPropertyForbiddenException
-     * @throws \FlowCatalyst\Generated\Exception\GetApiAdminConfigByAppCodeBySectionByPropertyNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiConfigByAppCodeBySectionByPropertyForbiddenException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiConfigByAppCodeBySectionByPropertyNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConfigAppCodeSectionPropertyGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConfigAppCodeSectionPropertyGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminConfigByAppCodeBySectionByProperty(string $appCode, string $section, string $property, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiConfigByAppCodeBySectionByProperty(string $appCode, string $section, string $property, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminConfigByAppCodeBySectionByProperty($appCode, $section, $property, $queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiConfigByAppCodeBySectionByProperty($appCode, $section, $property, $queryParameters), $fetch);
     }
     /**
      * @param string $appCode
      * @param string $section
      * @param string $property
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminConfigAppCodeSectionPropertyPutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiConfigAppCodeSectionPropertyPutBody $requestBody
      * @param array{
      *    "scope"?: string,
      *    "clientId"?: string,
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminConfigByAppCodeBySectionByPropertyBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminConfigByAppCodeBySectionByPropertyForbiddenException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiConfigByAppCodeBySectionByPropertyBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiConfigByAppCodeBySectionByPropertyForbiddenException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConfigAppCodeSectionPropertyPutResponse200|\FlowCatalyst\Generated\Model\ApiAdminConfigAppCodeSectionPropertyPutResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConfigAppCodeSectionPropertyPutResponse200|\FlowCatalyst\Generated\Model\ApiConfigAppCodeSectionPropertyPutResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminConfigByAppCodeBySectionByProperty(string $appCode, string $section, string $property, ?\FlowCatalyst\Generated\Model\ApiAdminConfigAppCodeSectionPropertyPutBody $requestBody = null, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function putApiConfigByAppCodeBySectionByProperty(string $appCode, string $section, string $property, ?\FlowCatalyst\Generated\Model\ApiConfigAppCodeSectionPropertyPutBody $requestBody = null, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminConfigByAppCodeBySectionByProperty($appCode, $section, $property, $requestBody, $queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiConfigByAppCodeBySectionByProperty($appCode, $section, $property, $requestBody, $queryParameters), $fetch);
     }
     /**
      * @param string $appCode
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConfigAccessAppCodeGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConfigAccessAppCodeGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminConfigAccessByAppCode(string $appCode, string $fetch = self::FETCH_OBJECT)
+    public function getApiConfigAccessByAppCode(string $appCode, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminConfigAccessByAppCode($appCode), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiConfigAccessByAppCode($appCode), $fetch);
     }
     /**
      * @param string $appCode
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminConfigAccessAppCodePostBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiConfigAccessAppCodePostBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiAdminConfigAccessByAppCodeConflictException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiConfigAccessByAppCodeConflictException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConfigAccessAppCodePostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConfigAccessAppCodePostResponse201 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiAdminConfigAccessByAppCode(string $appCode, ?\FlowCatalyst\Generated\Model\ApiAdminConfigAccessAppCodePostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function postApiConfigAccessByAppCode(string $appCode, ?\FlowCatalyst\Generated\Model\ApiConfigAccessAppCodePostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiAdminConfigAccessByAppCode($appCode, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiConfigAccessByAppCode($appCode, $requestBody), $fetch);
     }
     /**
      * @param string $appCode
      * @param string $roleCode
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiAdminConfigAccessByAppCodeByRoleCodeNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiConfigAccessByAppCodeByRoleCodeNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiAdminConfigAccessByAppCodeByRoleCode(string $appCode, string $roleCode, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiConfigAccessByAppCodeByRoleCode(string $appCode, string $roleCode, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiAdminConfigAccessByAppCodeByRoleCode($appCode, $roleCode), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiConfigAccessByAppCodeByRoleCode($appCode, $roleCode), $fetch);
     }
     /**
      * @param string $appCode
      * @param string $roleCode
-     * @param null|\FlowCatalyst\Generated\Model\ApiAdminConfigAccessAppCodeRoleCodePutBody $requestBody
+     * @param null|\FlowCatalyst\Generated\Model\ApiConfigAccessAppCodeRoleCodePutBody $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiAdminConfigAccessByAppCodeByRoleCodeNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiConfigAccessByAppCodeByRoleCodeNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminConfigAccessAppCodeRoleCodePutResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiConfigAccessAppCodeRoleCodePutResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function putApiAdminConfigAccessByAppCodeByRoleCode(string $appCode, string $roleCode, ?\FlowCatalyst\Generated\Model\ApiAdminConfigAccessAppCodeRoleCodePutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    public function putApiConfigAccessByAppCodeByRoleCode(string $appCode, string $roleCode, ?\FlowCatalyst\Generated\Model\ApiConfigAccessAppCodeRoleCodePutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiAdminConfigAccessByAppCodeByRoleCode($appCode, $roleCode, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiConfigAccessByAppCodeByRoleCode($appCode, $roleCode, $requestBody), $fetch);
     }
     /**
      * @param array{
@@ -2137,288 +2138,378 @@ class Client extends \FlowCatalyst\Generated\Runtime\Client\Client
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiAdminLoginAttemptsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiLoginAttemptsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiAdminLoginAttempt(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiLoginAttempt(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiAdminLoginAttempt($queryParameters), $fetch);
-    }
-    /**
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkClientsGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiSdkClient(string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiSdkClient(), $fetch);
-    }
-    /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiSdkClientsPostBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkClientBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkClientConflictException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkClientsPostResponse201 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiSdkClient(?\FlowCatalyst\Generated\Model\ApiSdkClientsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSdkClient($requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiSdkClientByIdNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkClientsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiSdkClientById(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiSdkClientById($id), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiSdkClientsIdPutBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiSdkClientByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiSdkClientByIdNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkClientsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function putApiSdkClientById(string $id, ?\FlowCatalyst\Generated\Model\ApiSdkClientsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiSdkClientById($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiSdkClientsIdActivatePostBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkClientsByIdActivateNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkClientsByIdActivateConflictException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkClientsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiSdkClientsByIdActivate(string $id, ?\FlowCatalyst\Generated\Model\ApiSdkClientsIdActivatePostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSdkClientsByIdActivate($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiSdkClientsIdSuspendPostBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkClientsByIdSuspendNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkClientsByIdSuspendConflictException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkClientsIdSuspendPostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiSdkClientsByIdSuspend(string $id, ?\FlowCatalyst\Generated\Model\ApiSdkClientsIdSuspendPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSdkClientsByIdSuspend($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiSdkClientsIdDeactivatePostBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkClientsByIdDeactivateNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkClientsByIdDeactivateConflictException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkClientsIdDeactivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiSdkClientsByIdDeactivate(string $id, ?\FlowCatalyst\Generated\Model\ApiSdkClientsIdDeactivatePostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSdkClientsByIdDeactivate($id, $requestBody), $fetch);
-    }
-    /**
-     * @param array{
-     *    "application"?: string,
-     *    "source"?: string,
-     * } $queryParameters
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkRolesGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiSdkRole(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiSdkRole($queryParameters), $fetch);
-    }
-    /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiSdkRolesPostBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkRoleBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkRoleConflictException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkRolesPostResponse201 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiSdkRole(?\FlowCatalyst\Generated\Model\ApiSdkRolesPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSdkRole($requestBody), $fetch);
-    }
-    /**
-     * @param string $roleName
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiSdkRoleByRoleNameNotFoundException
-     *
-     * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
-     */
-    public function deleteApiSdkRoleByRoleName(string $roleName, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiSdkRoleByRoleName($roleName), $fetch);
-    }
-    /**
-     * @param string $roleName
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiSdkRoleByRoleNameNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkRolesRoleNameGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiSdkRoleByRoleName(string $roleName, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiSdkRoleByRoleName($roleName), $fetch);
-    }
-    /**
-     * @param string $roleName
-     * @param null|\FlowCatalyst\Generated\Model\ApiSdkRolesRoleNamePutBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiSdkRoleByRoleNameBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiSdkRoleByRoleNameNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkRolesRoleNamePutResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function putApiSdkRoleByRoleName(string $roleName, ?\FlowCatalyst\Generated\Model\ApiSdkRolesRoleNamePutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiSdkRoleByRoleName($roleName, $requestBody), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiLoginAttempt($queryParameters), $fetch);
     }
     /**
      * @param array{
      *    "clientId"?: string,
-     *    "type"?: string,
-     *    "active"?: string,
-     *    "email"?: string,
+     *    "platformScoped"?: bool,
+     *    "status"?: string,
+     *    "search"?: string,
+     *    "limit"?: int,
+     *    "offset"?: int,
      * } $queryParameters
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function getApiSdkPrincipal(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    public function getApiScheduledJob(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiSdkPrincipal($queryParameters), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiScheduledJob($queryParameters), $fetch);
+    }
+    /**
+     * @param null|\FlowCatalyst\Generated\Model\ApiScheduledJobsPostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobConflictException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiScheduledJob(?\FlowCatalyst\Generated\Model\ApiScheduledJobsPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiScheduledJob($requestBody), $fetch);
     }
     /**
      * @param string $id
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiSdkPrincipalByIdNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiSdkPrincipalById(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiSdkPrincipalById($id), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdPutBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiSdkPrincipalByIdBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiSdkPrincipalByIdNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdPutResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function putApiSdkPrincipalById(string $id, ?\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiSdkPrincipalById($id, $requestBody), $fetch);
-    }
-    /**
-     * @param null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsUserPostBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkPrincipalsUserBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkPrincipalsUserConflictException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsUserPostResponse201 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiSdkPrincipalsUser(?\FlowCatalyst\Generated\Model\ApiSdkPrincipalsUserPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSdkPrincipalsUser($requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkPrincipalsByIdActivateNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdActivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiSdkPrincipalsByIdActivate(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSdkPrincipalsByIdActivate($id), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkPrincipalsByIdDeactivateNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdDeactivatePostResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function postApiSdkPrincipalsByIdDeactivate(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSdkPrincipalsByIdDeactivate($id), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiSdkPrincipalsByIdRoleNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdRolesGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiSdkPrincipalsByIdRole(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiSdkPrincipalsByIdRole($id), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdRolesPutBody $requestBody
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PutApiSdkPrincipalsByIdRoleBadRequestException
-     * @throws \FlowCatalyst\Generated\Exception\PutApiSdkPrincipalsByIdRoleNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdRolesPutResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function putApiSdkPrincipalsByIdRole(string $id, ?\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdRolesPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiSdkPrincipalsByIdRole($id, $requestBody), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\GetApiSdkPrincipalsByIdClientNotFoundException
-     *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdClientsGetResponse200 : \Psr\Http\Message\ResponseInterface)
-     */
-    public function getApiSdkPrincipalsByIdClient(string $id, string $fetch = self::FETCH_OBJECT)
-    {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiSdkPrincipalsByIdClient($id), $fetch);
-    }
-    /**
-     * @param string $id
-     * @param string $clientId
-     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\DeleteApiSdkPrincipalsByIdClientByClientIdNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiScheduledJobByIdNotFoundException
      *
      * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
      */
-    public function deleteApiSdkPrincipalsByIdClientByClientId(string $id, string $clientId, string $fetch = self::FETCH_OBJECT)
+    public function deleteApiScheduledJobById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiSdkPrincipalsByIdClientByClientId($id, $clientId), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiScheduledJobById($id), $fetch);
     }
     /**
      * @param string $id
-     * @param string $clientId
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkPrincipalsByIdClientByClientIdNotFoundException
-     * @throws \FlowCatalyst\Generated\Exception\PostApiSdkPrincipalsByIdClientByClientIdConflictException
+     * @throws \FlowCatalyst\Generated\Exception\GetApiScheduledJobByIdNotFoundException
      *
-     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiSdkPrincipalsIdClientsClientIdPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
      */
-    public function postApiSdkPrincipalsByIdClientByClientId(string $id, string $clientId, string $fetch = self::FETCH_OBJECT)
+    public function getApiScheduledJobById(string $id, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiSdkPrincipalsByIdClientByClientId($id, $clientId), $fetch);
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiScheduledJobById($id), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param null|\FlowCatalyst\Generated\Model\ApiScheduledJobsIdPatchBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PatchApiScheduledJobByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PatchApiScheduledJobByIdNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsIdPatchResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function patchApiScheduledJobById(string $id, ?\FlowCatalyst\Generated\Model\ApiScheduledJobsIdPatchBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PatchApiScheduledJobById($id, $requestBody), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsByIdPauseNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsByIdPauseConflictException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsIdPausePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiScheduledJobsByIdPause(string $id, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiScheduledJobsByIdPause($id), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsByIdResumeNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsByIdResumeConflictException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsIdResumePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiScheduledJobsByIdResume(string $id, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiScheduledJobsByIdResume($id), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsByIdArchiveNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsByIdArchiveConflictException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsIdArchivePostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiScheduledJobsByIdArchive(string $id, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiScheduledJobsByIdArchive($id), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param null|\FlowCatalyst\Generated\Model\ApiScheduledJobsIdFirePostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsByIdFireNotFoundException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsByIdFireConflictException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsIdFirePostResponse202 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiScheduledJobsByIdFire(string $id, ?\FlowCatalyst\Generated\Model\ApiScheduledJobsIdFirePostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiScheduledJobsByIdFire($id, $requestBody), $fetch);
+    }
+    /**
+     * @param null|\FlowCatalyst\Generated\Model\ApiScheduledJobsSyncPostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsSyncBadRequestException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiScheduledJobsSync(?\FlowCatalyst\Generated\Model\ApiScheduledJobsSyncPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiScheduledJobsSync($requestBody), $fetch);
+    }
+    /**
+     * @param array{
+     *    "scheduledJobId"?: string,
+     *    "clientId"?: string,
+     *    "status"?: string,
+     *    "triggerKind"?: string,
+     *    "from"?: string,
+     *    "to"?: string,
+     *    "limit"?: int,
+     *    "offset"?: int,
+     * } $queryParameters
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\GetApiScheduledJobsInstanceNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsInstancesGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiScheduledJobsInstance(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiScheduledJobsInstance($queryParameters), $fetch);
+    }
+    /**
+     * @param string $instanceId
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\GetApiScheduledJobsInstanceByInstanceIdNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsInstancesInstanceIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiScheduledJobsInstanceByInstanceId(string $instanceId, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiScheduledJobsInstanceByInstanceId($instanceId), $fetch);
+    }
+    /**
+     * @param string $instanceId
+     * @param array{
+     *    "limit"?: int,
+     * } $queryParameters
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\GetApiScheduledJobsInstancesByInstanceIdLogNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsInstancesInstanceIdLogsGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiScheduledJobsInstancesByInstanceIdLog(string $instanceId, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiScheduledJobsInstancesByInstanceIdLog($instanceId, $queryParameters), $fetch);
+    }
+    /**
+     * @param string $instanceId
+     * @param null|\FlowCatalyst\Generated\Model\ApiScheduledJobsInstancesInstanceIdLogPostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsInstancesByInstanceIdLogNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiScheduledJobsInstancesInstanceIdLogPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiScheduledJobsInstancesByInstanceIdLog(string $instanceId, ?\FlowCatalyst\Generated\Model\ApiScheduledJobsInstancesInstanceIdLogPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiScheduledJobsInstancesByInstanceIdLog($instanceId, $requestBody), $fetch);
+    }
+    /**
+     * @param string $instanceId
+     * @param null|\FlowCatalyst\Generated\Model\ApiScheduledJobsInstancesInstanceIdCompletePostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiScheduledJobsInstancesByInstanceIdCompleteNotFoundException
+     *
+     * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiScheduledJobsInstancesByInstanceIdComplete(string $instanceId, ?\FlowCatalyst\Generated\Model\ApiScheduledJobsInstancesInstanceIdCompletePostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiScheduledJobsInstancesByInstanceIdComplete($instanceId, $requestBody), $fetch);
+    }
+    /**
+     * @param array{
+     *    "application"?: string,
+     *    "subdomain"?: string,
+     *    "status"?: string,
+     *    "search"?: string,
+     * } $queryParameters
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiProcessesGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiProcess(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiProcess($queryParameters), $fetch);
+    }
+    /**
+     * @param null|\FlowCatalyst\Generated\Model\ApiProcessesPostBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiProcessBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PostApiProcessConflictException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiProcessesPostResponse201 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiProcess(?\FlowCatalyst\Generated\Model\ApiProcessesPostBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiProcess($requestBody), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\DeleteApiProcessByIdNotFoundException
+     *
+     * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
+     */
+    public function deleteApiProcessById(string $id, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\DeleteApiProcessById($id), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\GetApiProcessByIdNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiProcessesIdGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiProcessById(string $id, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiProcessById($id), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param null|\FlowCatalyst\Generated\Model\ApiProcessesIdPutBody $requestBody
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PutApiProcessByIdBadRequestException
+     * @throws \FlowCatalyst\Generated\Exception\PutApiProcessByIdNotFoundException
+     *
+     * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
+     */
+    public function putApiProcessById(string $id, ?\FlowCatalyst\Generated\Model\ApiProcessesIdPutBody $requestBody = null, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PutApiProcessById($id, $requestBody), $fetch);
+    }
+    /**
+     * @param string $code
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\GetApiProcessesByCodeByCodeNotFoundException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiProcessesByCodeCodeGetResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function getApiProcessesByCodeByCode(string $code, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\GetApiProcessesByCodeByCode($code), $fetch);
+    }
+    /**
+     * @param string $id
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiProcessesByIdArchiveNotFoundException
+     *
+     * @return ($fetch is 'object' ? null : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiProcessesByIdArchive(string $id, string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiProcessesByIdArchive($id), $fetch);
+    }
+    /**
+     * @param string $appCode
+     * @param null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeRolesSyncPostBody $requestBody
+     * @param array{
+     *    "removeUnlisted"?: bool,
+     * } $queryParameters
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByAppCodeRolesSyncBadRequestException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeRolesSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiApplicationsByAppCodeRolesSync(string $appCode, ?\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeRolesSyncPostBody $requestBody = null, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplicationsByAppCodeRolesSync($appCode, $requestBody, $queryParameters), $fetch);
+    }
+    /**
+     * @param string $appCode
+     * @param null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeEventTypesSyncPostBody $requestBody
+     * @param array{
+     *    "removeUnlisted"?: bool,
+     * } $queryParameters
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByAppCodeEventTypesSyncBadRequestException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeEventTypesSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiApplicationsByAppCodeEventTypesSync(string $appCode, ?\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeEventTypesSyncPostBody $requestBody = null, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplicationsByAppCodeEventTypesSync($appCode, $requestBody, $queryParameters), $fetch);
+    }
+    /**
+     * @param string $appCode
+     * @param null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeSubscriptionsSyncPostBody $requestBody
+     * @param array{
+     *    "removeUnlisted"?: bool,
+     * } $queryParameters
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByAppCodeSubscriptionsSyncBadRequestException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeSubscriptionsSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiApplicationsByAppCodeSubscriptionsSync(string $appCode, ?\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeSubscriptionsSyncPostBody $requestBody = null, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplicationsByAppCodeSubscriptionsSync($appCode, $requestBody, $queryParameters), $fetch);
+    }
+    /**
+     * @param string $appCode
+     * @param null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeDispatchPoolsSyncPostBody $requestBody
+     * @param array{
+     *    "removeUnlisted"?: bool,
+     * } $queryParameters
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByAppCodeDispatchPoolsSyncBadRequestException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeDispatchPoolsSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiApplicationsByAppCodeDispatchPoolsSync(string $appCode, ?\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeDispatchPoolsSyncPostBody $requestBody = null, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplicationsByAppCodeDispatchPoolsSync($appCode, $requestBody, $queryParameters), $fetch);
+    }
+    /**
+     * @param string $appCode
+     * @param null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodePrincipalsSyncPostBody $requestBody
+     * @param array{
+     *    "removeUnlisted"?: bool,
+     * } $queryParameters
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByAppCodePrincipalsSyncBadRequestException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodePrincipalsSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiApplicationsByAppCodePrincipalsSync(string $appCode, ?\FlowCatalyst\Generated\Model\ApiApplicationsAppCodePrincipalsSyncPostBody $requestBody = null, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplicationsByAppCodePrincipalsSync($appCode, $requestBody, $queryParameters), $fetch);
+    }
+    /**
+     * @param string $appCode
+     * @param null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeProcessesSyncPostBody $requestBody
+     * @param array{
+     *    "removeUnlisted"?: bool,
+     * } $queryParameters
+     * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
+     * @throws \FlowCatalyst\Generated\Exception\PostApiApplicationsByAppCodeProcessesSyncBadRequestException
+     *
+     * @return ($fetch is 'object' ? null|\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeProcessesSyncPostResponse200 : \Psr\Http\Message\ResponseInterface)
+     */
+    public function postApiApplicationsByAppCodeProcessesSync(string $appCode, ?\FlowCatalyst\Generated\Model\ApiApplicationsAppCodeProcessesSyncPostBody $requestBody = null, array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
+    {
+        return $this->executeEndpoint(new \FlowCatalyst\Generated\Endpoint\PostApiApplicationsByAppCodeProcessesSync($appCode, $requestBody, $queryParameters), $fetch);
     }
     /**
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)

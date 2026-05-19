@@ -235,6 +235,7 @@ const InstancesQuerySchema = Type.Object({
 });
 
 const IdParam = Type.Object({ id: Type.String() });
+const InstanceIdParam = Type.Object({ instanceId: Type.String() });
 
 // ─── Mapping ────────────────────────────────────────────────────────────────
 
@@ -714,11 +715,11 @@ export async function registerScheduledJobsRoutes(
 
 	// GET /api/scheduled-jobs/instances/:id — fetch single instance
 	f.get(
-		"/scheduled-jobs/instances/:id",
+		"/scheduled-jobs/instances/:instanceId",
 		{
 			preHandler: requirePermission(SCHEDULED_JOB_PERMISSIONS.INSTANCE_READ),
 			schema: {
-				params: IdParam,
+				params: InstanceIdParam,
 				response: { 200: InstanceResponseSchema, 404: ErrorResponseSchema },
 			},
 		},
@@ -726,7 +727,7 @@ export async function registerScheduledJobsRoutes(
 			if (!scheduledJobInstanceRepository) {
 				return notFound(reply, "Scheduled-job instances are not configured");
 			}
-			const { id } = request.params as Static<typeof IdParam>;
+			const { instanceId: id } = request.params as Static<typeof InstanceIdParam>;
 			const inst = await scheduledJobInstanceRepository.findById(id);
 			if (!inst) return notFound(reply, `Instance not found: ${id}`);
 			return jsonSuccess(reply, toInstanceResponse(inst));
@@ -735,11 +736,11 @@ export async function registerScheduledJobsRoutes(
 
 	// GET /api/scheduled-jobs/instances/:id/logs
 	f.get(
-		"/scheduled-jobs/instances/:id/logs",
+		"/scheduled-jobs/instances/:instanceId/logs",
 		{
 			preHandler: requirePermission(SCHEDULED_JOB_PERMISSIONS.INSTANCE_READ),
 			schema: {
-				params: IdParam,
+				params: InstanceIdParam,
 				querystring: Type.Object({
 					limit: Type.Optional(Type.Integer({ minimum: 1, maximum: 1000 })),
 				}),
@@ -753,7 +754,7 @@ export async function registerScheduledJobsRoutes(
 			if (!scheduledJobInstanceRepository) {
 				return notFound(reply, "Scheduled-job instances are not configured");
 			}
-			const { id } = request.params as Static<typeof IdParam>;
+			const { instanceId: id } = request.params as Static<typeof InstanceIdParam>;
 			const { limit } = request.query as { limit?: number };
 			const logs = await scheduledJobInstanceRepository.listLogsForInstance(
 				id,
@@ -765,11 +766,11 @@ export async function registerScheduledJobsRoutes(
 
 	// POST /api/scheduled-jobs/instances/:id/log — SDK callback to append a log
 	f.post(
-		"/scheduled-jobs/instances/:id/log",
+		"/scheduled-jobs/instances/:instanceId/log",
 		{
 			preHandler: requirePermission(SCHEDULED_JOB_PERMISSIONS.INSTANCE_WRITE),
 			schema: {
-				params: IdParam,
+				params: InstanceIdParam,
 				body: AddInstanceLogSchema,
 				response: {
 					201: InstanceLogResponseSchema,
@@ -781,7 +782,7 @@ export async function registerScheduledJobsRoutes(
 			if (!scheduledJobInstanceRepository) {
 				return notFound(reply, "Scheduled-job instances are not configured");
 			}
-			const { id } = request.params as Static<typeof IdParam>;
+			const { instanceId: id } = request.params as Static<typeof InstanceIdParam>;
 			const body = request.body as Static<typeof AddInstanceLogSchema>;
 			const inst = await scheduledJobInstanceRepository.findById(id);
 			if (!inst) return notFound(reply, `Instance not found: ${id}`);
@@ -799,11 +800,11 @@ export async function registerScheduledJobsRoutes(
 
 	// POST /api/scheduled-jobs/instances/:id/complete — SDK callback for completion
 	f.post(
-		"/scheduled-jobs/instances/:id/complete",
+		"/scheduled-jobs/instances/:instanceId/complete",
 		{
 			preHandler: requirePermission(SCHEDULED_JOB_PERMISSIONS.INSTANCE_WRITE),
 			schema: {
-				params: IdParam,
+				params: InstanceIdParam,
 				body: CompleteInstanceSchema,
 				response: {
 					204: Type.Null(),
@@ -815,7 +816,7 @@ export async function registerScheduledJobsRoutes(
 			if (!scheduledJobInstanceRepository) {
 				return notFound(reply, "Scheduled-job instances are not configured");
 			}
-			const { id } = request.params as Static<typeof IdParam>;
+			const { instanceId: id } = request.params as Static<typeof InstanceIdParam>;
 			const body = request.body as Static<typeof CompleteInstanceSchema>;
 			const inst = await scheduledJobInstanceRepository.findById(id);
 			if (!inst) return notFound(reply, `Instance not found: ${id}`);

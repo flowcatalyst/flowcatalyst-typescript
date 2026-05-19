@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import {
-	getApiAdminEvents,
-	getApiAdminEventsById,
-	getApiAdminEventsFilterOptions,
+	getApiEvents,
+	getApiEventsById,
+	getApiEventsFilterOptions,
 } from "@/api/generated";
 import { useListState } from "@/composables/useListState";
 
@@ -130,7 +130,7 @@ async function onFilterChange(
 async function loadFilterOptions() {
 	loadingOptions.value = true;
 	try {
-		const response = await getApiAdminEventsFilterOptions({
+		const response = await getApiEventsFilterOptions({
 			query: {
 				clientIds: selectedClients.value.length
 					? selectedClients.value.join(",")
@@ -170,7 +170,7 @@ async function loadFilterOptions() {
 async function loadEvents() {
 	loading.value = true;
 	try {
-		const response = await getApiAdminEvents({
+		const response = await getApiEvents({
 			query: {
 				page: String(currentPage.value),
 				size: String(pageSize.value),
@@ -240,7 +240,7 @@ async function viewEventDetail(event: EventRead) {
 	loadingDetail.value = true;
 	showDetailDialog.value = true;
 	try {
-		const response = await getApiAdminEventsById({ path: { id: event.id } });
+		const response = await getApiEventsById({ path: { id: event.id } });
 		if (response.data) {
 			selectedEvent.value = response.data as unknown as EventRead;
 		}

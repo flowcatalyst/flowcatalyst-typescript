@@ -59,7 +59,7 @@ import {
 
 const AppCodeParam = Type.Object({ appCode: Type.String() });
 const RemoveUnlistedQuery = Type.Object({
-	removeUnlisted: Type.Optional(Type.Union([Type.Boolean(), Type.String()])),
+	removeUnlisted: Type.Optional(Type.Boolean()),
 });
 
 // RoleDefinition::toArray() → { name, displayName?, description?, permissions?: PermissionInput[], clientManaged? }
@@ -193,10 +193,7 @@ export interface ApplicationSyncRoutesDeps {
 function parseRemoveUnlisted(
 	query: Static<typeof RemoveUnlistedQuery>,
 ): boolean {
-	const val = query.removeUnlisted;
-	if (typeof val === "boolean") return val;
-	if (typeof val === "string") return val === "true" || val === "1";
-	return false;
+	return query.removeUnlisted ?? false;
 }
 
 /**
