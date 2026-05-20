@@ -1,7 +1,37 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
+import { eventTypesApi } from "@/api/event-types";
+import { toast } from "@/utils/errorBus";
 
 const authStore = useAuthStore();
+
+const syncingEvents = ref(false);
+
+async function syncPlatformEvents() {
+	syncingEvents.value = true;
+	try {
+		const result = await eventTypesApi.syncPlatform();
+		const parts: string[] = [];
+		if (result.created > 0) parts.push(`${result.created} created`);
+		if (result.updated > 0) parts.push(`${result.updated} updated`);
+		if (result.deleted > 0) parts.push(`${result.deleted} deleted`);
+		toast.success(
+			"Platform Events Synced",
+			parts.length > 0
+				? `${parts.join(", ")} (${result.total} total)`
+				: `${result.total} event types up to date`,
+		);
+	} catch {
+		// Global banner shown by bffFetch
+	} finally {
+		syncingEvents.value = false;
+	}
+}
+
+async function syncAllPlatform() {
+	await syncPlatformEvents();
+}
 
 const dashboardCards = [
 	{
@@ -82,6 +112,43 @@ const dashboardCards = [
           </div>
         </div>
       </RouterLink>
+    </div>
+
+    <!-- Platform sync section -->
+    <div class="sync-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Platform Sync</h2>
+          <p class="section-subtitle">
+            Re-apply code-defined platform definitions without restarting the server.
+          </p>
+        </div>
+        <Button
+          label="Sync All"
+          icon="pi pi-sync"
+          :loading="syncingEvents"
+          @click="syncAllPlatform"
+        />
+      </div>
+      <div class="sync-grid">
+        <div class="sync-card">
+          <div class="sync-icon bg-amber">
+            <i class="pi pi-bolt text-amber"></i>
+          </div>
+          <div class="sync-info">
+            <h3 class="sync-title">Event Types</h3>
+            <p class="sync-description">Platform event-type definitions and schemas.</p>
+          </div>
+          <Button
+            label="Sync"
+            icon="pi pi-sync"
+            severity="secondary"
+            outlined
+            :loading="syncingEvents"
+            @click="syncPlatformEvents"
+          />
+        </div>
+      </div>
     </div>
 
     <!-- Stats section -->
@@ -237,6 +304,73 @@ const dashboardCards = [
   color: #64748b;
   margin: 0;
   line-height: 1.4;
+}
+
+.sync-section {
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.section-subtitle {
+  color: #64748b;
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+
+.sync-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.sync-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.sync-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sync-icon i {
+  font-size: 16px;
+}
+
+.sync-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sync-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #102a43;
+  margin: 0;
+}
+
+.sync-description {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0;
 }
 
 .stats-section {

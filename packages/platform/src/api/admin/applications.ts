@@ -13,10 +13,14 @@ import {
 	jsonSuccess,
 	noContent,
 	notFound,
+	badRequest,
+	jsonError,
 	ErrorResponseSchema,
 } from "@flowcatalyst/http";
 import { Result } from "@flowcatalyst/application";
 import type { UseCase } from "@flowcatalyst/application";
+import type { EncryptionService } from "@flowcatalyst/platform-crypto";
+import { randomBytes } from "node:crypto";
 
 import type {
 	CreateApplicationCommand,
@@ -28,6 +32,7 @@ import type {
 	DeactivateApplicationCommand,
 	CreateServiceAccountCommand,
 	AttachServiceAccountToApplicationCommand,
+	CreateOAuthClientCommand,
 } from "../../application/index.js";
 import type {
 	ApplicationCreated,
@@ -40,12 +45,14 @@ import type {
 	ApplicationType,
 	ServiceAccountCreated,
 	ApplicationServiceAccountProvisioned,
+	OAuthClientCreated,
 } from "../../domain/index.js";
 import type {
 	ApplicationRepository,
 	ApplicationClientConfigRepository,
 	RoleRepository,
 	PrincipalRepository,
+	OAuthClientRepository,
 } from "../../infrastructure/persistence/index.js";
 import { requirePermission } from "../../authorization/index.js";
 import { APPLICATION_PERMISSIONS } from "../../authorization/permissions/platform-admin.js";
@@ -135,6 +142,10 @@ const ApplicationResponseSchema = Type.Object({
 	active: Type.Boolean(),
 	createdAt: Type.String({ format: "date-time" }),
 	updatedAt: Type.String({ format: "date-time" }),
+	// True iff this application has an authorization_code OAuth client
+	// (login client) provisioned. Returned on detail GET only — list GET
+	// omits it to avoid N+1.
+	hasLoginClient: Type.Optional(Type.Boolean()),
 });
 
 const ApplicationsListResponseSchema = Type.Object({
@@ -170,18 +181,48 @@ const ApplicationRolesResponseSchema = Type.Object({
 	),
 });
 
-const ProvisionServiceAccountResponseSchema = Type.Object({
+const OAuthClientCredentialsSchema = Type.Object({
 	id: Type.String(),
-	code: Type.String(),
+	clientId: Type.String(),
+	clientSecret: Type.Optional(Type.String()),
+});
+
+const ServiceAccountCredentialsSchema = Type.Object({
+	principalId: Type.String(),
 	name: Type.String(),
-	applicationId: Type.Union([Type.String(), Type.Null()]),
-	active: Type.Boolean(),
-	createdAt: Type.String({ format: "date-time" }),
+	oauthClient: OAuthClientCredentialsSchema,
+});
+
+const ProvisionServiceAccountResponseSchema = Type.Object({
+	message: Type.String(),
+	serviceAccount: ServiceAccountCredentialsSchema,
 });
 
 const ProvisionServiceAccountSchema = Type.Object({
 	code: Type.Optional(Type.String({ minLength: 1, maxLength: 100 })),
 	name: Type.Optional(Type.String({ minLength: 1, maxLength: 200 })),
+});
+
+const LoginClientTypeSchema = Type.Union([
+	Type.Literal("PUBLIC"),
+	Type.Literal("CONFIDENTIAL"),
+]);
+
+const ProvisionLoginClientRequestSchema = Type.Object({
+	clientType: Type.Optional(LoginClientTypeSchema),
+	redirectUris: Type.Array(Type.String({ minLength: 1 }), { minItems: 1 }),
+	allowedOrigins: Type.Optional(Type.Array(Type.String({ minLength: 1 }))),
+});
+
+const LoginClientCredentialsSchema = Type.Object({
+	clientType: LoginClientTypeSchema,
+	redirectUris: Type.Array(Type.String()),
+	oauthClient: OAuthClientCredentialsSchema,
+});
+
+const ProvisionLoginClientResponseSchema = Type.Object({
+	message: Type.String(),
+	loginClient: LoginClientCredentialsSchema,
 });
 
 type ApplicationResponse = Static<typeof ApplicationResponseSchema>;
@@ -197,6 +238,8 @@ export interface ApplicationsRoutesDeps {
 	readonly applicationClientConfigRepository: ApplicationClientConfigRepository;
 	readonly roleRepository: RoleRepository;
 	readonly principalRepository: PrincipalRepository;
+	readonly oauthClientRepository: OAuthClientRepository;
+	readonly encryptionService: EncryptionService;
 	readonly createApplicationUseCase: UseCase<
 		CreateApplicationCommand,
 		ApplicationCreated
@@ -233,6 +276,10 @@ export interface ApplicationsRoutesDeps {
 		AttachServiceAccountToApplicationCommand,
 		ApplicationServiceAccountProvisioned
 	>;
+	readonly createOAuthClientUseCase: UseCase<
+		CreateOAuthClientCommand,
+		OAuthClientCreated
+	>;
 }
 
 /**
@@ -248,6 +295,8 @@ export async function registerApplicationsRoutes(
 		applicationClientConfigRepository,
 		roleRepository,
 		principalRepository,
+		oauthClientRepository,
+		encryptionService,
 		createApplicationUseCase,
 		updateApplicationUseCase,
 		deleteApplicationUseCase,
@@ -257,7 +306,17 @@ export async function registerApplicationsRoutes(
 		disableApplicationForClientUseCase,
 		createServiceAccountUseCase,
 		attachServiceAccountToApplicationUseCase,
+		createOAuthClientUseCase,
 	} = deps;
+
+	async function appHasLoginClient(appId: string): Promise<boolean> {
+		const clients = await oauthClientRepository.findByApplication(appId);
+		return clients.some(
+			(c) =>
+				c.serviceAccountPrincipalId === null &&
+				c.grantTypes.includes("authorization_code"),
+		);
+	}
 
 	// POST /api/applications - Create application
 	f.post(
@@ -396,7 +455,11 @@ export async function registerApplicationsRoutes(
 				return notFound(reply, `Application not found: ${id}`);
 			}
 
-			return jsonSuccess(reply, toApplicationResponse(application));
+			const hasLoginClient = await appHasLoginClient(application.id);
+			return jsonSuccess(reply, {
+				...toApplicationResponse(application),
+				hasLoginClient,
+			});
 		},
 	);
 
@@ -745,21 +808,16 @@ export async function registerApplicationsRoutes(
 				return notFound(reply, `Application not found: ${id}`);
 			}
 
-			// Check if application already has a service account
+			// Application already has a service account — return 409 so the
+			// caller knows to rotate via the OAuth Clients page rather than
+			// silently succeeding with no plaintext to show.
 			if (application.serviceAccountId) {
-				const existing = await principalRepository.findById(
-					application.serviceAccountId,
+				return jsonError(
+					reply,
+					409,
+					"CONFLICT",
+					"Application already has a service account provisioned",
 				);
-				if (existing && existing.serviceAccount) {
-					return jsonSuccess(reply, {
-						id: existing.id,
-						code: existing.serviceAccount.code,
-						name: existing.name,
-						applicationId: existing.applicationId,
-						active: existing.active,
-						createdAt: existing.createdAt.toISOString(),
-					});
-				}
 			}
 
 			const command: CreateServiceAccountCommand = {
@@ -772,38 +830,146 @@ export async function registerApplicationsRoutes(
 
 			const result = await createServiceAccountUseCase.execute(command, ctx);
 
-			if (Result.isSuccess(result)) {
-				const saData = result.value.getData();
-				const principalId = saData.principalId;
-				const principal = await principalRepository.findById(principalId);
-
-				// Link service account back to the application
-				const attachResult =
-					await attachServiceAccountToApplicationUseCase.execute(
-						{
-							applicationId: application.id,
-							serviceAccountId: principalId,
-							serviceAccountCode: saData.code,
-						},
-						ctx,
-					);
-				if (Result.isFailure(attachResult)) {
-					return sendResult(reply, attachResult);
-				}
-
-				if (principal) {
-					return jsonCreated(reply, {
-						id: principal.id,
-						code: principal.serviceAccount?.code ?? command.code,
-						name: principal.name,
-						applicationId: principal.applicationId,
-						active: principal.active,
-						createdAt: principal.createdAt.toISOString(),
-					});
-				}
+			if (Result.isFailure(result)) {
+				return sendResult(reply, result);
 			}
 
-			return sendResult(reply, result);
+			const event = result.value;
+			const saData = event.getData();
+			const principalId = saData.principalId;
+
+			// Link service account back to the application
+			const attachResult =
+				await attachServiceAccountToApplicationUseCase.execute(
+					{
+						applicationId: application.id,
+						serviceAccountId: principalId,
+						serviceAccountCode: saData.code,
+					},
+					ctx,
+				);
+			if (Result.isFailure(attachResult)) {
+				return sendResult(reply, attachResult);
+			}
+
+			const principal = await principalRepository.findById(principalId);
+
+			return jsonCreated(reply, {
+				message: "Service account provisioned",
+				serviceAccount: {
+					principalId: saData.principalId,
+					name: principal?.name ?? saData.name,
+					oauthClient: {
+						id: saData.oauthClientId,
+						clientId: saData.oauthClientPublicId,
+						// Plaintext secret is transient on the event — returned to
+						// the caller exactly once. Frontend MUST show it now.
+						...(event.clientSecret
+							? { clientSecret: event.clientSecret }
+							: {}),
+					},
+				},
+			});
+		},
+	);
+
+	// POST /api/applications/:id/provision-login-client - Mint an authorization_code OAuth client
+	f.post(
+		"/applications/:id/provision-login-client",
+		{
+			preHandler: requirePermission(APPLICATION_PERMISSIONS.UPDATE),
+			schema: {
+				params: IdParam,
+				body: ProvisionLoginClientRequestSchema,
+				response: {
+					201: ProvisionLoginClientResponseSchema,
+					400: ErrorResponseSchema,
+					404: ErrorResponseSchema,
+					409: ErrorResponseSchema,
+				},
+			},
+		},
+		async (request, reply) => {
+			const { id } = request.params as Static<typeof IdParam>;
+			const body = request.body as Static<
+				typeof ProvisionLoginClientRequestSchema
+			>;
+			const ctx = request.executionContext;
+
+			const application = await applicationRepository.findById(id);
+			if (!application) {
+				return notFound(reply, `Application not found: ${id}`);
+			}
+
+			if (body.redirectUris.length === 0) {
+				return badRequest(reply, "At least one redirect URI is required");
+			}
+
+			if (await appHasLoginClient(application.id)) {
+				return jsonError(
+					reply,
+					409,
+					"CONFLICT",
+					"Application already has a login OAuth client provisioned",
+				);
+			}
+
+			const clientType: "PUBLIC" | "CONFIDENTIAL" =
+				body.clientType ?? "PUBLIC";
+
+			// CONFIDENTIAL clients get a freshly generated secret. PUBLIC clients
+			// use PKCE alone — no secret, no clientSecretRef.
+			let clientSecretRef: string | undefined;
+			let plaintextSecret: string | undefined;
+			if (clientType === "CONFIDENTIAL") {
+				const plain = randomBytes(32).toString("base64url");
+				const encryptResult = encryptionService.encrypt(plain);
+				if (encryptResult.isErr()) {
+					throw new Error("Failed to encrypt client secret");
+				}
+				clientSecretRef = encryptResult.value;
+				plaintextSecret = plain;
+			}
+
+			const command: CreateOAuthClientCommand = {
+				clientName: `${application.name} Login`,
+				clientType,
+				...(clientSecretRef ? { clientSecretRef } : {}),
+				redirectUris: body.redirectUris,
+				...(body.allowedOrigins
+					? { allowedOrigins: body.allowedOrigins }
+					: {}),
+				grantTypes: ["authorization_code"],
+				defaultScopes: "openid profile email",
+				pkceRequired: clientType === "PUBLIC",
+				applicationIds: [application.id],
+			};
+
+			const result = await createOAuthClientUseCase.execute(command, ctx);
+			if (Result.isFailure(result)) {
+				return sendResult(reply, result);
+			}
+
+			const eventData = result.value.getData();
+			const created = await oauthClientRepository.findById(
+				eventData.oauthClientId,
+			);
+			if (!created) {
+				throw new Error("OAuth client not found after creation");
+			}
+
+			return jsonCreated(reply, {
+				message: "Login client provisioned",
+				loginClient: {
+					clientType,
+					redirectUris: [...created.redirectUris],
+					oauthClient: {
+						id: created.id,
+						clientId: created.clientId,
+						...(plaintextSecret ? { clientSecret: plaintextSecret } : {}),
+					},
+				},
+			});
 		},
 	);
 }

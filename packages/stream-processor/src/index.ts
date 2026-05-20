@@ -36,6 +36,14 @@ export {
 export interface StreamProcessorConfig {
 	databaseUrl?: string;
 	logLevel?: "trace" | "debug" | "info" | "warn" | "error" | "fatal";
+	/**
+	 * Optional pre-existing postgres-js client. When provided, the stream
+	 * processor uses this client (and won't close it on stop) instead of
+	 * creating its own pool. Used by the in-process app to share a single
+	 * connection pool across services — critical for the embedded pglite
+	 * dev path where pglite-socket serves one connection at a time.
+	 */
+	sql?: postgres.Sql;
 }
 
 /**
@@ -73,12 +81,19 @@ export async function startStreamProcessor(
 	});
 	setDefaultLogger(logger);
 
-	// Create PostgreSQL connection
-	const sql = postgres(DATABASE_URL, {
-		max: 4, // Two pollers + headroom
-		idle_timeout: 20,
-		connect_timeout: 30,
-	});
+	// Use a caller-provided client if given (in-process app shares its pool
+	// to avoid contention on pglite-socket's single-connection limit);
+	// otherwise create our own. `ownsSql` tracks whether stop() should close
+	// the client.
+	const ownsSql = config?.sql == null;
+	const poolMax = Number(process.env["DB_POOL_MAX"] ?? "4") || 4;
+	const sql =
+		config?.sql ??
+		postgres(DATABASE_URL, {
+			max: poolMax,
+			idle_timeout: 20,
+			connect_timeout: 30,
+		});
 
 	// Create projection services
 	const eventProjection = createEventProjectionService(
@@ -166,9 +181,16 @@ export async function startStreamProcessor(
 			dispatchJobProjection.stop();
 			partitionManager.stop();
 			fanOutService.stop();
-			// Allow current polls to complete (max 2 seconds)
-			await new Promise((resolve) => setTimeout(resolve, 2000));
-			await sql.end();
+			// Only close the pool if we own it. When the caller shared
+			// their client, leaving it open avoids tearing down their
+			// connections during our shutdown.
+			if (ownsSql) {
+				// sql.end({ timeout }) waits for in-flight queries to drain
+				// and then closes the connection pool. Bound it so a slow/
+				// blocked query (e.g. partition manager mid-init) can't
+				// stall shutdown.
+				await sql.end({ timeout: 1 });
+			}
 			logger.info("Stream processor stopped");
 		},
 		getHealth: () =>
@@ -189,14 +211,16 @@ const isMainModule =
 		process.argv[1].endsWith("/index.js"));
 
 if (isMainModule) {
-	const handle = await startStreamProcessor();
+	void (async () => {
+		const handle = await startStreamProcessor();
 
-	// Graceful shutdown
-	const shutdown = async () => {
-		await handle.stop();
-		process.exit(0);
-	};
+		// Graceful shutdown
+		const shutdown = async () => {
+			await handle.stop();
+			process.exit(0);
+		};
 
-	process.on("SIGINT", shutdown);
-	process.on("SIGTERM", shutdown);
+		process.on("SIGINT", shutdown);
+		process.on("SIGTERM", shutdown);
+	})();
 }

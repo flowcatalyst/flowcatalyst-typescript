@@ -59,7 +59,7 @@ export interface Database {
  */
 export function createDatabase(config: DatabaseConfig): Database {
 	const options: postgres.Options<Record<string, never>> = {
-		max: config.maxConnections ?? 10,
+		max: resolvePoolMax(config.maxConnections),
 		idle_timeout: config.idleTimeout ?? 20,
 		connect_timeout: config.connectTimeout ?? 30,
 		// Keep TCP connections alive so AWS NAT gateways / NLBs don't silently
@@ -110,7 +110,7 @@ export function createRefreshableDatabase(
 	config: DatabaseConfig,
 ): RefreshableDatabase {
 	const poolOptions: postgres.Options<Record<string, never>> = {
-		max: config.maxConnections ?? 10,
+		max: resolvePoolMax(config.maxConnections),
 		idle_timeout: config.idleTimeout ?? 20,
 		connect_timeout: config.connectTimeout ?? 30,
 		keep_alive: 60,
@@ -197,4 +197,21 @@ export function createMigrationDatabase(config: DatabaseConfig): Database {
 			await client.end();
 		},
 	};
+}
+
+/**
+ * Resolve the pool's `max` setting. An explicit `maxConnections` in the
+ * caller's config wins; otherwise we honour `DB_POOL_MAX` from the
+ * environment (used by the embedded-Postgres dev path, where pglite-socket
+ * services exactly one connection at a time and a pool > 1 deadlocks); and
+ * finally fall back to 10.
+ */
+function resolvePoolMax(explicit: number | undefined): number {
+	if (typeof explicit === "number") return explicit;
+	const envMax = process.env["DB_POOL_MAX"];
+	if (envMax) {
+		const parsed = Number(envMax);
+		if (Number.isFinite(parsed) && parsed > 0) return parsed;
+	}
+	return 10;
 }

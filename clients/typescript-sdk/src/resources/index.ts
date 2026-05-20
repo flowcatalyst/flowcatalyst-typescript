@@ -20,3 +20,4 @@ export {
 	type MyApplicationsResponse,
 } from "./me";
 export { ConnectionsResource } from "./connections";
+export { ScheduledJobsResource } from "./scheduled-jobs";

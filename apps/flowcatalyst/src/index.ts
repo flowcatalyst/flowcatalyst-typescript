@@ -28,9 +28,16 @@ import { startEmbeddedPostgres } from "./embedded-postgres.js";
 
 const VERSION = "0.0.1";
 
-// Load .env file from app directory
-const __dirname = dirname(fileURLToPath(import.meta.url));
-config({ path: resolve(__dirname, "../.env") });
+// Resolve module dir. ESM (tsx dev): import.meta.url. CJS bundle (SEA): fall back to
+// process.cwd() — SEA-specific paths are handled via `node:sea` getAsset() elsewhere;
+// the disk-path lookups using __dirname are dev-only fallbacks.
+const __dirname: string = (() => {
+	const metaUrl: string | undefined = (import.meta as { url?: string }).url;
+	return metaUrl ? dirname(fileURLToPath(metaUrl)) : process.cwd();
+})();
+
+// Load .env from the directory the binary is invoked from (standard CLI convention).
+config({ path: resolve(process.cwd(), ".env") });
 
 function printUsage() {
 	console.log(`flowcatalyst v${VERSION}
@@ -59,12 +66,26 @@ Environment:
   JWT_KEY_DIR              Directory for JWT key pairs (rotation-capable)`);
 }
 
+// Sync access to `node:sea`. Dynamic `await import("node:sea")` is rewritten
+// by esbuild to `import("sea")` (the `node:` prefix is dropped), which fails
+// at runtime. Resolving via CJS `require` keeps the prefix intact. In ESM dev
+// (tsx) `require` is undefined → returns null and callers fall through.
+function getSeaModule(): typeof import("node:sea") | null {
+	try {
+		const req: NodeJS.Require | null =
+			typeof require !== "undefined" ? require : null;
+		return req ? (req("node:sea") as typeof import("node:sea")) : null;
+	} catch {
+		return null;
+	}
+}
+
 // Resolve migrations folder — SEA asset, dist/drizzle, or ../drizzle
 async function resolveMigrationsFolder(): Promise<string> {
 	// SEA: extract embedded migrations to temp dir
 	try {
-		const sea = await import("node:sea");
-		if (sea.isSea()) {
+		const sea = getSeaModule();
+		if (sea?.isSea()) {
 			const raw = sea.getAsset("migrations", "utf8");
 			const data = JSON.parse(raw) as {
 				files: Record<string, string>;
@@ -103,8 +124,8 @@ function resolveProductionMigrationsFolder(): string | undefined {
 async function resolveFrontendDir(): Promise<string | undefined> {
 	// SEA: extract embedded frontend to temp dir
 	try {
-		const sea = await import("node:sea");
-		if (sea.isSea()) {
+		const sea = getSeaModule();
+		if (sea?.isSea()) {
 			const raw = sea.getAsset("frontend", "utf8");
 			const data = JSON.parse(raw) as {
 				files: Record<string, { content: string; encoding: "utf8" | "base64" }>;
@@ -207,13 +228,9 @@ const command = process.argv[2] ?? "serve";
 
 switch (command) {
 	case "serve":
-		break; // fall through to main()
 	case "migrate":
-		await runMigrateCommand();
-		process.exit(0);
 	case "rotate-keys":
-		await runRotateKeysCommand();
-		process.exit(0);
+		break; // fall through to main()
 	case "version":
 	case "--version":
 	case "-v":
@@ -285,8 +302,10 @@ const EMBEDDED_POSTGRES_ENABLED = (() => {
 	if (explicit === "false") return false;
 	return isDev && !process.env["DATABASE_URL"];
 })();
+// Default to 15432 (not 5432) so the embedded dev instance doesn't collide
+// with a system Postgres listening on the standard port.
 const EMBEDDED_POSTGRES_PORT = Number(
-	process.env["EMBEDDED_POSTGRES_PORT"] ?? "5432",
+	process.env["EMBEDDED_POSTGRES_PORT"] ?? "15432",
 );
 const EMBEDDED_POSTGRES_HOST =
 	process.env["EMBEDDED_POSTGRES_HOST"] ?? "127.0.0.1";
@@ -342,6 +361,15 @@ async function shutdown(signal: string) {
 }
 
 async function main() {
+	if (command === "migrate") {
+		await runMigrateCommand();
+		process.exit(0);
+	}
+	if (command === "rotate-keys") {
+		await runRotateKeysCommand();
+		process.exit(0);
+	}
+
 	// --- Embedded Postgres (dev) ---
 	// Starts before credential resolution so its URL can be picked up below.
 	if (EMBEDDED_POSTGRES_ENABLED && needsDatabase) {
@@ -507,6 +535,10 @@ async function main() {
 		const streamHandle = await startStreamProcessor({
 			databaseUrl: DATABASE_URL,
 			logLevel: LOG_LEVEL,
+			// Share the platform's connection pool so we don't open a separate
+			// one — pglite-socket only services one connection at a time and
+			// a second pool would deadlock on the embedded dev path.
+			...(refreshableDatabase ? { sql: refreshableDatabase.client } : {}),
 		});
 		stopFns.push(async () => {
 			logger.info("Stopping Stream Processor...");

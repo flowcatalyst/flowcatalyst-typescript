@@ -15,10 +15,7 @@
 import type { DomainEvent } from "@flowcatalyst/domain";
 import { generateRaw } from "@flowcatalyst/tsid";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import {
-	dispatchJobs,
-	dispatchJobProjectionFeed,
-} from "@flowcatalyst/persistence";
+import { dispatchJobs } from "@flowcatalyst/persistence";
 
 import type { SubscriptionRepository } from "../persistence/repositories/subscription-repository.js";
 import type { ConnectionCache } from "./connection-cache.js";
@@ -135,15 +132,10 @@ export function createEventDispatchService(
 					updatedAt: now,
 				};
 
-				// Insert dispatch job
+				// Insert dispatch job. Stream-processor picks it up via
+				// `projected_at IS NULL` and projects into
+				// msg_dispatch_jobs_read — no separate feed write needed.
 				await db.insert(dispatchJobs).values(jobRecord);
-
-				// Write to dispatch job projection feed for stream-processor projection
-				await db.insert(dispatchJobProjectionFeed).values({
-					dispatchJobId: jobId,
-					operation: "INSERT",
-					payload: jobRecord,
-				});
 
 				// Only add QUEUED jobs to notifications (PENDING jobs are held)
 				if (status === "QUEUED") {

@@ -63,7 +63,7 @@ async function loadDispatchJobs() {
 	loading.value = true;
 	try {
 		const data = await apiFetch<{ items: RawDispatchJob[]; page: number; size: number }>(
-			`/admin/dispatch-jobs/raw?page=${currentPage.value}&size=${pageSize.value}`,
+			`/dispatch-jobs/raw?page=${currentPage.value}&size=${pageSize.value}`,
 		);
 		dispatchJobs.value = data.items || [];
 		totalRecords.value = data.items.length < pageSize.value

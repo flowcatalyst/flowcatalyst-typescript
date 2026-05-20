@@ -23,6 +23,7 @@ import { ClientsResource } from "./resources/clients";
 import { PrincipalsResource } from "./resources/principals";
 import { MeResource } from "./resources/me";
 import { ConnectionsResource } from "./resources/connections";
+import { ScheduledJobsResource } from "./resources/scheduled-jobs";
 
 /**
  * Configuration for client credentials authentication.
@@ -111,6 +112,7 @@ export class FlowCatalystClient {
 	private _principals?: PrincipalsResource;
 	private _me?: MeResource;
 	private _connections?: ConnectionsResource;
+	private _scheduledJobs?: ScheduledJobsResource;
 
 	constructor(config: FlowCatalystConfig) {
 		this.config = {
@@ -199,6 +201,11 @@ export class FlowCatalystClient {
 	/** Connections resource */
 	connections(): ConnectionsResource {
 		return (this._connections ??= new ConnectionsResource(this));
+	}
+
+	/** Scheduled Jobs resource */
+	scheduledJobs(): ScheduledJobsResource {
+		return (this._scheduledJobs ??= new ScheduledJobsResource(this));
 	}
 
 	// ============ Internal Methods ============

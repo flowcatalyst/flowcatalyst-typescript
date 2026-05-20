@@ -1,92 +1,304 @@
 /**
- * Embedded Postgres (PGlite) for zero-setup local dev.
+ * Embedded Postgres for zero-setup local dev.
  *
- * Boots PGlite (real Postgres compiled to WASM) in-process and exposes it
- * over TCP via @electric-sql/pglite-socket, so the app connects over a
- * normal `postgres://` URL and devs can `psql` the same port to inspect
- * records.
+ * Spawns the real PostgreSQL binary (bundled via `@embedded-postgres/<plat>`)
+ * as a child process. Connect via a normal `postgres://` URL — `psql` works,
+ * concurrent connections work, no special pooling required.
  *
- * Not for production — single-process, no replication, limited extensions.
+ * In a Node SEA binary the postgres dist is packed via scripts/pack-postgres.js
+ * and extracted to /tmp on first run; outside SEA we resolve from node_modules.
+ *
+ * Not for production — single-process, no replication. Intended for dev/demo.
  */
 
-import { mkdirSync } from "node:fs";
-import { resolve } from "node:path";
+import { spawn } from "node:child_process";
+import {
+	mkdirSync,
+	writeFileSync,
+	existsSync,
+	chmodSync,
+	symlinkSync,
+	rmSync,
+} from "node:fs";
+import { resolve, dirname, join } from "node:path";
+import { tmpdir } from "node:os";
 import type { Logger } from "@flowcatalyst/logging";
 
 export interface EmbeddedPostgresOptions {
-	/** TCP port to expose the database on. */
 	port: number;
-	/** Host to bind on. Use "127.0.0.1" to block remote access. */
 	host: string;
-	/**
-	 * Directory for persistent DB files. If undefined or "memory", PGlite
-	 * runs in-memory and the DB is wiped on restart.
-	 */
+	/** Directory for cluster data. Defaults to `.fc-data/pg`. */
 	dataDir?: string;
 	logger: Logger;
 }
 
 export interface EmbeddedPostgresHandle {
-	/** Connection string the app (and any psql client) can use. */
 	url: string;
 	stop: () => Promise<void>;
 }
 
-/**
- * Start an embedded Postgres instance and expose it over TCP.
- * Resolves once the socket server is accepting connections.
- */
 export async function startEmbeddedPostgres(
 	opts: EmbeddedPostgresOptions,
 ): Promise<EmbeddedPostgresHandle> {
 	const { port, host, logger } = opts;
+	const dataDir = resolve(opts.dataDir ?? ".fc-data/pg");
 
-	// Dynamic imports keep @electric-sql/pglite out of the critical-path bundle
-	// graph and match the tsup-externalized pattern used for other native deps.
-	const { PGlite } = await import("@electric-sql/pglite");
-	const { PGLiteSocketServer } = await import("@electric-sql/pglite-socket");
+	const binDir = await resolvePostgresBinDir(logger);
+	const initdb = join(binDir, "initdb");
+	const postgres = join(binDir, "postgres");
 
-	const dataDir =
-		opts.dataDir && opts.dataDir !== "memory"
-			? resolve(opts.dataDir)
-			: undefined;
+	mkdirSync(dataDir, { recursive: true });
 
-	if (dataDir) {
-		mkdirSync(dataDir, { recursive: true });
-		logger.info({ dataDir }, "Starting embedded Postgres (persistent)");
+	// Run initdb only if the cluster hasn't been initialised yet (PG_VERSION
+	// file is the canonical marker postgres itself looks for).
+	if (!existsSync(join(dataDir, "PG_VERSION"))) {
+		logger.info({ dataDir }, "Initialising embedded Postgres cluster");
+		await runOnce(initdb, [
+			"-D",
+			dataDir,
+			"-U",
+			"postgres",
+			"-A",
+			"trust",
+			"--encoding=UTF8",
+			"--locale=C",
+			"--no-instructions",
+		]);
 	} else {
-		logger.info("Starting embedded Postgres (in-memory)");
+		logger.info({ dataDir }, "Reusing embedded Postgres cluster");
 	}
 
-	const db = await PGlite.create(dataDir);
+	// Listen on TCP only — disable the unix socket so it doesn't try to write
+	// to /tmp at fixed paths that could collide across instances.
+	const proc = spawn(
+		postgres,
+		[
+			"-D",
+			dataDir,
+			"-p",
+			String(port),
+			"-h",
+			host,
+			"-c",
+			"listen_addresses=" + host,
+			"-c",
+			"unix_socket_directories=",
+			"-c",
+			"log_min_messages=warning",
+		],
+		{ stdio: ["ignore", "pipe", "pipe"] },
+	);
 
-	const server = new PGLiteSocketServer({
-		db,
-		port,
-		host,
+	proc.stdout?.on("data", (chunk: Buffer) => {
+		const text = chunk.toString().trimEnd();
+		if (text) logger.debug({ src: "postgres" }, text);
+	});
+	proc.stderr?.on("data", (chunk: Buffer) => {
+		const text = chunk.toString().trimEnd();
+		if (text) logger.debug({ src: "postgres" }, text);
+	});
+	proc.on("exit", (code, signal) => {
+		if (code !== 0 && code !== null) {
+			logger.error({ code, signal }, "Embedded Postgres exited unexpectedly");
+		}
 	});
 
-	await server.start();
-
-	const url = `postgres://postgres@${host}:${port}/postgres`;
+	await waitForReady(host, port, 30_000);
 	logger.info(
-		{ url },
-		"Embedded Postgres ready — connect with `psql` or any client using this URL",
+		{ url: `postgres://postgres@${host}:${port}/postgres`, dataDir, pid: proc.pid },
+		"Embedded Postgres ready",
 	);
 
 	return {
-		url,
+		url: `postgres://postgres@${host}:${port}/postgres`,
 		async stop() {
-			try {
-				await server.stop();
-			} catch (err) {
-				logger.error({ err }, "Error stopping embedded Postgres socket server");
-			}
-			try {
-				await db.close();
-			} catch (err) {
-				logger.error({ err }, "Error closing embedded Postgres instance");
+			if (proc.exitCode !== null) return;
+			// SIGINT triggers Postgres "fast shutdown" — terminates active
+			// queries, doesn't wait for clients. We follow up with SIGKILL after
+			// 5s as a safety net.
+			proc.kill("SIGINT");
+			const killed = await new Promise<boolean>((res) => {
+				const t = setTimeout(() => res(false), 5_000);
+				proc.once("exit", () => {
+					clearTimeout(t);
+					res(true);
+				});
+			});
+			if (!killed) {
+				logger.warn("Embedded Postgres did not exit cleanly; sending SIGKILL");
+				proc.kill("SIGKILL");
 			}
 		},
 	};
 }
+
+/**
+ * Resolve the directory containing `postgres`, `initdb`, `pg_ctl` for the
+ * current platform. In a SEA we extract the packed binary asset to /tmp on
+ * first call (then symlink-hydrate); outside SEA we resolve through
+ * `@embedded-postgres/<platform>` in node_modules.
+ */
+async function resolvePostgresBinDir(logger: Logger): Promise<string> {
+	const cjsRequire: NodeJS.Require | null =
+		typeof require !== "undefined" ? require : null;
+
+	const sea = (() => {
+		try {
+			return cjsRequire
+				? (cjsRequire("node:sea") as typeof import("node:sea"))
+				: null;
+		} catch {
+			return null;
+		}
+	})();
+
+	if (sea?.isSea()) {
+		const extractDir = join(tmpdir(), "flowcatalyst-postgres");
+		const sentinel = join(extractDir, ".extracted");
+		if (!existsSync(sentinel)) {
+			logger.info({ extractDir }, "Extracting embedded Postgres binary");
+			const raw = sea.getAsset("postgres") as ArrayBuffer;
+			extractPostgresBlob(Buffer.from(raw), extractDir);
+			writeFileSync(sentinel, "");
+		}
+		return join(extractDir, "bin");
+	}
+
+	// Dev: dynamic-import the platform binary package. It exports named
+	// constants `postgres`, `initdb`, `pg_ctl` pointing at the absolute paths
+	// inside its `native/bin/` directory.
+	const platformPkg = (await import(getPlatformPackageName())) as {
+		postgres?: string;
+	};
+	if (!platformPkg.postgres || typeof platformPkg.postgres !== "string") {
+		throw new Error(
+			"Could not resolve postgres binary path from @embedded-postgres/* package",
+		);
+	}
+	return dirname(platformPkg.postgres);
+}
+
+function getPlatformPackageName(): string {
+	const platform = process.platform;
+	const arch = process.arch;
+	const map: Record<string, string> = {
+		"darwin-arm64": "@embedded-postgres/darwin-arm64",
+		"darwin-x64": "@embedded-postgres/darwin-x64",
+		"linux-arm64": "@embedded-postgres/linux-arm64",
+		"linux-x64": "@embedded-postgres/linux-x64",
+		"win32-x64": "@embedded-postgres/windows-x64",
+	};
+	const key = `${platform}-${arch}`;
+	const name = map[key];
+	if (!name) {
+		throw new Error(`Unsupported platform for embedded Postgres: ${key}`);
+	}
+	return name;
+}
+
+/**
+ * Decode the binary asset produced by scripts/pack-postgres.js into destDir.
+ *
+ * Format:
+ *   [u32 BE: header length]
+ *   [header JSON: { entries: { name, size, mode, link? }[] }]
+ *   [raw bytes for each non-symlink entry]
+ *
+ * Files marked `link` are recreated as symlinks (relative target) after the
+ * regular files have been written, so postgres can resolve its `@loader_path`
+ * dylibs against the extracted lib/ directory.
+ */
+function extractPostgresBlob(blob: Buffer, destDir: string): void {
+	if (blob.length < 4) throw new Error("postgres asset truncated");
+	const headerLen = blob.readUInt32BE(0);
+	const header = JSON.parse(
+		blob.subarray(4, 4 + headerLen).toString("utf8"),
+	) as {
+		entries: { name: string; size: number; mode: number; link?: string }[];
+	};
+
+	// Wipe stale extraction dir so we don't merge with an older layout.
+	if (existsSync(destDir)) rmSync(destDir, { recursive: true, force: true });
+	mkdirSync(destDir, { recursive: true });
+
+	let offset = 4 + headerLen;
+	const symlinks: { name: string; link: string }[] = [];
+
+	for (const entry of header.entries) {
+		const outPath = join(destDir, entry.name);
+		mkdirSync(dirname(outPath), { recursive: true });
+		if (entry.link !== undefined) {
+			// Defer symlink creation until after all regular files are in place.
+			symlinks.push({ name: entry.name, link: entry.link });
+			continue;
+		}
+		const bytes = blob.subarray(offset, offset + entry.size);
+		offset += entry.size;
+		writeFileSync(outPath, bytes);
+		// Preserve executable bit so postgres/initdb/pg_ctl can run.
+		if ((entry.mode & 0o111) !== 0) {
+			chmodSync(outPath, entry.mode & 0o777);
+		}
+	}
+
+	for (const s of symlinks) {
+		const linkPath = join(destDir, s.name);
+		try {
+			rmSync(linkPath, { force: true });
+		} catch {
+			/* ignore */
+		}
+		symlinkSync(s.link, linkPath);
+	}
+}
+
+function runOnce(cmd: string, args: string[]): Promise<void> {
+	return new Promise((res, rej) => {
+		const child = spawn(cmd, args, { stdio: ["ignore", "pipe", "pipe"] });
+		let stderr = "";
+		child.stderr?.on("data", (c: Buffer) => {
+			stderr += c.toString();
+		});
+		child.on("error", rej);
+		child.on("exit", (code) => {
+			if (code === 0) res();
+			else rej(new Error(`${cmd} exited ${code}: ${stderr.trim()}`));
+		});
+	});
+}
+
+/**
+ * Poll-connect to `host:port` until Postgres accepts a TCP connection or we
+ * hit `timeoutMs`. Postgres logs a "ready to accept connections" line earlier
+ * than it actually does on slow boxes; a real connect test is more reliable.
+ */
+async function waitForReady(
+	host: string,
+	port: number,
+	timeoutMs: number,
+): Promise<void> {
+	const { createConnection } = await import("node:net");
+	const deadline = Date.now() + timeoutMs;
+	while (Date.now() < deadline) {
+		try {
+			await new Promise<void>((res, rej) => {
+				const sock = createConnection({ host, port });
+				sock.once("connect", () => {
+					sock.destroy();
+					res();
+				});
+				sock.once("error", (e) => {
+					sock.destroy();
+					rej(e);
+				});
+			});
+			return;
+		} catch {
+			await new Promise((r) => setTimeout(r, 200));
+		}
+	}
+	throw new Error(
+		`Embedded Postgres did not become ready on ${host}:${port} within ${timeoutMs}ms`,
+	);
+}
+

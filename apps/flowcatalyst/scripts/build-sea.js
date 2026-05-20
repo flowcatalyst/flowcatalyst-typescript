@@ -23,6 +23,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const distDir = resolve(__dirname, "../dist");
 const blobPath = resolve(distDir, "sea-prep.blob");
+const postjectBin = resolve(__dirname, "../node_modules/.bin/postject");
 const outputName =
 	process.platform === "win32" ? "flowcatalyst.exe" : "flowcatalyst";
 const outputPath = resolve(distDir, outputName);
@@ -67,7 +68,7 @@ async function main() {
 		postjectArgs.push("--macho-segment-name", "NODE_SEA");
 	}
 
-	run(`npx postject ${postjectArgs.join(" ")}`);
+	run(`"${postjectBin}" ${postjectArgs.join(" ")}`);
 
 	// 4. Re-sign on macOS
 	if (process.platform === "darwin") {

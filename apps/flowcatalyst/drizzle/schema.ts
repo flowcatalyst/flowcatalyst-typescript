@@ -175,20 +175,8 @@ export const dispatchJobAttempts = pgTable("dispatch_job_attempts", {
 	uniqueIndex("idx_dispatch_job_attempts_job_number").using("btree", table.dispatchJobId.asc().nullsLast(), table.attemptNumber.asc().nullsLast()),
 ]);
 
-export const dispatchJobProjectionFeed = pgTable("dispatch_job_projection_feed", {
-	id: bigserial({ mode: 'number' }).primaryKey(),
-	dispatchJobId: varchar("dispatch_job_id", { length: 13 }).notNull(),
-	operation: varchar({ length: 10 }).notNull(),
-	payload: jsonb().notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
-	processed: smallint().default(0).notNull(),
-	processedAt: timestamp("processed_at", { withTimezone: true }),
-	errorMessage: text("error_message"),
-}, (table) => [
-	index("idx_dj_projection_feed_in_progress").using("btree", table.id.asc().nullsLast()).where(sql`(processed = 9)`),
-	index("idx_dj_projection_feed_processed_at").using("btree", table.processedAt.asc().nullsLast()).where(sql`(processed = 1)`),
-	index("idx_dj_projection_feed_unprocessed").using("btree", table.dispatchJobId.asc().nullsLast(), table.id.asc().nullsLast()).where(sql`(processed = 0)`),
-]);
+// dispatch_job_projection_feed retired — stream processor reads
+// msg_dispatch_jobs directly via `projected_at`.
 
 export const dispatchJobs = pgTable("dispatch_jobs", {
 	id: varchar({ length: 13 }).primaryKey(),
@@ -341,18 +329,8 @@ export const emailDomainMappings = pgTable("email_domain_mappings", {
 	index("idx_email_domain_mappings_scope").using("btree", table.scopeType.asc().nullsLast()),
 ]);
 
-export const eventProjectionFeed = pgTable("event_projection_feed", {
-	id: bigserial({ mode: 'number' }).primaryKey(),
-	eventId: varchar("event_id", { length: 13 }).notNull(),
-	payload: jsonb().notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
-	processed: smallint().default(0).notNull(),
-	processedAt: timestamp("processed_at", { withTimezone: true }),
-	errorMessage: text("error_message"),
-}, (table) => [
-	index("idx_event_projection_feed_in_progress").using("btree", table.id.asc().nullsLast()).where(sql`(processed = 9)`),
-	index("idx_event_projection_feed_unprocessed").using("btree", table.id.asc().nullsLast()).where(sql`(processed = 0)`),
-]);
+// event_projection_feed retired — stream processor reads msg_events
+// directly via `projected_at`.
 
 export const eventTypeSpecVersions = pgTable("event_type_spec_versions", {
 	id: varchar({ length: 17 }).primaryKey(),

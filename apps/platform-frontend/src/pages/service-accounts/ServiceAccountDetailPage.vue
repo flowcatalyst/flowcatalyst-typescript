@@ -13,6 +13,7 @@ import { connectionsApi, type Connection } from "@/api/connections";
 import type { PrincipalScope } from "@/api/users";
 import { rolesApi, type Role } from "@/api/roles";
 import { clientsApi, type Client } from "@/api/clients";
+import { applicationsApi, type Application } from "@/api/applications";
 
 const router = useRouter();
 const route = useRoute();
@@ -22,6 +23,7 @@ const serviceAccountId = route.params['id'] as string;
 
 const serviceAccount = ref<ServiceAccount | null>(null);
 const clients = ref<Client[]>([]);
+const ownerApplication = ref<Application | null>(null);
 const roleAssignments = ref<RoleAssignment[]>([]);
 const availableRoles = ref<Role[]>([]);
 const loading = ref(true);
@@ -68,13 +70,23 @@ const showCreateConnectionDialog = ref(false);
 const showDeleteDialog = ref(false);
 const deleting = ref(false);
 
+// Roles filtered by:
+//  - text search (name / displayName)
+//  - the service account's owning application — only that app's roles
+//    are eligible. Platform-level roles (no applicationCode) stay visible
+//    so platform-anchor permissions can still be assigned.
 const filteredAvailableRoles = computed(() => {
 	const query = roleSearchQuery.value.toLowerCase();
-	return availableRoles.value.filter(
-		(r) =>
+	const ownerAppCode = ownerApplication.value?.code ?? null;
+	return availableRoles.value.filter((r) => {
+		const matchesQuery =
 			r.name.toLowerCase().includes(query) ||
-			r.displayName?.toLowerCase().includes(query),
-	);
+			(r.displayName?.toLowerCase().includes(query) ?? false);
+		if (!matchesQuery) return false;
+		if (!ownerAppCode) return true;
+		if (!r.applicationCode) return true;
+		return r.applicationCode === ownerAppCode;
+	});
 });
 
 const hasRoleChanges = computed(() => {
@@ -93,13 +105,31 @@ onMounted(async () => {
 		loadAvailableRoles(),
 	]);
 	if (serviceAccount.value) {
-		await Promise.all([loadRoleAssignments(), loadConnections()]);
+		await Promise.all([
+			loadRoleAssignments(),
+			loadConnections(),
+			loadOwnerApplication(),
+		]);
 		if (route.query['edit'] === "true") {
 			startEdit();
 		}
 	}
 	loading.value = false;
 });
+
+async function loadOwnerApplication() {
+	const appId = serviceAccount.value?.applicationId;
+	if (!appId) {
+		ownerApplication.value = null;
+		return;
+	}
+	try {
+		ownerApplication.value = await applicationsApi.get(appId);
+	} catch (error) {
+		console.error("Failed to fetch owner application:", error);
+		ownerApplication.value = null;
+	}
+}
 
 async function loadServiceAccount() {
 	try {

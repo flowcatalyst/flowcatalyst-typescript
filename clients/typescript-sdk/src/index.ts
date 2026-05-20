@@ -87,6 +87,7 @@ export {
 	ApplicationsResource,
 	ClientsResource,
 	PrincipalsResource,
+	ScheduledJobsResource,
 } from "./resources";
 
 // Re-export generated types for convenience

@@ -20,6 +20,7 @@ export interface ServiceAccountCreatedData {
 	readonly serviceAccountId: string;
 	readonly principalId: string;
 	readonly oauthClientId: string;
+	readonly oauthClientPublicId: string;
 	readonly code: string;
 	readonly name: string;
 	readonly applicationId: string | null;
@@ -35,7 +36,17 @@ export class ServiceAccountCreated extends BaseDomainEvent<ServiceAccountCreated
 	);
 	static readonly SPEC_VERSION = "1.0";
 
-	constructor(ctx: ExecutionContext, data: ServiceAccountCreatedData) {
+	/**
+	 * Plaintext OAuth client secret. Transient — set by the use case, read
+	 * once by the API handler, never serialized into the event payload.
+	 */
+	readonly clientSecret: string | undefined;
+
+	constructor(
+		ctx: ExecutionContext,
+		data: ServiceAccountCreatedData,
+		clientSecret?: string,
+	) {
 		super(
 			{
 				eventType: ServiceAccountCreated.EVENT_TYPE,
@@ -55,6 +66,7 @@ export class ServiceAccountCreated extends BaseDomainEvent<ServiceAccountCreated
 			ctx,
 			data,
 		);
+		this.clientSecret = clientSecret;
 	}
 }
 

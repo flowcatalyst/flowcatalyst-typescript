@@ -64,6 +64,7 @@ const isMainModule =
 		process.argv[1].endsWith("/message-router/index.js"));
 
 if (isMainModule) {
+	void (async () => {
 	const logger = createLogger({
 		level: env.LOG_LEVEL,
 		serviceName: "message-router",
@@ -108,4 +109,5 @@ if (isMainModule) {
 
 	process.on("SIGINT", () => shutdown("SIGINT"));
 	process.on("SIGTERM", () => shutdown("SIGTERM"));
+	})();
 }

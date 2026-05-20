@@ -16,6 +16,7 @@ use FlowCatalyst\Client\Resources\Permissions;
 use FlowCatalyst\Client\Resources\Principals;
 use FlowCatalyst\Client\Resources\Roles;
 use FlowCatalyst\Client\Resources\Connections;
+use FlowCatalyst\Client\Resources\ScheduledJobs;
 use FlowCatalyst\Client\Resources\Subscriptions;
 use FlowCatalyst\Exceptions\AuthenticationException;
 use FlowCatalyst\Exceptions\FlowCatalystException;
@@ -39,6 +40,7 @@ class FlowCatalystClient
     private ?Clients $clients = null;
     private ?Principals $principals = null;
     private ?Connections $connections = null;
+    private ?ScheduledJobs $scheduledJobs = null;
     private ?Me $me = null;
 
     /**
@@ -169,6 +171,14 @@ class FlowCatalystClient
     public function principals(): Principals
     {
         return $this->principals ??= new Principals($this);
+    }
+
+    /**
+     * Get the Scheduled Jobs resource.
+     */
+    public function scheduledJobs(): ScheduledJobs
+    {
+        return $this->scheduledJobs ??= new ScheduledJobs($this);
     }
 
     /**

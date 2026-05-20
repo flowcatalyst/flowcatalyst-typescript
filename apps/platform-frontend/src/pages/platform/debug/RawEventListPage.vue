@@ -45,7 +45,7 @@ async function loadEvents() {
 	loading.value = true;
 	try {
 		const data = await apiFetch<{ items: RawEvent[]; page: number; size: number }>(
-			`/admin/events/raw?page=${currentPage.value}&size=${pageSize.value}`,
+			`/events/raw?page=${currentPage.value}&size=${pageSize.value}`,
 		);
 		events.value = data.items || [];
 		totalRecords.value = data.items.length < pageSize.value

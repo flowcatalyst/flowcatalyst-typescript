@@ -125,7 +125,7 @@ export function createFastifyLoggerOptions(
 			...baseContext,
 			...pinoOptions.base,
 		},
-		...(isDev
+		...(isDev && !isSeaBinary()
 			? {
 					transport: {
 						target: "pino-pretty",
@@ -138,6 +138,20 @@ export function createFastifyLoggerOptions(
 				}
 			: {}),
 	};
+}
+
+// Detect Node SEA at runtime. pino's pino-pretty transport spawns a worker
+// thread that does `require("pino-pretty")`; SEA's restricted require can't
+// resolve it. Disable the transport when running in a SEA binary.
+function isSeaBinary(): boolean {
+	try {
+		const req: NodeJS.Require | null =
+			typeof require !== "undefined" ? require : null;
+		if (!req) return false;
+		return (req("node:sea") as { isSea(): boolean }).isSea();
+	} catch {
+		return false;
+	}
 }
 
 export type { Logger, LoggerOptions };

@@ -12,7 +12,18 @@
 ALTER TABLE msg_events ADD COLUMN IF NOT EXISTS fanned_out_at TIMESTAMPTZ;
 --> statement-breakpoint
 
-ALTER TABLE msg_events DROP CONSTRAINT IF EXISTS msg_events_pkey;
+-- Drop whatever PK currently sits on msg_events. The constraint may still be
+-- named `events_pkey` from before the namespace rename (Postgres doesn't
+-- rename associated constraints when a table is renamed).
+DO $$
+DECLARE pk_name text;
+BEGIN
+	SELECT conname INTO pk_name FROM pg_constraint
+	WHERE conrelid = 'msg_events'::regclass AND contype = 'p';
+	IF pk_name IS NOT NULL THEN
+		EXECUTE format('ALTER TABLE msg_events DROP CONSTRAINT %I', pk_name);
+	END IF;
+END $$;
 --> statement-breakpoint
 
 ALTER TABLE msg_events ALTER COLUMN created_at SET NOT NULL;
@@ -46,7 +57,15 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_msg_events_deduplication ON msg_events (de
 ALTER TABLE msg_events_read ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
 --> statement-breakpoint
 
-ALTER TABLE msg_events_read DROP CONSTRAINT IF EXISTS msg_events_read_pkey;
+DO $$
+DECLARE pk_name text;
+BEGIN
+	SELECT conname INTO pk_name FROM pg_constraint
+	WHERE conrelid = 'msg_events_read'::regclass AND contype = 'p';
+	IF pk_name IS NOT NULL THEN
+		EXECUTE format('ALTER TABLE msg_events_read DROP CONSTRAINT %I', pk_name);
+	END IF;
+END $$;
 --> statement-breakpoint
 
 ALTER TABLE msg_events_read ADD CONSTRAINT msg_events_read_pkey PRIMARY KEY (id, created_at);
@@ -54,7 +73,15 @@ ALTER TABLE msg_events_read ADD CONSTRAINT msg_events_read_pkey PRIMARY KEY (id,
 
 -- ─── msg_dispatch_jobs ────────────────────────────────────────────────────
 
-ALTER TABLE msg_dispatch_jobs DROP CONSTRAINT IF EXISTS msg_dispatch_jobs_pkey;
+DO $$
+DECLARE pk_name text;
+BEGIN
+	SELECT conname INTO pk_name FROM pg_constraint
+	WHERE conrelid = 'msg_dispatch_jobs'::regclass AND contype = 'p';
+	IF pk_name IS NOT NULL THEN
+		EXECUTE format('ALTER TABLE msg_dispatch_jobs DROP CONSTRAINT %I', pk_name);
+	END IF;
+END $$;
 --> statement-breakpoint
 
 ALTER TABLE msg_dispatch_jobs ALTER COLUMN created_at SET NOT NULL;
@@ -93,7 +120,15 @@ CREATE INDEX IF NOT EXISTS idx_dispatch_jobs_stale_queued
 
 -- ─── msg_dispatch_jobs_read ───────────────────────────────────────────────
 
-ALTER TABLE msg_dispatch_jobs_read DROP CONSTRAINT IF EXISTS msg_dispatch_jobs_read_pkey;
+DO $$
+DECLARE pk_name text;
+BEGIN
+	SELECT conname INTO pk_name FROM pg_constraint
+	WHERE conrelid = 'msg_dispatch_jobs_read'::regclass AND contype = 'p';
+	IF pk_name IS NOT NULL THEN
+		EXECUTE format('ALTER TABLE msg_dispatch_jobs_read DROP CONSTRAINT %I', pk_name);
+	END IF;
+END $$;
 --> statement-breakpoint
 
 ALTER TABLE msg_dispatch_jobs_read ALTER COLUMN created_at SET NOT NULL;
@@ -104,7 +139,15 @@ ALTER TABLE msg_dispatch_jobs_read ADD CONSTRAINT msg_dispatch_jobs_read_pkey PR
 
 -- ─── msg_dispatch_job_attempts ────────────────────────────────────────────
 
-ALTER TABLE msg_dispatch_job_attempts DROP CONSTRAINT IF EXISTS msg_dispatch_job_attempts_pkey;
+DO $$
+DECLARE pk_name text;
+BEGIN
+	SELECT conname INTO pk_name FROM pg_constraint
+	WHERE conrelid = 'msg_dispatch_job_attempts'::regclass AND contype = 'p';
+	IF pk_name IS NOT NULL THEN
+		EXECUTE format('ALTER TABLE msg_dispatch_job_attempts DROP CONSTRAINT %I', pk_name);
+	END IF;
+END $$;
 --> statement-breakpoint
 
 ALTER TABLE msg_dispatch_job_attempts ALTER COLUMN created_at SET DEFAULT NOW();

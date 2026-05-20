@@ -563,14 +563,18 @@ export const monitoringRoutes: FastifyPluginAsync = async (fastify) => {
 			const path = await import("node:path");
 			const { fileURLToPath } = await import("node:url");
 
-			const __filename = fileURLToPath(import.meta.url);
-			const __dirname = path.dirname(__filename);
+			const metaUrl: string | undefined = (
+				import.meta as { url?: string }
+			).url;
+			const baseDir = metaUrl
+				? path.dirname(fileURLToPath(metaUrl))
+				: process.cwd();
 
 			// Bundled: dist/message-router-XXX.js → dist/public/dashboard.html
 			// Dev tsx: src/message-router/routes/monitoring.ts → public/dashboard.html
 			const candidates = [
-				path.join(__dirname, "public/dashboard.html"),
-				path.join(__dirname, "../../../public/dashboard.html"),
+				path.join(baseDir, "public/dashboard.html"),
+				path.join(baseDir, "../../../public/dashboard.html"),
 			];
 			let dashboardPath = "";
 			for (const candidate of candidates) {

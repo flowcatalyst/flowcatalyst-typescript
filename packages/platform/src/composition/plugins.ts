@@ -108,13 +108,29 @@ export async function registerPlatformPlugins(
 		},
 	});
 
-	await fastify.register(swaggerUi, {
+	// fastify-swagger-ui reads its static assets (logo, HTML, JS, CSS) from
+	// `path.join(__dirname, "./static/...")`. In a SEA bundle __dirname points
+	// at the bundle dir where those files don't exist — so we pack the static
+	// dir as a SEA asset, extract it to /tmp, and pass `baseDir` + `logo` so
+	// the plugin reads from the extracted path instead.
+	const swaggerUiOpts: Parameters<typeof swaggerUi>[1] = {
 		routePrefix: "/docs",
 		uiConfig: {
 			docExpansion: "list",
 			deepLinking: true,
 		},
-	});
+	};
+	const swaggerStaticDir = extractSwaggerUiStatic();
+	if (swaggerStaticDir) {
+		swaggerUiOpts.baseDir = swaggerStaticDir;
+		swaggerUiOpts.logo = {
+			type: "image/svg+xml",
+			content: await import("node:fs/promises").then((fs) =>
+				fs.readFile(`${swaggerStaticDir}/logo.svg`),
+			),
+		};
+	}
+	await fastify.register(swaggerUi, swaggerUiOpts);
 
 	// Register shared schemas so Fastify emits $ref instead of inlining
 	fastify.addSchema(ErrorResponseSchema);
@@ -464,4 +480,54 @@ export async function registerPlatformPlugins(
 			maxAge: env.OIDC_SESSION_TTL ?? 86400,
 		},
 	});
+}
+
+// Acquire a CJS-style require from inside an ESM-typed source file. In a SEA
+// CJS bundle Node injects `require` into the module scope. In tsx ESM dev it
+// isn't defined; `typeof` safely returns "undefined" on the undeclared ref.
+function cjsRequire(): NodeJS.Require | null {
+	return typeof require !== "undefined" ? require : null;
+}
+
+// Extract the packed @fastify/swagger-ui static dir to /tmp on first use and
+// return the path. Returns null when not running in a SEA — the plugin will
+// then read from its installed location as normal.
+function extractSwaggerUiStatic(): string | null {
+	const req = cjsRequire();
+	if (!req) return null;
+	let sea: typeof import("node:sea");
+	try {
+		sea = req("node:sea") as typeof import("node:sea");
+	} catch {
+		return null;
+	}
+	if (!sea.isSea()) return null;
+
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	const path = req("node:path") as typeof import("node:path");
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	const fs = req("node:fs") as typeof import("node:fs");
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	const os = req("node:os") as typeof import("node:os");
+
+	const extractDir = path.join(os.tmpdir(), "flowcatalyst-swagger-ui");
+	const sentinel = path.join(extractDir, ".extracted");
+	if (fs.existsSync(sentinel)) return extractDir;
+
+	const blob = Buffer.from(sea.getAsset("swagger-ui") as ArrayBuffer);
+	const headerLen = blob.readUInt32BE(0);
+	const header = JSON.parse(
+		blob.subarray(4, 4 + headerLen).toString("utf8"),
+	) as { entries: { name: string; size: number }[] };
+	let offset = 4 + headerLen;
+	fs.mkdirSync(extractDir, { recursive: true });
+	for (const entry of header.entries) {
+		const bytes = blob.subarray(offset, offset + entry.size);
+		offset += entry.size;
+		const outPath = path.join(extractDir, entry.name);
+		fs.mkdirSync(path.dirname(outPath), { recursive: true });
+		fs.writeFileSync(outPath, bytes);
+	}
+	fs.writeFileSync(sentinel, "");
+	return extractDir;
 }

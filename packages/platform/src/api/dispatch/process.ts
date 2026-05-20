@@ -18,7 +18,6 @@ import { generateRaw } from "@flowcatalyst/tsid";
 import {
 	dispatchJobs,
 	dispatchJobAttempts,
-	dispatchJobProjectionFeed,
 	type DispatchErrorType,
 } from "@flowcatalyst/persistence";
 import { and, eq } from "drizzle-orm";
@@ -309,6 +308,8 @@ async function updateJobAfterAttempt(
 		update.status,
 	);
 
+	// The UPDATE bumps `updated_at`; the dispatch-job projector picks the
+	// row up on its next poll via `updated_at > projected_at`.
 	await db
 		.update(dispatchJobs)
 		.set({
@@ -326,26 +327,4 @@ async function updateJobAfterAttempt(
 				eq(dispatchJobs.createdAt, jobCreatedAt),
 			),
 		);
-
-	// Append to projection feed so stream processor picks up the change.
-	// Feed is append-only: each change produces a new row with a changed-fields patch.
-	const payload = {
-		status: update.status,
-		attemptCount: update.attemptCount,
-		lastAttemptAt: now,
-		durationMillis: update.durationMillis,
-		lastError: update.lastError,
-		...(isTerminal ? { completedAt: now } : {}),
-		updatedAt: now,
-	};
-	await db
-		.insert(dispatchJobProjectionFeed)
-		.values({
-			dispatchJobId: jobId,
-			operation: "UPDATE",
-			payload,
-		})
-		.catch(() => {
-			// Non-critical: projection will catch up on next poll
-		});
 }

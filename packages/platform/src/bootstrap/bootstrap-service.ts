@@ -284,10 +284,17 @@ export async function bootstrapAdminUser(deps: BootstrapDeps): Promise<void> {
 
 	logger.info("No anchor users found, checking for bootstrap configuration...");
 
-	// Read bootstrap env vars
-	const bootstrapEmail = process.env["FLOWCATALYST_BOOTSTRAP_ADMIN_EMAIL"];
+	// Read bootstrap env vars. In dev (NODE_ENV !== "production") we fall back
+	// to well-known defaults so the binary is immediately usable on first run.
+	// In production we require explicit credentials and refuse to seed a known
+	// default.
+	const isDev = process.env["NODE_ENV"] !== "production";
+	const bootstrapEmail =
+		process.env["FLOWCATALYST_BOOTSTRAP_ADMIN_EMAIL"] ??
+		(isDev ? "admin@flowcatalyst.local" : undefined);
 	const bootstrapPassword =
-		process.env["FLOWCATALYST_BOOTSTRAP_ADMIN_PASSWORD"];
+		process.env["FLOWCATALYST_BOOTSTRAP_ADMIN_PASSWORD"] ??
+		(isDev ? "DevPassword123!" : undefined);
 	const bootstrapName =
 		process.env["FLOWCATALYST_BOOTSTRAP_ADMIN_NAME"] ?? "Bootstrap Admin";
 
@@ -296,6 +303,17 @@ export async function bootstrapAdminUser(deps: BootstrapDeps): Promise<void> {
 			"No bootstrap admin configured. Set FLOWCATALYST_BOOTSTRAP_ADMIN_EMAIL and FLOWCATALYST_BOOTSTRAP_ADMIN_PASSWORD to create an initial admin.",
 		);
 		return;
+	}
+
+	const usingDevDefaults =
+		isDev &&
+		!process.env["FLOWCATALYST_BOOTSTRAP_ADMIN_EMAIL"] &&
+		!process.env["FLOWCATALYST_BOOTSTRAP_ADMIN_PASSWORD"];
+	if (usingDevDefaults) {
+		logger.warn(
+			{ email: bootstrapEmail },
+			"Using dev bootstrap admin defaults — change the password before exposing this instance",
+		);
 	}
 
 	// Validate email format

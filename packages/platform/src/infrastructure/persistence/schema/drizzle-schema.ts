@@ -65,7 +65,6 @@ export { oidcLoginStates } from "./oidc-login-states.js";
 export { principalApplicationAccess } from "./principal-application-access.js";
 export { platformConfigs, platformConfigAccess } from "./platform-configs.js";
 export { corsAllowedOrigins } from "./cors-allowed-origins.js";
-export { dispatchJobProjectionFeed, eventProjectionFeed } from "./outbox.js";
 export { loginAttempts } from "./login-attempts.js";
 export { webauthnCredentials } from "./webauthn-credentials.js";
 export { scheduledJobs } from "./scheduled-jobs.js";

@@ -3,8 +3,10 @@
  *
  * Batch ingestion endpoint for dispatch jobs from the outbox processor.
  * Accepts an array of dispatch job payloads and bulk-inserts into the
- * dispatch_jobs table and dispatch_job_projection_feed in a single transaction.
- * After commit, publishes MessagePointers to the queue via PostCommitDispatcher.
+ * dispatch_jobs table. After commit, publishes MessagePointers to the
+ * queue via PostCommitDispatcher. Stream-processor projects
+ * msg_dispatch_jobs → msg_dispatch_jobs_read directly via
+ * `projected_at IS NULL` (no feed table).
  */
 
 import type { FastifyInstance } from "fastify";
@@ -19,9 +21,7 @@ import {
 import { generateRaw } from "@flowcatalyst/tsid";
 import {
 	dispatchJobs,
-	dispatchJobProjectionFeed,
 	type NewDispatchJobRecord,
-	type NewDispatchJobProjectionFeedRecord,
 	type DispatchJobMetadata,
 	type PostCommitDispatcher,
 } from "@flowcatalyst/persistence";
@@ -147,7 +147,6 @@ export async function registerDispatchJobsBatchRoutes(
 
 			// Build all records in memory
 			const jobRows: NewDispatchJobRecord[] = [];
-			const feedRows: NewDispatchJobProjectionFeedRecord[] = [];
 			const ids: string[] = [];
 
 			for (const item of items) {
@@ -215,19 +214,9 @@ export async function registerDispatchJobsBatchRoutes(
 				};
 
 				jobRows.push(jobRecord);
-
-				feedRows.push({
-					dispatchJobId: id,
-					operation: "INSERT",
-					payload: jobRecord,
-				});
 			}
 
-			// Bulk insert in a single transaction — two multi-row INSERTs
-			await db.transaction(async (tx) => {
-				await tx.insert(dispatchJobs).values(jobRows);
-				await tx.insert(dispatchJobProjectionFeed).values(feedRows);
-			});
+			await db.insert(dispatchJobs).values(jobRows);
 
 			// Post-commit: publish MessagePointers to the queue (only QUEUED jobs)
 			const dispatcher = getPostCommitDispatcher();

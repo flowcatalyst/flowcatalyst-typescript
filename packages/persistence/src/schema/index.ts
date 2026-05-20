@@ -63,14 +63,6 @@ export {
 	type DispatchErrorType,
 } from "./dispatch-job-attempts.js";
 
-// Projection feed schemas (CQRS change capture)
-export {
-	eventProjectionFeed,
-	dispatchJobProjectionFeed,
-	type EventProjectionFeedRecord,
-	type NewEventProjectionFeedRecord,
-	type DispatchJobProjectionFeedRecord,
-	type NewDispatchJobProjectionFeedRecord,
-	type ProjectionFeedOperation,
-	type ProjectionFeedProcessedStatus,
-} from "./outbox.js";
+// Projection feed tables were retired — the stream processor projects
+// msg_events / msg_dispatch_jobs into their read models directly via the
+// `projected_at` column.

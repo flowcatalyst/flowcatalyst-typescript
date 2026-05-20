@@ -163,6 +163,9 @@ export function createPartitionManagerService(
 			running = false;
 			return;
 		}
+		// stop() may have been called while the partition-check query was
+		// in-flight (common at startup→shutdown races); skip the rest.
+		if (!running) return;
 
 		logger.info(
 			{
@@ -174,6 +177,7 @@ export function createPartitionManagerService(
 
 		// Run once immediately.
 		await safeTick();
+		if (!running) return;
 
 		// Then on interval.
 		timer = setInterval(() => {

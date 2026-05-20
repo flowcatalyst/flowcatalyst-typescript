@@ -6,6 +6,9 @@
 	"useCodeCache": false,
 	"assets": {
 		"migrations": "dist/migrations.json",
-		"frontend": "dist/frontend.json"
+		"frontend": "dist/frontend.json",
+		"postgres": "dist/postgres.bin",
+		"argon2": "dist/argon2.bin",
+		"swagger-ui": "dist/swagger-ui.bin"
 	}
 }

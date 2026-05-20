@@ -264,15 +264,34 @@ export async function startPlatform(
 			}
 		});
 
-		// SPA catch-all: serve index.html for navigation paths not matched by API routes
+		// SPA catch-all: serve index.html for navigation paths not matched by
+		// API routes. API-shaped prefixes always get a JSON 404 so a stale
+		// frontend call surfaces as a parse error instead of silently swallowing
+		// HTML into the client.
+		const API_PREFIXES = [
+			"/api/",
+			"/auth/",
+			"/oidc/",
+			"/oauth/",
+			"/bff/",
+			"/.well-known/",
+			"/openapi",
+			"/health",
+			"/docs",
+		];
 		fastify.setNotFoundHandler(async (request, reply) => {
+			const url = request.url;
+			const isApi = API_PREFIXES.some(
+				(p) => url === p.replace(/\/$/, "") || url.startsWith(p),
+			);
 			if (
+				!isApi &&
 				(request.method === "GET" || request.method === "HEAD") &&
-				request.url.indexOf(".") === -1
+				url.indexOf(".") === -1
 			) {
 				return reply.sendFile("index.html");
 			}
-			reply.code(404).send({ error: "Not Found" });
+			reply.code(404).send({ error: "Not Found", path: url });
 		});
 
 		fastify.log.info(
@@ -351,9 +370,10 @@ export {
 // Run when executed as main module (not when imported by flowcatalyst app)
 import { fileURLToPath as _toPath } from "node:url";
 import { resolve as _resolve } from "node:path";
-const _self = _resolve(_toPath(import.meta.url));
+const _metaUrl: string | undefined = (import.meta as { url?: string }).url;
+const _self = _metaUrl ? _resolve(_toPath(_metaUrl)) : "";
 const _entry = process.argv[1] ? _resolve(process.argv[1]) : "";
-if (_self === _entry) {
+if (_self && _self === _entry) {
 	startPlatform().catch((err) => {
 		console.error("Failed to start platform:", err);
 		process.exit(1);

@@ -7,6 +7,8 @@ import {
 	applicationsApi,
 	type Application,
 	type ServiceAccountCredentials,
+	type LoginClientCredentials,
+	type LoginClientType,
 } from "@/api/applications";
 
 const route = useRoute();
@@ -31,6 +33,68 @@ const editLogoMimeType = ref("");
 const provisioning = ref(false);
 const showCredentialsDialog = ref(false);
 const provisionedCredentials = ref<ServiceAccountCredentials | null>(null);
+
+// Login client provisioning
+const loginClientType = ref<LoginClientType>("PUBLIC");
+const loginRedirectUris = ref<string[]>([]);
+const loginRedirectUriInput = ref("");
+const provisioningLoginClient = ref(false);
+const showLoginClientDialog = ref(false);
+const provisionedLoginClient = ref<LoginClientCredentials | null>(null);
+
+const loginClientTypeOptions: { label: string; value: LoginClientType }[] = [
+	{ label: "PUBLIC (PKCE)", value: "PUBLIC" },
+	{ label: "CONFIDENTIAL (client secret)", value: "CONFIDENTIAL" },
+];
+
+function addRedirectUri() {
+	const uri = loginRedirectUriInput.value.trim();
+	if (!uri) return;
+	if (loginRedirectUris.value.includes(uri)) return;
+	loginRedirectUris.value.push(uri);
+	loginRedirectUriInput.value = "";
+}
+
+function removeRedirectUri(uri: string) {
+	loginRedirectUris.value = loginRedirectUris.value.filter((u) => u !== uri);
+}
+
+async function provisionLoginClient() {
+	const id = application.value?.id || (route.params['id'] as string);
+	if (!id) {
+		toast.error("Error", "Application ID not found");
+		return;
+	}
+	if (loginRedirectUris.value.length === 0) {
+		toast.error("Error", "Add at least one redirect URI");
+		return;
+	}
+
+	provisioningLoginClient.value = true;
+	try {
+		const result = await applicationsApi.provisionLoginClient(id, {
+			clientType: loginClientType.value,
+			redirectUris: [...loginRedirectUris.value],
+		});
+		provisionedLoginClient.value = result.loginClient;
+		showLoginClientDialog.value = true;
+
+		// Reset form
+		loginRedirectUris.value = [];
+		loginRedirectUriInput.value = "";
+
+		await loadApplication(id);
+	} catch {
+		// Global banner shown by bffFetch
+	} finally {
+		provisioningLoginClient.value = false;
+	}
+}
+
+function onLoginClientDialogClose() {
+	showLoginClientDialog.value = false;
+	provisionedLoginClient.value = null;
+}
 
 onMounted(async () => {
 	const id = route.params['id'] as string;
@@ -339,7 +403,7 @@ function formatDate(dateString: string) {
           <h3>Service Account</h3>
         </div>
         <div class="card-content">
-          <template v-if="application.serviceAccountPrincipalId">
+          <template v-if="application.serviceAccountId">
             <div class="detail-grid">
               <div class="detail-item">
                 <label>Status</label>
@@ -347,7 +411,7 @@ function formatDate(dateString: string) {
               </div>
               <div class="detail-item">
                 <label>Principal ID</label>
-                <code>{{ application.serviceAccountPrincipalId }}</code>
+                <code>{{ application.serviceAccountId }}</code>
               </div>
             </div>
             <Message severity="info" class="service-account-info">
@@ -369,6 +433,81 @@ function formatDate(dateString: string) {
                 icon="pi pi-plus"
                 :loading="provisioning"
                 @click="provisionServiceAccount"
+              />
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Login Client Card -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3>Login Client</h3>
+        </div>
+        <div class="card-content">
+          <template v-if="application.hasLoginClient">
+            <div class="detail-grid">
+              <div class="detail-item">
+                <label>Status</label>
+                <Tag value="Provisioned" severity="success" />
+              </div>
+            </div>
+            <Message severity="info" class="service-account-info">
+              Login OAuth client is configured for this application. Manage redirect URIs and
+              secrets in the OAuth Clients section.
+            </Message>
+          </template>
+          <template v-else>
+            <div class="action-info">
+              <strong>Provision Login Client</strong>
+              <p>
+                Create an OAuth authorization_code client for user login (OIDC). PUBLIC clients
+                use PKCE; CONFIDENTIAL clients are issued a client secret.
+              </p>
+            </div>
+            <div class="form-field">
+              <label>Client Type</label>
+              <Select
+                v-model="loginClientType"
+                :options="loginClientTypeOptions"
+                optionLabel="label"
+                optionValue="value"
+                class="full-width"
+              />
+            </div>
+            <div class="form-field">
+              <label>Redirect URIs</label>
+              <div class="redirect-input-row">
+                <InputText
+                  v-model="loginRedirectUriInput"
+                  placeholder="https://app.example.com/callback"
+                  class="full-width"
+                  @keyup.enter="addRedirectUri"
+                />
+                <Button
+                  icon="pi pi-plus"
+                  severity="secondary"
+                  @click="addRedirectUri"
+                  :disabled="!loginRedirectUriInput.trim()"
+                />
+              </div>
+              <div v-if="loginRedirectUris.length > 0" class="chip-list">
+                <Chip
+                  v-for="uri in loginRedirectUris"
+                  :key="uri"
+                  :label="uri"
+                  removable
+                  @remove="removeRedirectUri(uri)"
+                />
+              </div>
+            </div>
+            <div class="form-actions">
+              <Button
+                label="Provision Login Client"
+                icon="pi pi-plus"
+                :loading="provisioningLoginClient"
+                :disabled="loginRedirectUris.length === 0"
+                @click="provisionLoginClient"
               />
             </div>
           </template>
@@ -480,6 +619,87 @@ function formatDate(dateString: string) {
           label="I've saved the credentials"
           icon="pi pi-check"
           @click="onCredentialsDialogClose"
+        />
+      </template>
+    </Dialog>
+
+    <!-- Login Client Credentials Dialog -->
+    <Dialog
+      v-model:visible="showLoginClientDialog"
+      header="Login Client Provisioned"
+      :style="{ width: '550px' }"
+      :modal="true"
+      :closable="false"
+    >
+      <div class="credentials-dialog-content" v-if="provisionedLoginClient">
+        <Message
+          v-if="provisionedLoginClient.clientType === 'CONFIDENTIAL'"
+          severity="warn"
+          class="credentials-warning"
+        >
+          Save the client secret now. It will not be shown again.
+        </Message>
+        <Message
+          v-else
+          severity="info"
+          class="credentials-warning"
+        >
+          PUBLIC clients use PKCE — no client secret is issued.
+        </Message>
+
+        <div class="credential-item">
+          <label>Client Type</label>
+          <div class="credential-value">
+            <code>{{ provisionedLoginClient.clientType }}</code>
+          </div>
+        </div>
+
+        <div class="credential-item">
+          <label>Client ID</label>
+          <div class="credential-value">
+            <code>{{ provisionedLoginClient.oauthClient.clientId }}</code>
+            <Button
+              icon="pi pi-copy"
+              text
+              size="small"
+              @click="copyToClipboard(provisionedLoginClient.oauthClient.clientId)"
+            />
+          </div>
+        </div>
+
+        <div
+          v-if="provisionedLoginClient.oauthClient.clientSecret"
+          class="credential-item"
+        >
+          <label>Client Secret</label>
+          <div class="credential-value">
+            <code>{{ provisionedLoginClient.oauthClient.clientSecret }}</code>
+            <Button
+              icon="pi pi-copy"
+              text
+              size="small"
+              @click="copyToClipboard(provisionedLoginClient.oauthClient.clientSecret!)"
+            />
+          </div>
+        </div>
+
+        <div class="credential-item">
+          <label>Redirect URIs</label>
+          <div class="chip-list">
+            <Chip
+              v-for="uri in provisionedLoginClient.redirectUris"
+              :key="uri"
+              :label="uri"
+            />
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <Button
+          label="Done"
+          icon="pi pi-check"
+          @click="onLoginClientDialogClose"
         />
       </template>
     </Dialog>
@@ -621,6 +841,19 @@ function formatDate(dateString: string) {
 
 .service-account-info {
   margin-top: 16px;
+}
+
+.redirect-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
 }
 
 /* Credentials Dialog */

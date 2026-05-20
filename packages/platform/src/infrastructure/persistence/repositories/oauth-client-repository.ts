@@ -55,6 +55,10 @@ export interface OAuthClientRepository {
 	): Promise<OAuthClient | undefined>;
 	findAll(tx?: TransactionContext): Promise<OAuthClient[]>;
 	findActive(tx?: TransactionContext): Promise<OAuthClient[]>;
+	findByApplication(
+		applicationId: string,
+		tx?: TransactionContext,
+	): Promise<OAuthClient[]>;
 	count(tx?: TransactionContext): Promise<number>;
 	exists(id: string, tx?: TransactionContext): Promise<boolean>;
 	existsByClientId(clientId: string, tx?: TransactionContext): Promise<boolean>;
@@ -206,6 +210,25 @@ export function createOAuthClientRepository(
 		async findActive(tx?: TransactionContext): Promise<OAuthClient[]> {
 			const results = await rq(tx).oauthClients.findMany({
 				where: { active: true },
+				with: withCollections,
+			});
+			return (results as OAuthClientRelationalResult[]).map(
+				resultToOAuthClient,
+			);
+		},
+
+		async findByApplication(
+			applicationId: string,
+			tx?: TransactionContext,
+		): Promise<OAuthClient[]> {
+			const joinRows = await db(tx)
+				.select({ oauthClientId: oauthClientApplicationIds.oauthClientId })
+				.from(oauthClientApplicationIds)
+				.where(eq(oauthClientApplicationIds.applicationId, applicationId));
+			const ids = joinRows.map((row) => row.oauthClientId);
+			if (ids.length === 0) return [];
+			const results = await rq(tx).oauthClients.findMany({
+				where: { id: { in: ids } },
 				with: withCollections,
 			});
 			return (results as OAuthClientRelationalResult[]).map(

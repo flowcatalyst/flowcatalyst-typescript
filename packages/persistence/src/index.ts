@@ -143,13 +143,4 @@ export {
 	type DispatchJobAttemptRecord,
 	type NewDispatchJobAttemptRecord,
 	type DispatchErrorType,
-	// Projection feed
-	eventProjectionFeed,
-	dispatchJobProjectionFeed,
-	type EventProjectionFeedRecord,
-	type NewEventProjectionFeedRecord,
-	type DispatchJobProjectionFeedRecord,
-	type NewDispatchJobProjectionFeedRecord,
-	type ProjectionFeedOperation,
-	type ProjectionFeedProcessedStatus,
 } from "./schema/index.js";

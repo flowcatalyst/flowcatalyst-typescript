@@ -18,9 +18,7 @@ import {
 import { generateRaw } from "@flowcatalyst/tsid";
 import {
 	events,
-	eventProjectionFeed,
 	type NewEvent,
-	type NewEventProjectionFeedRecord,
 	type EventContextData,
 } from "@flowcatalyst/persistence";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
@@ -92,11 +90,8 @@ export async function registerEventsBatchRoutes(
 			}
 
 			const now = new Date();
-			const nowIso = now.toISOString();
 
-			// Build all records in memory
 			const eventRows: NewEvent[] = [];
-			const feedRows: NewEventProjectionFeedRecord[] = [];
 			const ids: string[] = [];
 
 			for (const item of items) {
@@ -123,33 +118,11 @@ export async function registerEventsBatchRoutes(
 						contextData && contextData.length > 0 ? contextData : null,
 					createdAt: now,
 				});
-
-				feedRows.push({
-					eventId: id,
-					payload: {
-						specVersion: item.specVersion ?? "1.0",
-						type: item.type,
-						source: item.source ?? "sdk",
-						subject: item.subject ?? null,
-						time: nowIso,
-						data:
-							typeof item.data === "string"
-								? item.data
-								: JSON.stringify(item.data ?? null),
-						correlationId: item.correlationId ?? null,
-						causationId: item.causationId ?? null,
-						deduplicationId: item.deduplicationId ?? null,
-						messageGroup: item.messageGroup ?? null,
-						clientId: item.clientId ?? null,
-					},
-				});
 			}
 
-			// Bulk insert in a single transaction — two multi-row INSERTs
-			await db.transaction(async (tx) => {
-				await tx.insert(events).values(eventRows);
-				await tx.insert(eventProjectionFeed).values(feedRows);
-			});
+			// Stream-processor projects msg_events → msg_events_read directly
+			// via `projected_at IS NULL`; no separate feed write is needed.
+			await db.insert(events).values(eventRows);
 
 			return jsonSuccess(reply, {
 				results: ids.map((id) => ({ id, status: "SUCCESS" as const })),

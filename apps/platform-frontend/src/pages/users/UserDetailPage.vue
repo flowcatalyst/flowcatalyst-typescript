@@ -116,14 +116,28 @@ const availableClients = computed(() => {
 	return clients.value.filter((c) => !existingIds.has(c.id));
 });
 
-// Roles filtered by search query for the picker
+// Roles filtered by:
+//  - text search (name / displayName)
+//  - the user's application access (only roles whose applicationCode is in the
+//    set of apps the user has access to). Anchor users see all roles.
 const filteredAvailableRoles = computed(() => {
 	const query = roleSearchQuery.value.toLowerCase();
-	return availableRoles.value.filter(
-		(r) =>
-			r.name.toLowerCase().includes(query) ||
-			r.displayName?.toLowerCase().includes(query),
+	const accessibleAppCodes = new Set(
+		applicationAccessGrants.value.map((g) => g.code),
 	);
+	const isAnchor = isAnchorUser.value;
+	return availableRoles.value.filter((r) => {
+		const matchesQuery =
+			r.name.toLowerCase().includes(query) ||
+			(r.displayName?.toLowerCase().includes(query) ?? false);
+		if (!matchesQuery) return false;
+		if (isAnchor) return true;
+		// If the role lacks an applicationCode (platform-level), keep it visible
+		// — the gate is "only roles tied to apps the user has no access to"
+		// should hide.
+		if (!r.applicationCode) return true;
+		return accessibleAppCodes.has(r.applicationCode);
+	});
 });
 
 // Check if there are unsaved changes in the role picker

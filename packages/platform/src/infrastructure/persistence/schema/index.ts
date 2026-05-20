@@ -290,14 +290,6 @@ export {
 	type NewProcessRecord,
 } from "./processes.js";
 
-// Projection feed tables (CQRS read model projection)
-export {
-	dispatchJobProjectionFeed,
-	eventProjectionFeed,
-	ProjectionFeedStatus,
-	type ProjectionFeedStatusValue,
-	type DispatchJobProjectionFeedRecord,
-	type NewDispatchJobProjectionFeedRecord,
-	type EventProjectionFeedRecord,
-	type NewEventProjectionFeedRecord,
-} from "./outbox.js";
+// Projection feed tables were retired — the stream processor projects
+// msg_events / msg_dispatch_jobs into their read models directly via
+// the `projected_at` column.

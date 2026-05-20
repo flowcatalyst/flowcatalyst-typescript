@@ -27,7 +27,6 @@ import {
 	type EventContextData,
 } from "./schema/events.js";
 import { auditLogs, type NewAuditLog } from "./schema/audit-logs.js";
-import { eventProjectionFeed } from "./schema/outbox.js";
 import { getLogger } from "@flowcatalyst/logging";
 
 /**
@@ -352,24 +351,8 @@ async function createEventRecord(
 	};
 
 	await db.insert(events).values(newEvent);
-
-	// Write to event projection feed for stream-processor projection to events_read
-	await db.insert(eventProjectionFeed).values({
-		eventId: event.eventId,
-		payload: {
-			specVersion: event.specVersion,
-			type: event.eventType,
-			source: event.source,
-			subject: event.subject,
-			time: event.time.toISOString(),
-			data: event.toDataJson(),
-			correlationId: event.correlationId,
-			causationId: event.causationId,
-			deduplicationId: `${event.eventType}-${event.eventId}`,
-			messageGroup: event.messageGroup,
-			clientId,
-		},
-	});
+	// Stream-processor projects msg_events → msg_events_read directly via
+	// `projected_at IS NULL`; no separate feed write is needed.
 }
 
 /**

@@ -14,17 +14,94 @@
  * $argon2id$v=19$m=65536,t=3,p=4$<salt>$<hash>
  */
 
-import argon2 from "argon2";
+import type Argon2 from "argon2";
 import { type Result, ok, err, ResultAsync } from "neverthrow";
+import { mkdirSync, writeFileSync, existsSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { tmpdir } from "node:os";
+import { createRequire } from "node:module";
 
-// Argon2id parameters matching Java implementation
-const ARGON2_OPTIONS: argon2.Options = {
-	type: argon2.argon2id,
-	memoryCost: 65536, // 64 MiB
-	timeCost: 3,
-	parallelism: 4,
-	hashLength: 32,
-};
+// Lazy argon2 loader.
+//
+// In a Node SEA binary, argon2 is packed as an asset (see scripts/pack-argon2.js)
+// and extracted to /tmp on first use, then loaded via createRequire. In normal
+// CJS/ESM contexts, the require() falls through to node_modules resolution.
+//
+// Loaded once, then cached for the lifetime of the process.
+let argon2Cache: typeof Argon2 | null = null;
+function argon2(): typeof Argon2 {
+	if (argon2Cache) return argon2Cache;
+
+	// In a SEA bundle the injected `require` is `embedderRequire`, which only
+	// resolves Node built-in modules — it can't load a file by absolute path
+	// or do node_modules resolution. We use it to access `node:sea` (a
+	// built-in) but always switch to `createRequire` for loading argon2 from
+	// disk (either the extracted SEA asset, or normal node_modules).
+	const cjsRequire: NodeJS.Require | null =
+		typeof require !== "undefined" ? require : null;
+
+	// SEA mode: extract argon2 dist to /tmp and load it from there.
+	const sea = (() => {
+		try {
+			return cjsRequire
+				? (cjsRequire("node:sea") as typeof import("node:sea"))
+				: null;
+		} catch {
+			return null;
+		}
+	})();
+	if (sea?.isSea()) {
+		const extractDir = join(tmpdir(), "flowcatalyst-argon2");
+		const sentinel = join(extractDir, ".extracted");
+		if (!existsSync(sentinel)) {
+			const blob = Buffer.from(sea.getAsset("argon2") as ArrayBuffer);
+			extractArgon2Blob(blob, extractDir);
+			writeFileSync(sentinel, "");
+		}
+		// createRequire anchored INSIDE the extracted dir so argon2's internal
+		// require calls (node-gyp-build looks at __filename to find prebuilds/)
+		// resolve correctly.
+		const fileReq = createRequire(join(extractDir, "package.json"));
+		argon2Cache = fileReq(join(extractDir, "argon2.cjs")) as typeof Argon2;
+		return argon2Cache;
+	}
+
+	// Non-SEA: prefer the CJS-injected require if present (covers CJS bundle
+	// run outside SEA); otherwise use createRequire for ESM dev mode.
+	const metaUrl: string | undefined = (import.meta as { url?: string }).url;
+	const req: NodeJS.Require =
+		cjsRequire ?? createRequire(metaUrl ?? __filename);
+	argon2Cache = req("argon2") as typeof Argon2;
+	return argon2Cache;
+}
+
+function extractArgon2Blob(blob: Buffer, destDir: string): void {
+	const headerLen = blob.readUInt32BE(0);
+	const header = JSON.parse(
+		blob.subarray(4, 4 + headerLen).toString("utf8"),
+	) as { entries: { name: string; size: number }[] };
+	let offset = 4 + headerLen;
+	mkdirSync(destDir, { recursive: true });
+	for (const entry of header.entries) {
+		const bytes = blob.subarray(offset, offset + entry.size);
+		offset += entry.size;
+		const outPath = join(destDir, entry.name);
+		mkdirSync(dirname(outPath), { recursive: true });
+		writeFileSync(outPath, bytes);
+	}
+}
+
+// Build the Argon2 options against a loaded module instance. `argon2id` is a
+// runtime constant exposed by the loaded module.
+function options(a: typeof Argon2): Argon2.Options {
+	return {
+		type: a.argon2id,
+		memoryCost: 65536, // 64 MiB
+		timeCost: 3,
+		parallelism: 4,
+		hashLength: 32,
+	};
+}
 
 // Password complexity requirements
 const MIN_LENGTH = 8;
@@ -57,14 +134,12 @@ export class PasswordService {
 	 * @returns Result with PHC format hash string, or error
 	 */
 	hash(password: string): ResultAsync<string, PasswordError> {
-		return ResultAsync.fromPromise(
-			argon2.hash(password, ARGON2_OPTIONS),
-			(e) => ({
-				type: "hashing_failed" as const,
-				message: `Password hashing failed: ${e instanceof Error ? e.message : String(e)}`,
-				cause: e instanceof Error ? e : undefined,
-			}),
-		);
+		const a = argon2();
+		return ResultAsync.fromPromise(a.hash(password, options(a)), (e) => ({
+			type: "hashing_failed" as const,
+			message: `Password hashing failed: ${e instanceof Error ? e.message : String(e)}`,
+			cause: e instanceof Error ? e : undefined,
+		}));
 	}
 
 	/**
@@ -76,7 +151,7 @@ export class PasswordService {
 	 */
 	async verify(password: string, hash: string): Promise<boolean> {
 		try {
-			return await argon2.verify(hash, password);
+			return await argon2().verify(hash, password);
 		} catch {
 			return false;
 		}
@@ -90,7 +165,8 @@ export class PasswordService {
 	 */
 	async needsRehash(hash: string): Promise<boolean> {
 		try {
-			return argon2.needsRehash(hash, ARGON2_OPTIONS);
+			const a = argon2();
+			return a.needsRehash(hash, options(a));
 		} catch {
 			return true;
 		}

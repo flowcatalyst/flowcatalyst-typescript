@@ -46,8 +46,10 @@ export function createLogger(config: LoggerConfig): Logger {
 		},
 	};
 
-	// Use pino-pretty for development
-	if (config.pretty) {
+	// Use pino-pretty for development. Skip when running inside a Node SEA
+	// binary — pino's transport spawns a worker thread that does
+	// `require("pino-pretty")`, which SEA's restricted require can't resolve.
+	if (config.pretty && !isSeaBinary()) {
 		return pino({
 			...options,
 			transport: {
@@ -62,6 +64,21 @@ export function createLogger(config: LoggerConfig): Logger {
 	}
 
 	return pino(options);
+}
+
+function isSeaBinary(): boolean {
+	try {
+		// `require` is module-local in a CJS bundle (injected by Node's CommonJS
+		// wrapper). In ESM dev (tsx) it isn't defined; `typeof` safely returns
+		// "undefined" without throwing on the undeclared reference.
+		const req: NodeJS.Require | null =
+			typeof require !== "undefined" ? require : null;
+		if (!req) return false;
+		const sea = req("node:sea") as { isSea(): boolean };
+		return sea.isSea();
+	} catch {
+		return false;
+	}
 }
 
 /**

@@ -165,15 +165,24 @@ export function createCreateServiceAccountUseCase(
 				serviceAccountPrincipalId: principal.id,
 			};
 
-			// Create domain event
-			const event = new ServiceAccountCreated(context, {
-				serviceAccountId: principal.id,
-				principalId: principal.id,
-				oauthClientId: linkedOAuthClient.id,
-				code: command.code,
-				name: command.name,
-				applicationId: command.applicationId,
-			});
+			// Create domain event.
+			// `clientSecret` is set on the event as a transient field so the API
+			// handler can return it to the caller exactly once. `getData()` only
+			// returns the persisted shape, so the plaintext never reaches the
+			// outbox table.
+			const event = new ServiceAccountCreated(
+				context,
+				{
+					serviceAccountId: principal.id,
+					principalId: principal.id,
+					oauthClientId: linkedOAuthClient.id,
+					oauthClientPublicId: linkedOAuthClient.clientId,
+					code: command.code,
+					name: command.name,
+					applicationId: command.applicationId,
+				},
+				clientSecret,
+			);
 
 			// Commit both aggregates atomically
 			return unitOfWork.commitAll(
