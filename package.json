@@ -34,7 +34,7 @@
 	"packageManager": "pnpm@10.30.3",
 	"pnpm": {
 		"overrides": {
-			"drizzle-orm": "1.0.0-rc.1"
+			"drizzle-orm": "1.0.0-rc.3"
 		},
 		"packageExtensions": {
 			"drizzle-kit": {
