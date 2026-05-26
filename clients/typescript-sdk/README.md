@@ -99,19 +99,27 @@ import type { EventType, Subscription, DispatchJob } from '@flowcatalyst/sdk';
 
 ## Error Handling
 
-All API methods return a response object with either `data` or `error`:
+Every resource method returns a `ResultAsync<T, SdkError>` (from
+[`neverthrow`](https://github.com/supermacro/neverthrow)). Branch on the
+tagged `SdkError.type` to handle different failure modes — see
+[`ERRORS.md`](./ERRORS.md) for the full variant list and idioms.
 
 ```typescript
-const { data, error } = await client.getEventTypes();
-
-if (error) {
-  // Handle error
-  console.error('API Error:', error);
-} else {
-  // Use data
-  console.log('Event types:', data);
-}
+const result = await client.eventTypes().list();
+result.match(
+  (page) => console.log('event types:', page.eventTypes),
+  (err) => {
+    switch (err.type) {
+      case 'not_found':    return console.error('not found', err.message);
+      case 'validation':   return console.error('validation', err.errors);
+      case 'token_expired':return console.error('refresh token');
+      default:             return console.error(err.type, err.message);
+    }
+  },
+);
 ```
+
+Runnable end-to-end demos live in [`examples/`](./examples/).
 
 ## AI Agent Access (MCP Server)
 

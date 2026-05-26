@@ -18,6 +18,7 @@
 	"files": [
 		"dist",
 		"migrations",
+		"ERRORS.md",
 		"README.md"
 	],
 	"type": "module",
