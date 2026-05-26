@@ -37,7 +37,7 @@
 		"generate:live": "OPENAPI_LIVE=true openapi-ts",
 		"prebuild": "npm run generate",
 		"test": "echo \"Tests coming soon\" && exit 0",
-		"lint": "tsc --noEmit",
+		"lint": "tsc --noEmit && tsc --noEmit -p examples/tsconfig.json",
 		"clean": "rm -rf dist src/generated"
 	},
 	"dependencies": {
@@ -46,6 +46,9 @@
 	"devDependencies": {
 		"@hey-api/openapi-ts": "^0.91.1",
 		"@types/node": "^22.0.0",
+		"@types/pg": "^8.11.10",
+		"pg": "^8.13.1",
+		"tsx": "^4.19.2",
 		"typescript": "^5.9.0"
 	},
 	"engines": {
