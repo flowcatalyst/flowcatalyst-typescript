@@ -16,6 +16,19 @@ import type { MessageRouterMetrics } from "../metrics.js";
 export type CircuitBreakerState = "CLOSED" | "OPEN" | "HALF_OPEN";
 
 /**
+ * Thrown by CircuitBreaker.execute when the circuit is open. Use
+ * `instanceof CircuitBreakerOpenError` instead of grepping `error.message`.
+ */
+export class CircuitBreakerOpenError extends Error {
+	override readonly name = "CircuitBreakerOpenError";
+	readonly breakerName: string;
+	constructor(breakerName: string) {
+		super(`Circuit breaker is open for ${breakerName}`);
+		this.breakerName = breakerName;
+	}
+}
+
+/**
  * Circuit breaker configuration
  */
 export interface CircuitBreakerConfig {
@@ -188,7 +201,7 @@ export class CircuitBreaker {
 						result: "rejected",
 					});
 				}
-				throw new Error(`Circuit breaker is open for ${this.name}`);
+				throw new CircuitBreakerOpenError(this.name);
 			}
 			throw error;
 		}

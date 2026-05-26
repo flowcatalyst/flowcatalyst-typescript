@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import { request, Agent } from "undici";
+import { request, Agent, errors as undiciErrors } from "undici";
 import type { Dispatcher } from "undici";
 import type { Logger } from "@flowcatalyst/logging";
 import type {
@@ -7,7 +7,48 @@ import type {
 	ProcessingResult,
 	QueueMessage,
 } from "@flowcatalyst/contracts";
-import type { CircuitBreakerManager } from "./circuit-breaker.js";
+import {
+	CircuitBreakerOpenError,
+	type CircuitBreakerManager,
+} from "./circuit-breaker.js";
+
+/**
+ * Node.js system-error codes that indicate the request never reached
+ * (or never finished establishing) a working TCP/TLS connection. These
+ * surface as plain `Error` with a `.code` field — Node doesn't model
+ * them as subclasses, so a `.code` check is the typed equivalent.
+ */
+const CONNECTION_ERROR_CODES = new Set([
+	"ECONNREFUSED",
+	"ECONNRESET",
+	"ENOTFOUND",
+	"ETIMEDOUT",
+	"EHOSTUNREACH",
+	"ENETUNREACH",
+	"EAI_AGAIN",
+]);
+
+function systemErrorCode(error: unknown): string | undefined {
+	if (error instanceof Error) {
+		const code = (error as Error & { code?: unknown }).code;
+		if (typeof code === "string") return code;
+	}
+	return undefined;
+}
+
+function isConnectionFailure(error: unknown): boolean {
+	if (error instanceof undiciErrors.ConnectTimeoutError) return true;
+	if (error instanceof undiciErrors.SocketError) return true;
+	const code = systemErrorCode(error);
+	return code !== undefined && CONNECTION_ERROR_CODES.has(code);
+}
+
+function isRequestTimeout(error: unknown): boolean {
+	return (
+		error instanceof undiciErrors.BodyTimeoutError ||
+		error instanceof undiciErrors.HeadersTimeoutError
+	);
+}
 
 /** Webhook signature header — matches Rust `SIGNATURE_HEADER`. */
 export const SIGNATURE_HEADER = "X-FLOWCATALYST-SIGNATURE";
@@ -135,10 +176,7 @@ export class HttpMediator {
 		} catch (error) {
 			const durationMs = Date.now() - startTime;
 
-			if (
-				error instanceof Error &&
-				error.message.includes("Circuit breaker is open")
-			) {
+			if (error instanceof CircuitBreakerOpenError) {
 				this.logger.warn(
 					{ callbackUrl, messageId: message.messageId },
 					"Circuit breaker open - request rejected",
@@ -201,10 +239,10 @@ export class HttpMediator {
 			} catch (error) {
 				lastError = error instanceof Error ? error : new Error(String(error));
 
-				if (this.isConnectionTimeout(lastError)) {
+				if (isConnectionFailure(lastError)) {
 					this.logger.warn(
 						{ err: lastError, attempt, messageId: message.messageId },
-						"Connection timeout",
+						"Connection failure",
 					);
 				}
 			}
@@ -317,7 +355,7 @@ export class HttpMediator {
 			const errorMessage =
 				error instanceof Error ? error.message : String(error);
 
-			if (this.isConnectionTimeout(error)) {
+			if (error instanceof undiciErrors.ConnectTimeoutError) {
 				return {
 					outcome: "ERROR_CONNECTION",
 					error: `Connection timeout after ${this.config.connectTimeoutMs}ms`,
@@ -325,7 +363,7 @@ export class HttpMediator {
 				};
 			}
 
-			if (this.isBodyTimeout(error)) {
+			if (isRequestTimeout(error)) {
 				return {
 					outcome: "ERROR_PROCESS",
 					error: `Request timeout after ${this.config.bodyTimeoutMs}ms`,
@@ -333,7 +371,8 @@ export class HttpMediator {
 				};
 			}
 
-			// General I/O errors (socket reset, connection dropped, etc.)
+			// All other errors (SocketError, ECONNREFUSED, ENOTFOUND, etc.)
+			// are connection failures from this caller's perspective.
 			return {
 				outcome: "ERROR_CONNECTION",
 				error: errorMessage,
@@ -390,31 +429,6 @@ export class HttpMediator {
 		} catch {
 			return "";
 		}
-	}
-
-	private isConnectionTimeout(error: unknown): boolean {
-		if (!(error instanceof Error)) return false;
-		const message = error.message.toLowerCase();
-		return (
-			message.includes("connect timeout") ||
-			message.includes("connection timeout") ||
-			message.includes("etimedout") ||
-			message.includes("econnrefused") ||
-			message.includes("enotfound") ||
-			error.name === "ConnectTimeoutError"
-		);
-	}
-
-	private isBodyTimeout(error: unknown): boolean {
-		if (!(error instanceof Error)) return false;
-		const message = error.message.toLowerCase();
-		return (
-			message.includes("body timeout") ||
-			message.includes("headers timeout") ||
-			message.includes("request timeout") ||
-			error.name === "BodyTimeoutError" ||
-			error.name === "HeadersTimeoutError"
-		);
 	}
 
 	async close(): Promise<void> {
