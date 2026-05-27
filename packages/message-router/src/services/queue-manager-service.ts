@@ -6,7 +6,6 @@ import type {
 	MessageBatch,
 	PoolConfig,
 	PoolStats,
-	QueueMessage,
 	QueueStats,
 } from "@flowcatalyst/contracts";
 import {
@@ -14,9 +13,7 @@ import {
 	HttpMediator,
 	type HttpMediatorConfig,
 	ProcessPool,
-	type MessageCallback,
 	type QueueConsumer,
-	type ConsumerHealth,
 	type MessageCallbackFns,
 } from "@flowcatalyst/queue-core";
 import type { WarningService } from "./warning-service.js";
@@ -27,33 +24,32 @@ import {
 	type MessageRouterConfig,
 } from "../clients/platform-config-client.js";
 import { MultiConfigFetcher } from "../clients/multi-config-client.js";
-import {
-	SqsConsumer,
-	type SqsConsumerConfig,
-} from "../consumers/sqs-consumer.js";
-import {
-	ActiveMqConsumer,
-	type ActiveMqConsumerConfig,
-} from "../consumers/activemq-consumer.js";
-import {
-	NatsConsumer,
-	type NatsConsumerConfig,
-} from "../consumers/nats-consumer.js";
 import { sleep } from "@flowcatalyst/queue-core";
 import { EmbeddedQueue } from "../embedded/index.js";
 import type { TrafficManager } from "../traffic/index.js";
 import { env } from "../env.js";
-
-/**
- * In-flight message tracking
- */
-interface InFlightMessageInfo {
-	messageId: string;
-	brokerMessageId: string;
-	queueId: string;
-	poolCode: string;
-	addedAt: number;
-}
+import { InFlightTracker } from "./queue-manager/in-flight-tracker.js";
+import { BackgroundTaskScheduler } from "./queue-manager/background-task-scheduler.js";
+import {
+	initializeActiveMqMode,
+	initializeEmbeddedMode,
+	initializeNatsMode,
+	type BrokerInitContext,
+} from "./queue-manager/broker-initializers.js";
+import { ConfigApplicator } from "./queue-manager/config-applicator.js";
+import { BatchDispatcher } from "./queue-manager/batch-dispatcher.js";
+import {
+	monitorAndRestartUnhealthyConsumers,
+	pauseAllConsumers,
+	resumeAllConsumers,
+	type ConsumerLifecycleDeps,
+} from "./queue-manager/consumer-lifecycle.js";
+import {
+	getConsumerHealth as collectConsumerHealth,
+	getQueueStats as collectQueueStats,
+	refreshQueueMetrics as refreshAllConsumerMetrics,
+	type StatsReportingDeps,
+} from "./queue-manager/stats-reporting.js";
 
 /**
  * Queue manager service - orchestrates consumers, pools, and mediation
@@ -89,31 +85,20 @@ export class QueueManagerService {
 	private readonly maxPools = env.MAX_POOLS;
 	private readonly poolWarningThreshold = Math.floor(env.MAX_POOLS * 0.5); // 50% threshold
 
-	// Chained promise to serialize concurrent config syncs
-	private syncChain: Promise<void> = Promise.resolve();
+	// Config applicator (owns the syncChain promise internally)
+	private readonly configApplicator: ConfigApplicator;
 
-	// Cleanup interval
-	private cleanupInterval: ReturnType<typeof setInterval> | null = null;
-
-	// Health check interval for stalled consumer detection
-	private healthCheckInterval: ReturnType<typeof setInterval> | null = null;
-
-	// Leak detection interval (30s, matches Java)
-	private leakDetectionInterval: ReturnType<typeof setInterval> | null = null;
-
-	// Windowed stat reset timers for queue stats
-	private queueWindowResetInterval5min: ReturnType<typeof setInterval> | null =
-		null;
-	private queueWindowResetInterval30min: ReturnType<typeof setInterval> | null =
-		null;
+	// Background timers (cleanup, health, leak, window resets)
+	private readonly backgroundTasks: BackgroundTaskScheduler;
 
 	// Queue and pool statistics
 	private readonly queueStats = new Map<string, QueueStats>();
 
-	// In-flight message tracking
-	private readonly inFlightMessages = new Map<string, InFlightMessageInfo>();
-	private readonly messageCallbacks = new Map<string, MessageCallbackFns>();
-	private readonly appMessageIdToPipelineKey = new Map<string, string>();
+	// In-flight message tracking (encapsulated)
+	private readonly inFlight: InFlightTracker;
+
+	// Batch dispatcher (3-phase routing: dedup -> capacity -> per-group)
+	private readonly batchDispatcher: BatchDispatcher;
 
 	constructor(
 		circuitBreakers: CircuitBreakerManager,
@@ -146,6 +131,66 @@ export class QueueManagerService {
 			circuitBreakers,
 			logger,
 		);
+
+		this.inFlight = new InFlightTracker({
+			warnings: this.warnings,
+			logger: this.logger,
+			totalPoolCapacity: () => {
+				let total = 0;
+				for (const pool of this.processPools.values()) {
+					total += pool.getStats().maxQueueCapacity;
+				}
+				return total;
+			},
+			isRunning: () => this.running,
+		});
+
+		this.backgroundTasks = new BackgroundTaskScheduler(this.logger);
+
+		this.batchDispatcher = new BatchDispatcher({
+			logger: this.logger,
+			warnings: this.warnings,
+			inFlight: this.inFlight,
+			queueStats: this.queueStats,
+			processPools: this.processPools,
+			httpMediator: this.httpMediator,
+		});
+
+		this.configApplicator = new ConfigApplicator({
+			logger: this.logger,
+			warnings: this.warnings,
+			queueValidation: this.queueValidation,
+			httpMediator: this.httpMediator,
+			processPools: this.processPools,
+			drainingPools: this.drainingPools,
+			consumers: this.consumers,
+			drainingConsumers: this.drainingConsumers,
+			queueStats: this.queueStats,
+			maxPools: this.maxPools,
+			poolWarningThreshold: this.poolWarningThreshold,
+			setCurrentConfig: (config) => {
+				this.currentConfig = config;
+			},
+			brokerInitContext: () => this.brokerInitContext(),
+		});
+	}
+
+	/**
+	 * Build the slice of state the broker initializers need. Captures
+	 * `this` so the helper module never touches private fields directly.
+	 */
+	private brokerInitContext(): BrokerInitContext {
+		return {
+			logger: this.logger,
+			httpMediator: this.httpMediator,
+			processPools: this.processPools,
+			consumers: this.consumers,
+			queueStats: this.queueStats,
+			setEmbeddedQueue: (queue) => {
+				this.embeddedQueue = queue;
+			},
+			handleBatch: (batch, callbacks) => this.handleBatch(batch, callbacks),
+		};
 	}
 
 	/**
@@ -174,15 +219,10 @@ export class QueueManagerService {
 			},
 		);
 
-		// Start windowed stat reset timers for queue stats
-		this.startQueueWindowResets();
-
 		if (env.QUEUE_TYPE === "EMBEDDED") {
 			// Use embedded mode with SQLite-backed queue
-			await this.initializeEmbeddedMode();
-			this.startCleanupTask();
-			this.startHealthMonitor();
-			this.startLeakDetection();
+			await initializeEmbeddedMode(this.brokerInitContext());
+			this.startBackgroundTasks();
 			this.running = true;
 			this.pauseConsumersIfStandby();
 			this.logger.info("Queue manager started in embedded mode");
@@ -191,10 +231,8 @@ export class QueueManagerService {
 
 		if (env.QUEUE_TYPE === "ACTIVEMQ") {
 			// Use ActiveMQ mode
-			await this.initializeActiveMqMode();
-			this.startCleanupTask();
-			this.startHealthMonitor();
-			this.startLeakDetection();
+			await initializeActiveMqMode(this.brokerInitContext());
+			this.startBackgroundTasks();
 			this.running = true;
 			this.pauseConsumersIfStandby();
 			this.logger.info("Queue manager started in ActiveMQ mode");
@@ -203,10 +241,8 @@ export class QueueManagerService {
 
 		if (env.QUEUE_TYPE === "NATS") {
 			// Use NATS JetStream mode
-			await this.initializeNatsMode();
-			this.startCleanupTask();
-			this.startHealthMonitor();
-			this.startLeakDetection();
+			await initializeNatsMode(this.brokerInitContext());
+			this.startBackgroundTasks();
 			this.running = true;
 			this.pauseConsumersIfStandby();
 			this.logger.info("Queue manager started in NATS mode");
@@ -260,13 +296,11 @@ export class QueueManagerService {
 		} else {
 			// No platform URL - use embedded mode
 			this.logger.warn("No ROUTER_CONFIG_URL configured, using embedded mode");
-			await this.initializeEmbeddedMode();
+			await initializeEmbeddedMode(this.brokerInitContext());
 		}
 
-		// Start cleanup task (matches Java scheduled tasks)
-		this.startCleanupTask();
-		this.startHealthMonitor();
-		this.startLeakDetection();
+		// Start scheduled tasks (matches Java scheduled tasks)
+		this.startBackgroundTasks();
 
 		this.running = true;
 		this.pauseConsumersIfStandby();
@@ -274,15 +308,37 @@ export class QueueManagerService {
 	}
 
 	/**
-	 * Start scheduled cleanup task for draining pools and consumers
-	 * Matches Java QueueManager.cleanupDrainingResources()
+	 * Start the five background timers. The scheduler owns the handles;
+	 * we supply the per-tick logic via callbacks. Note: window-reset
+	 * timers run on **every** start, including modes other than SQS,
+	 * matching prior behaviour where `startQueueWindowResets()` was
+	 * called before mode-specific init.
 	 */
-	private startCleanupTask(): void {
-		// Run every 10 seconds (matches Java)
-		this.cleanupInterval = setInterval(() => {
-			this.cleanupDrainingResources();
-		}, 10_000);
-		this.logger.debug("Cleanup task started (10s interval)");
+	private startBackgroundTasks(): void {
+		this.backgroundTasks.start({
+			onCleanupTick: () => this.cleanupDrainingResources(),
+			onHealthCheck: () => {
+				if (!this.running) return;
+				void monitorAndRestartUnhealthyConsumers(this.consumerLifecycleDeps());
+			},
+			onLeakCheck: () => this.inFlight.checkForLeaks(),
+			onWindowReset5min: () => {
+				for (const stat of this.queueStats.values()) {
+					stat.totalMessages5min = 0;
+					stat.totalConsumed5min = 0;
+					stat.totalFailed5min = 0;
+					stat.successRate5min = 1.0;
+				}
+			},
+			onWindowReset30min: () => {
+				for (const stat of this.queueStats.values()) {
+					stat.totalMessages30min = 0;
+					stat.totalConsumed30min = 0;
+					stat.totalFailed30min = 0;
+					stat.successRate30min = 1.0;
+				}
+			},
+		});
 	}
 
 	/**
@@ -342,150 +398,17 @@ export class QueueManagerService {
 	}
 
 	/**
-	 * Start consumer health monitor.
-	 * Checks every 60s for stalled consumers and restarts them.
-	 * Matches Java QueueManager.monitorAndRestartUnhealthyConsumers()
+	 * Build the slice of state consumer-lifecycle helpers need. Same
+	 * approach as {@link brokerInitContext}.
 	 */
-	private startHealthMonitor(): void {
-		this.healthCheckInterval = setInterval(() => {
-			this.monitorAndRestartUnhealthyConsumers();
-		}, 60_000);
-		this.logger.debug("Consumer health monitor started (60s interval)");
-	}
-
-	/**
-	 * Start windowed stat reset timers for queue stats.
-	 * Resets the 5min/30min counters on a fixed interval so the dashboard
-	 * time-period filter shows meaningful differences.
-	 */
-	private startQueueWindowResets(): void {
-		this.queueWindowResetInterval5min = setInterval(() => {
-			for (const stat of this.queueStats.values()) {
-				stat.totalMessages5min = 0;
-				stat.totalConsumed5min = 0;
-				stat.totalFailed5min = 0;
-				stat.successRate5min = 1.0;
-			}
-		}, 5 * 60 * 1000);
-
-		this.queueWindowResetInterval30min = setInterval(() => {
-			for (const stat of this.queueStats.values()) {
-				stat.totalMessages30min = 0;
-				stat.totalConsumed30min = 0;
-				stat.totalFailed30min = 0;
-				stat.successRate30min = 1.0;
-			}
-		}, 30 * 60 * 1000);
-
-		this.logger.debug("Queue stat window resets started (5min/30min)");
-	}
-
-	/**
-	 * Start leak detection (every 30s, matches Java QueueManager.checkForMapLeaks)
-	 */
-	private startLeakDetection(): void {
-		this.leakDetectionInterval = setInterval(() => {
-			this.checkForMapLeaks();
-		}, 30_000);
-		this.logger.debug("Leak detection started (30s interval)");
-	}
-
-	/**
-	 * Check for in-flight tracker growth beyond total pool capacity.
-	 * Matches Java QueueManager.checkForMapLeaks()
-	 */
-	private checkForMapLeaks(): void {
-		if (!this.running) return;
-
-		const pipelineSize = this.inFlightMessages.size;
-
-		let totalCapacity = 0;
-		for (const pool of this.processPools.values()) {
-			totalCapacity += pool.getStats().maxQueueCapacity;
-		}
-		totalCapacity = Math.max(totalCapacity, 50);
-
-		if (pipelineSize > totalCapacity) {
-			this.warnings.add(
-				"PIPELINE_MAP_LEAK",
-				"WARNING",
-				`In-flight tracker size (${pipelineSize}) exceeds total pool capacity (${totalCapacity})`,
-				"QueueManager",
-			);
-			this.logger.warn(
-				{ pipelineSize, totalCapacity },
-				"LEAK DETECTION: in-flight tracker size exceeds total capacity",
-			);
-		}
-	}
-
-	/**
-	 * Check all consumers for stalled state and restart any that are unhealthy.
-	 * Matches Java QueueManager.monitorAndRestartUnhealthyConsumers()
-	 */
-	private async monitorAndRestartUnhealthyConsumers(): Promise<void> {
-		if (!this.running) return;
-
-		// Auto-cleanup warnings older than 8 hours (matching Java)
-		this.warnings.clearOlderThan(8);
-
-		this.logger.info(
-			{ consumerCount: this.consumers.size },
-			"Health check running",
-		);
-
-		for (const [queueId, consumer] of this.consumers) {
-			const health = consumer.getHealth();
-			this.logger.debug({ queueId, ...health }, "Consumer health check");
-
-			if (!health.isHealthy) {
-				await this.restartConsumer(queueId, consumer);
-			}
-		}
-	}
-
-	/**
-	 * Restart a stalled consumer using the recreate() interface method
-	 */
-	private async restartConsumer(
-		queueId: string,
-		consumer: QueueConsumer,
-	): Promise<void> {
-		const health = consumer.getHealth();
-		this.logger.warn(
-			{ queueId, timeSinceLastPollMs: health.timeSinceLastPollMs },
-			"Consumer unhealthy - initiating restart",
-		);
-		this.warnings.add(
-			"CONSUMER_RESTART",
-			"WARNING",
-			`Consumer for queue [${queueId}] was unhealthy (last poll ${health.timeSinceLastPollSeconds}s ago) and has been restarted`,
-			"QueueManager",
-		);
-
-		try {
-			// Stop unhealthy consumer, move to draining
-			await consumer.stop();
-			this.consumers.delete(queueId);
-			this.drainingConsumers.set(queueId, consumer);
-
-			// Create replacement via recreate() and start it
-			const newConsumer = consumer.recreate((batch, cbs) =>
-				this.handleBatch(batch, cbs),
-			);
-			await newConsumer.start();
-			this.consumers.set(queueId, newConsumer);
-
-			this.logger.info({ queueId }, "Successfully restarted consumer");
-		} catch (error) {
-			this.logger.error({ err: error, queueId }, "Failed to restart consumer");
-			this.warnings.add(
-				"CONSUMER_RESTART_FAILED",
-				"CRITICAL",
-				`Failed to restart consumer for queue [${queueId}]: ${error}`,
-				"QueueManager",
-			);
-		}
+	private consumerLifecycleDeps(): ConsumerLifecycleDeps {
+		return {
+			logger: this.logger,
+			warnings: this.warnings,
+			consumers: this.consumers,
+			drainingConsumers: this.drainingConsumers,
+			handleBatch: (batch, callbacks) => this.handleBatch(batch, callbacks),
+		};
 	}
 
 	/**
@@ -501,26 +424,7 @@ export class QueueManagerService {
 		this.running = false;
 
 		// Step 1: Stop all scheduled tasks
-		if (this.cleanupInterval) {
-			clearInterval(this.cleanupInterval);
-			this.cleanupInterval = null;
-		}
-		if (this.healthCheckInterval) {
-			clearInterval(this.healthCheckInterval);
-			this.healthCheckInterval = null;
-		}
-		if (this.leakDetectionInterval) {
-			clearInterval(this.leakDetectionInterval);
-			this.leakDetectionInterval = null;
-		}
-		if (this.queueWindowResetInterval5min) {
-			clearInterval(this.queueWindowResetInterval5min);
-			this.queueWindowResetInterval5min = null;
-		}
-		if (this.queueWindowResetInterval30min) {
-			clearInterval(this.queueWindowResetInterval30min);
-			this.queueWindowResetInterval30min = null;
-		}
+		this.backgroundTasks.stop();
 
 		// Stop traffic manager (handles ALB deregistration)
 		const trafficResult = await this.traffic.stop();
@@ -584,15 +488,12 @@ export class QueueManagerService {
 		this.processPools.clear();
 
 		// Step 4: NACK all remaining in-flight messages (parallel — independent API calls)
+		const nackPromises: Promise<void>[] = [];
+		this.inFlight.forEachCallback((_key, callback) => {
+			nackPromises.push(callback.nack());
+		});
+		const nackResults = await Promise.allSettled(nackPromises);
 		let nackErrors = 0;
-		const nackResults = await Promise.allSettled(
-			[...this.inFlightMessages.entries()].map(async ([key, _info]) => {
-				const callback = this.messageCallbacks.get(key);
-				if (callback) {
-					await callback.nack();
-				}
-			}),
-		);
 		for (const result of nackResults) {
 			if (result.status === "rejected") {
 				nackErrors++;
@@ -611,10 +512,7 @@ export class QueueManagerService {
 			);
 		}
 
-		// Clear tracking maps
-		this.inFlightMessages.clear();
-		this.messageCallbacks.clear();
-		this.appMessageIdToPipelineKey.clear();
+		this.inFlight.clear();
 
 		// Close HTTP mediator
 		await this.httpMediator.close();
@@ -638,892 +536,42 @@ export class QueueManagerService {
 		previousMode: "PRIMARY" | "STANDBY",
 	): void {
 		this.logger.info({ newMode, previousMode }, "Traffic mode changed");
-
 		if (newMode === "STANDBY") {
-			// Pause all consumers - they will stop polling but can be resumed
-			this.pauseAllConsumers();
+			pauseAllConsumers(this.consumerLifecycleDeps());
 		} else if (newMode === "PRIMARY" && previousMode === "STANDBY") {
-			// Resume all consumers
-			this.resumeAllConsumers();
+			resumeAllConsumers(this.consumerLifecycleDeps());
 		}
 	}
 
 	/**
-	 * If traffic manager is already in STANDBY mode (set by StandbyService before
-	 * consumers were created), immediately pause all consumers.
+	 * If traffic manager is already in STANDBY mode (set by StandbyService
+	 * before consumers were created), immediately pause all consumers.
 	 */
 	private pauseConsumersIfStandby(): void {
 		if (this.traffic.isStandby()) {
 			this.logger.info("StandbyService already set STANDBY mode - pausing consumers");
-			this.pauseAllConsumers();
+			pauseAllConsumers(this.consumerLifecycleDeps());
 		}
 	}
 
 	/**
-	 * Pause all consumers (stop polling without full shutdown)
-	 */
-	private pauseAllConsumers(): void {
-		this.logger.info("Pausing all consumers for standby mode");
-
-		const failedQueueIds: string[] = [];
-		const pausePromises = [...this.consumers.entries()].map(
-			async ([queueId, consumer]) => {
-				try {
-					await consumer.stop();
-				} catch (err) {
-					this.logger.warn({ err, queueId }, "Failed to pause consumer");
-					failedQueueIds.push(queueId);
-				}
-			},
-		);
-		Promise.allSettled(pausePromises).then(() => {
-			if (failedQueueIds.length > 0) {
-				this.logger.warn(
-					{ failedCount: failedQueueIds.length, queueIds: failedQueueIds },
-					"Some consumers failed to pause for standby",
-				);
-			}
-		});
-	}
-
-	/**
-	 * Resume all consumers (restart polling)
-	 */
-	private resumeAllConsumers(): void {
-		this.logger.info("Resuming all consumers from standby mode");
-
-		for (const consumer of this.consumers.values()) {
-			consumer.start().catch((err) => {
-				this.logger.error({ err }, "Error starting consumer");
-			});
-		}
-	}
-
-	/**
-	 * Apply new configuration (serialized via promise chain to prevent concurrent syncs)
-	 * Matches Java QueueManager.syncConfiguration() behavior
+	 * Apply new configuration. Serialized inside the applicator so
+	 * concurrent platform pushes can't interleave.
 	 */
 	private async applyConfiguration(config: MessageRouterConfig): Promise<void> {
-		this.syncChain = this.syncChain.then(() =>
-			this.doApplyConfiguration(config).catch((err) => {
-				this.logger.error({ err }, "Configuration sync failed");
-			}),
-		);
-		await this.syncChain;
+		await this.configApplicator.apply(config);
 	}
 
 	/**
-	 * Internal: Apply configuration (called with lock held)
-	 */
-	private async doApplyConfiguration(
-		config: MessageRouterConfig,
-	): Promise<void> {
-		this.logger.info(
-			{
-				queues: config.queues.length,
-				pools: config.processingPools.length,
-				connections: config.connections,
-			},
-			"Applying configuration",
-		);
-
-		this.currentConfig = config;
-
-		// Filter queues with valid identifiers, warn about invalid ones
-		const validQueueConfigs: Array<
-			{ queueUri: string } | { queueName: string }
-		> = [];
-		for (const q of config.queues) {
-			const queueUri = q.queueUri?.trim() || null;
-			const queueName = q.queueName?.trim() || null;
-
-			if (queueUri) {
-				validQueueConfigs.push({ queueUri, ...(queueName && { queueName }) });
-			} else if (queueName) {
-				validQueueConfigs.push({ queueName });
-			} else {
-				this.warnings.add(
-					"CONFIGURATION",
-					"WARNING",
-					"Queue configuration missing both queueUri and queueName - skipping validation",
-					"QueueManagerService",
-				);
-				this.logger.warn(
-					{ queue: q },
-					"Queue configuration missing identifier, skipping",
-				);
-			}
-		}
-
-		// Validate queues (raises warnings for missing queues but doesn't stop)
-		const validationResult =
-			await this.queueValidation.validateQueues(validQueueConfigs);
-		if (validationResult.failed > 0) {
-			this.logger.warn(
-				{
-					validated: validationResult.validated,
-					failed: validationResult.failed,
-				},
-				"Some queues failed validation (continuing with available queues)",
-			);
-		}
-
-		// Sync process pools
-		await this.syncProcessPools(config.processingPools);
-
-		// Handle queue consumers
-		if (env.QUEUE_TYPE === "SQS") {
-			await this.syncSqsConsumers(config);
-		}
-
-		// Update queue stats
-		for (const queue of config.queues) {
-			const queueName =
-				queue.queueName || this.extractQueueName(queue.queueUri);
-			if (!this.queueStats.has(queueName)) {
-				this.queueStats.set(queueName, this.createEmptyQueueStats(queueName));
-			}
-		}
-	}
-
-	/**
-	 * Sync process pools with configuration (matches Java QueueManager.syncConfiguration)
-	 */
-	private async syncProcessPools(poolConfigs: PoolConfig[]): Promise<void> {
-		// Pool codes derived from newPoolConfigs keys below
-		const newPoolConfigs = new Map(poolConfigs.map((p) => [p.code, p]));
-
-		// Step 1: Handle pool changes - update in-place or move to draining
-		for (const [code, existingPool] of this.processPools) {
-			const newConfig = newPoolConfigs.get(code);
-
-			if (!newConfig) {
-				// Pool removed from config - drain asynchronously (matches Java)
-				this.logger.info(
-					{
-						poolCode: code,
-						queueSize: existingPool.getStats().queueSize,
-						activeWorkers: existingPool.getStats().activeWorkers,
-					},
-					"Pool removed from config - draining asynchronously",
-				);
-				existingPool.drain();
-				this.processPools.delete(code);
-				this.drainingPools.set(code, existingPool);
-			} else {
-				// Pool exists in new config - check for changes
-				const stats = existingPool.getStats();
-				const concurrencyChanged =
-					newConfig.concurrency !== stats.maxConcurrency;
-				const rateLimitChanged =
-					newConfig.rateLimitPerMinute !== existingPool.getConfig().rateLimitPerMinute;
-
-				if (concurrencyChanged || rateLimitChanged) {
-					this.logger.info(
-						{
-							poolCode: code,
-							oldConcurrency: stats.maxConcurrency,
-							newConcurrency: newConfig.concurrency,
-							rateLimitChanged,
-						},
-						"Updating pool configuration in-place",
-					);
-					existingPool.updateConfig(newConfig);
-				}
-			}
-		}
-
-		// Step 2: Create new pools (with limit checks)
-		for (const poolConfig of poolConfigs) {
-			if (!this.processPools.has(poolConfig.code)) {
-				const currentPoolCount = this.processPools.size;
-
-				// Check pool limit
-				if (currentPoolCount >= this.maxPools) {
-					this.logger.error(
-						{
-							poolCode: poolConfig.code,
-							currentCount: currentPoolCount,
-							maxPools: this.maxPools,
-						},
-						"Cannot create pool: maximum pool limit reached",
-					);
-					this.warnings.add(
-						"POOL_LIMIT",
-						"CRITICAL",
-						`Max pool limit reached (${currentPoolCount}/${this.maxPools}) - cannot create pool [${poolConfig.code}]`,
-						"QueueManager",
-					);
-					continue;
-				}
-
-				// Warn if approaching limit
-				if (currentPoolCount >= this.poolWarningThreshold) {
-					this.logger.warn(
-						{
-							currentCount: currentPoolCount,
-							maxPools: this.maxPools,
-							threshold: this.poolWarningThreshold,
-						},
-						"Pool count approaching limit",
-					);
-					this.warnings.add(
-						"POOL_LIMIT",
-						"WARNING",
-						`Pool count ${currentPoolCount} approaching limit ${this.maxPools}`,
-						"QueueManager",
-					);
-				}
-
-				// Calculate queue capacity (matches Java)
-				const queueCapacity = Math.max(poolConfig.concurrency * 20, 50);
-
-				this.logger.info(
-					{
-						poolCode: poolConfig.code,
-						concurrency: poolConfig.concurrency,
-						queueCapacity,
-						poolNumber: currentPoolCount + 1,
-						maxPools: this.maxPools,
-					},
-					"Creating new process pool",
-				);
-
-				const pool = new ProcessPool(
-					poolConfig,
-					this.httpMediator,
-					this.logger,
-				);
-				this.processPools.set(poolConfig.code, pool);
-			}
-		}
-	}
-
-	/**
-	 * Sync SQS consumers with configuration (matches Java QueueManager pattern)
-	 */
-	private async syncSqsConsumers(config: MessageRouterConfig): Promise<void> {
-		const activeQueueUris = new Set(config.queues.map((q) => q.queueUri));
-
-		// Phase out consumers for queues no longer in config (async draining)
-		for (const [queueUri, consumer] of this.consumers) {
-			if (!activeQueueUris.has(queueUri)) {
-				this.logger.info(
-					{ queueUri },
-					"Phasing out consumer for removed queue",
-				);
-				// Stop consumer (sets running=false, initiates graceful shutdown)
-				consumer.stop();
-				// Move to draining for async cleanup
-				this.consumers.delete(queueUri);
-				this.drainingConsumers.set(queueUri, consumer);
-				this.logger.info({ queueUri }, "Consumer moved to draining state");
-			}
-		}
-
-		// Start consumers for new queues
-		for (const queue of config.queues) {
-			if (!this.consumers.has(queue.queueUri)) {
-				this.logger.info(
-					{ queueUri: queue.queueUri },
-					"Starting consumer for new queue",
-				);
-				const consumer = this.createSqsConsumer(
-					queue.queueUri,
-					queue.queueName || "",
-					queue.connections || config.connections,
-				);
-				await consumer.start();
-				this.consumers.set(queue.queueUri, consumer);
-			}
-		}
-	}
-
-	/**
-	 * Create an SQS consumer
-	 */
-	private createSqsConsumer(
-		queueUrl: string,
-		queueName: string,
-		connections: number,
-	): SqsConsumer {
-		const config: SqsConsumerConfig = {
-			queueUrl,
-			queueName: queueName || this.extractQueueName(queueUrl),
-			region: env.AWS_REGION,
-			waitTimeSeconds: 20,
-			maxMessages: 10,
-			visibilityTimeout: 30,
-			connections,
-			metricsPollIntervalMs: Math.min(env.SYNC_INTERVAL_MS, 60_000),
-		};
-
-		return new SqsConsumer(
-			config,
-			async (batch, callbacks) => {
-				await this.handleBatch(batch, callbacks);
-			},
-			this.logger,
-			env.INSTANCE_ID,
-		);
-	}
-
-	/**
-	 * Unified batch handler for all consumer types (SQS, NATS, ActiveMQ, Embedded).
-	 * All consumers now produce standard MessageBatch + MessageCallbackFns.
-	 *
-	 * Three-phase routing algorithm matching Java QueueManager.routeMessageBatch():
-	 *   Phase 1: Deduplication (physical redelivery + logical requeue)
-	 *   Phase 2: Pool capacity pre-check (batch-level rejection)
-	 *   Phase 3: Per-group FIFO routing with nackRemaining
+	 * Unified batch handler for all consumer types — delegates to the
+	 * batch dispatcher. Kept as a private method so the broker
+	 * initializers can pass it as a callback by reference.
 	 */
 	private async handleBatch(
 		batch: MessageBatch,
 		callbacks: Map<string, MessageCallbackFns>,
 	): Promise<void> {
-		const queueName = this.extractQueueName(batch.queueId);
-		const queueStat = this.queueStats.get(queueName);
-
-		// Take a snapshot of processPools for consistent routing through the batch
-		const poolSnapshot = new Map(this.processPools);
-
-		// ── Phase 1: Deduplication ──────────────────────────────────────
-		interface TrackedMessage {
-			message: QueueMessage;
-			pipelineKey: string;
-			resolvedPoolCode: string;
-			resolvedPool: ProcessPool;
-		}
-
-		const messagesToRoute: TrackedMessage[] = [];
-
-		for (const message of batch.messages) {
-			const pipelineKey = message.brokerMessageId;
-			const callback = callbacks.get(message.brokerMessageId);
-
-			// Signal in-progress (e.g. NATS ack-wait extension)
-			if (callback) {
-				callback.inProgress();
-			}
-
-			// Check for physical redelivery (same broker message ID in pipeline)
-			if (this.inFlightMessages.has(pipelineKey)) {
-				const storedCallback = this.messageCallbacks.get(pipelineKey);
-				if (storedCallback && callback) {
-					const newHandle = callback.getReceiptHandle();
-					if (newHandle) {
-						storedCallback.updateReceiptHandle(newHandle);
-						this.logger.debug(
-							{ brokerMessageId: message.brokerMessageId },
-							"Physical redelivery detected - swapped receipt handle, no SQS action needed",
-						);
-					}
-				}
-				// No nack/defer — message stays in SQS with natural visibility timeout.
-				// The receipt handle swap ensures the eventual ACK uses the valid handle.
-				continue;
-			}
-
-			// Check for requeue (different broker ID, same app message ID)
-			const existingPipelineKey = this.appMessageIdToPipelineKey.get(
-				message.messageId,
-			);
-			if (existingPipelineKey && existingPipelineKey !== pipelineKey) {
-				this.logger.debug(
-					{
-						messageId: message.messageId,
-						existingKey: existingPipelineKey,
-						newKey: pipelineKey,
-					},
-					"Requeue detected - ACKing duplicate",
-				);
-				if (callback) {
-					await callback.ack();
-				}
-				continue;
-			}
-
-			// Track message in pipeline
-			this.inFlightMessages.set(pipelineKey, {
-				messageId: message.messageId,
-				brokerMessageId: message.brokerMessageId,
-				queueId: batch.queueId,
-				poolCode: message.pointer.poolCode,
-				addedAt: Date.now(),
-			});
-			this.appMessageIdToPipelineKey.set(message.messageId, pipelineKey);
-
-			if (callback) {
-				this.messageCallbacks.set(pipelineKey, callback);
-			}
-
-			// Update queue stats
-			if (queueStat) {
-				queueStat.totalMessages++;
-				queueStat.totalMessages5min++;
-				queueStat.totalMessages30min++;
-			}
-
-			// Resolve pool (with DEFAULT-POOL fallback)
-			let resolvedPoolCode = message.pointer.poolCode;
-			let resolvedPool = poolSnapshot.get(resolvedPoolCode);
-			if (!resolvedPool) {
-				this.logger.warn(
-					{ poolCode: resolvedPoolCode, messageId: message.messageId },
-					"No pool found, routing to DEFAULT-POOL",
-				);
-				this.warnings.add(
-					"ROUTING",
-					"WARNING",
-					`No pool found for code [${resolvedPoolCode}], using default pool`,
-					"QueueManager",
-				);
-				resolvedPoolCode = "DEFAULT-POOL";
-				resolvedPool = this.getOrCreateDefaultPool();
-			}
-
-			messagesToRoute.push({
-				message,
-				pipelineKey,
-				resolvedPoolCode,
-				resolvedPool,
-			});
-		}
-
-		// ── Phase 2: Batch-level pool capacity pre-check ────────────────
-		// Group messages by pool code
-		const messagesByPool = new Map<string, TrackedMessage[]>();
-		for (const tracked of messagesToRoute) {
-			const existing = messagesByPool.get(tracked.resolvedPoolCode) || [];
-			existing.push(tracked);
-			messagesByPool.set(tracked.resolvedPoolCode, existing);
-		}
-
-		// Check each pool can accept its entire sub-batch
-		const toNackPoolFull: TrackedMessage[] = [];
-		const acceptedByPool = new Map<string, TrackedMessage[]>();
-
-		for (const [poolCode, poolMessages] of messagesByPool) {
-			const pool = poolMessages[0]!.resolvedPool;
-			const stats = pool.getStats();
-			const availableCapacity = stats.maxQueueCapacity - stats.queueSize;
-
-			if (availableCapacity < poolMessages.length) {
-				this.logger.warn(
-					{
-						poolCode,
-						batchSize: poolMessages.length,
-						availableCapacity,
-					},
-					"Pool cannot accept batch — NACKing all messages for this pool",
-				);
-				this.warnings.add(
-					"QUEUE_FULL",
-					"WARNING",
-					`Pool [${poolCode}] buffer full — batch of ${poolMessages.length} NACKed (available: ${availableCapacity})`,
-					"QueueManager",
-				);
-				toNackPoolFull.push(...poolMessages);
-			} else {
-				acceptedByPool.set(poolCode, poolMessages);
-			}
-		}
-
-		// NACK all capacity-rejected messages (parallel — independent broker calls)
-		if (toNackPoolFull.length > 0) {
-			await Promise.allSettled(
-				toNackPoolFull.map(async (tracked) => {
-					const callback = this.messageCallbacks.get(tracked.pipelineKey);
-					if (callback) {
-						await callback.nack(10);
-					}
-					this.cleanupMessage(tracked.pipelineKey, tracked.message.messageId);
-				}),
-			);
-		}
-
-		// ── Phase 3: Per-group routing ──────────────────────────────────
-		// IMMEDIATE groups: submit all messages concurrently (no ordering dependency)
-		// Ordered groups (BLOCK_ON_ERROR, NEXT_ON_ERROR, default): FIFO with nackRemaining
-		for (const [_poolCode, poolMessages] of acceptedByPool) {
-			const pool = poolMessages[0]!.resolvedPool;
-
-			// Group by messageGroupId (preserve insertion order)
-			const messagesByGroup = new Map<string, TrackedMessage[]>();
-			for (const tracked of poolMessages) {
-				const groupId =
-					tracked.message.pointer.messageGroupId || "__DEFAULT__";
-				const existing = messagesByGroup.get(groupId) || [];
-				existing.push(tracked);
-				messagesByGroup.set(groupId, existing);
-			}
-
-			for (const [_groupId, groupMessages] of messagesByGroup) {
-				// Determine dispatch mode from the first message in the group
-				const groupDispatchMode = groupMessages[0]!.message.pointer.dispatchMode;
-				const isImmediate = groupDispatchMode === "IMMEDIATE";
-
-				if (isImmediate) {
-					// IMMEDIATE mode: submit all messages concurrently — no FIFO dependency
-					await this.submitGroupConcurrent(groupMessages, pool, queueStat);
-				} else {
-					// Ordered mode: strict FIFO with nackRemaining on rejection
-					await this.submitGroupFifo(groupMessages, pool, queueStat);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Submit all messages in a group concurrently (IMMEDIATE dispatch mode).
-	 * Each message is independently submitted to the pool — no ordering dependency.
-	 */
-	private async submitGroupConcurrent(
-		groupMessages: Array<{ message: QueueMessage; pipelineKey: string; resolvedPoolCode: string; resolvedPool: ProcessPool }>,
-		pool: ProcessPool,
-		queueStat: QueueStats | undefined,
-	): Promise<void> {
-		for (const tracked of groupMessages) {
-			const { message, pipelineKey } = tracked;
-			const callback = this.messageCallbacks.get(pipelineKey);
-
-			const poolCallback: MessageCallback = {
-				ack: async () => {
-					if (callback) {
-						await callback.ack();
-					}
-					this.cleanupMessage(pipelineKey, message.messageId);
-					if (queueStat) {
-						queueStat.totalConsumed++;
-						queueStat.totalConsumed5min++;
-						queueStat.totalConsumed30min++;
-						this.recalculateSuccessRates(queueStat);
-					}
-				},
-				nack: async (visibilityTimeoutSeconds?: number) => {
-					if (callback) {
-						await callback.nack(visibilityTimeoutSeconds);
-					}
-					this.cleanupMessage(pipelineKey, message.messageId);
-					if (queueStat) {
-						queueStat.totalFailed++;
-						queueStat.totalFailed5min++;
-						queueStat.totalFailed30min++;
-						this.recalculateSuccessRates(queueStat);
-					}
-				},
-			};
-
-			// Submit to pool — if rejected, NACK only this message (no nackRemaining)
-			const accepted = await pool.submit(message, poolCallback);
-			if (!accepted) {
-				this.logger.warn(
-					{
-						poolCode: tracked.resolvedPoolCode,
-						messageId: message.messageId,
-					},
-					"Pool rejected IMMEDIATE message (at capacity) - NACKing",
-				);
-				if (callback) {
-					await callback.nack(10);
-				}
-				this.cleanupMessage(pipelineKey, message.messageId);
-			}
-		}
-	}
-
-	/**
-	 * Submit messages in strict FIFO order (BLOCK_ON_ERROR / NEXT_ON_ERROR / default).
-	 * If any message is rejected by the pool, all subsequent messages in the group are NACKed.
-	 */
-	private async submitGroupFifo(
-		groupMessages: Array<{ message: QueueMessage; pipelineKey: string; resolvedPoolCode: string; resolvedPool: ProcessPool }>,
-		pool: ProcessPool,
-		queueStat: QueueStats | undefined,
-	): Promise<void> {
-		let nackRemaining = false;
-		const toNackFifo: Array<{ pipelineKey: string; messageId: string; callback: MessageCallbackFns }> = [];
-
-		for (const tracked of groupMessages) {
-			const { message, pipelineKey } = tracked;
-			const callback = this.messageCallbacks.get(pipelineKey);
-
-			if (nackRemaining) {
-				if (callback) {
-					toNackFifo.push({ pipelineKey, messageId: message.messageId, callback });
-				} else {
-					this.cleanupMessage(pipelineKey, message.messageId);
-				}
-				continue;
-			}
-
-			const poolCallback: MessageCallback = {
-				ack: async () => {
-					if (callback) {
-						await callback.ack();
-					}
-					this.cleanupMessage(pipelineKey, message.messageId);
-					if (queueStat) {
-						queueStat.totalConsumed++;
-						queueStat.totalConsumed5min++;
-						queueStat.totalConsumed30min++;
-						this.recalculateSuccessRates(queueStat);
-					}
-				},
-				nack: async (visibilityTimeoutSeconds?: number) => {
-					if (callback) {
-						await callback.nack(visibilityTimeoutSeconds);
-					}
-					this.cleanupMessage(pipelineKey, message.messageId);
-					if (queueStat) {
-						queueStat.totalFailed++;
-						queueStat.totalFailed5min++;
-						queueStat.totalFailed30min++;
-						this.recalculateSuccessRates(queueStat);
-					}
-				},
-			};
-
-			const accepted = await pool.submit(message, poolCallback);
-			if (!accepted) {
-				this.logger.warn(
-					{
-						poolCode: tracked.resolvedPoolCode,
-						messageId: message.messageId,
-					},
-					"Pool rejected message (at capacity) - NACKing remaining in group",
-				);
-				if (callback) {
-					await callback.nack(10);
-				}
-				this.cleanupMessage(pipelineKey, message.messageId);
-				nackRemaining = true;
-			}
-		}
-
-		// Flush FIFO NACKs in parallel (independent broker calls)
-		if (toNackFifo.length > 0) {
-			await Promise.allSettled(
-				toNackFifo.map(async ({ pipelineKey, messageId, callback }) => {
-					await callback.nack(10);
-					this.cleanupMessage(pipelineKey, messageId);
-				}),
-			);
-		}
-	}
-
-	/**
-	 * Get or create the default fallback pool
-	 */
-	private getOrCreateDefaultPool(): ProcessPool {
-		const defaultCode = "DEFAULT-POOL";
-		let pool = this.processPools.get(defaultCode);
-		if (!pool) {
-			this.logger.info(
-				{ poolCode: defaultCode, concurrency: 20 },
-				"Creating DEFAULT-POOL",
-			);
-			pool = new ProcessPool(
-				{ code: defaultCode, concurrency: 20, rateLimitPerMinute: null },
-				this.httpMediator,
-				this.logger,
-			);
-			this.processPools.set(defaultCode, pool);
-		}
-		return pool;
-	}
-
-	/**
-	 * Clean up message tracking
-	 */
-	private cleanupMessage(pipelineKey: string, messageId: string): void {
-		this.inFlightMessages.delete(pipelineKey);
-		this.messageCallbacks.delete(pipelineKey);
-		this.appMessageIdToPipelineKey.delete(messageId);
-	}
-
-	/**
-	 * Recalculate success rates based on completed messages only.
-	 * Uses consumed/(consumed+failed) so in-flight messages don't drag the rate down.
-	 */
-	private recalculateSuccessRates(stat: QueueStats): void {
-		const completed = stat.totalConsumed + stat.totalFailed;
-		stat.successRate = completed > 0 ? stat.totalConsumed / completed : 1.0;
-
-		const completed5min = stat.totalConsumed5min + stat.totalFailed5min;
-		stat.successRate5min =
-			completed5min > 0 ? stat.totalConsumed5min / completed5min : 1.0;
-
-		const completed30min = stat.totalConsumed30min + stat.totalFailed30min;
-		stat.successRate30min =
-			completed30min > 0 ? stat.totalConsumed30min / completed30min : 1.0;
-	}
-
-	/**
-	 * Initialize embedded mode with SQLite-backed queue
-	 */
-	private async initializeEmbeddedMode(): Promise<void> {
-		const queueName = "embedded-queue";
-
-		// Create embedded queue
-		this.embeddedQueue = new EmbeddedQueue(
-			{
-				dbPath: env.EMBEDDED_DB_PATH,
-				queueName,
-				visibilityTimeoutSeconds: env.EMBEDDED_VISIBILITY_TIMEOUT_SECONDS,
-				receiveTimeoutMs: env.EMBEDDED_RECEIVE_TIMEOUT_MS,
-				maxMessages: env.EMBEDDED_MAX_MESSAGES,
-				metricsPollIntervalMs: env.EMBEDDED_METRICS_POLL_INTERVAL_MS,
-			},
-			this.logger,
-			env.INSTANCE_ID,
-		);
-
-		// Initialize the queue
-		await this.embeddedQueue.initialize();
-
-		// Add queue stats
-		this.queueStats.set(queueName, this.createEmptyQueueStats(queueName));
-
-		// Create default pools
-		const poolConfigs: PoolConfig[] = [
-			{ code: "POOL-HIGH", concurrency: 10, rateLimitPerMinute: null },
-			{ code: "POOL-MEDIUM", concurrency: 10, rateLimitPerMinute: null },
-			{ code: "POOL-LOW", concurrency: 10, rateLimitPerMinute: null },
-		];
-
-		for (const config of poolConfigs) {
-			const pool = new ProcessPool(config, this.httpMediator, this.logger);
-			this.processPools.set(config.code, pool);
-		}
-
-		// Start the consumer
-		await this.embeddedQueue.startConsumer(async (batch, callbacks) =>
-			this.handleBatch(batch, callbacks),
-		);
-
-		this.logger.info(
-			{ dbPath: env.EMBEDDED_DB_PATH, queueName },
-			"Embedded queue initialized",
-		);
-	}
-
-	/**
-	 * Initialize ActiveMQ mode
-	 */
-	private async initializeActiveMqMode(): Promise<void> {
-		// Default queue names for ActiveMQ mode
-		const queueNames = [
-			"flow-catalyst-high-priority",
-			"flow-catalyst-medium-priority",
-			"flow-catalyst-low-priority",
-		];
-
-		// Create default pools
-		const poolConfigs: PoolConfig[] = [
-			{ code: "POOL-HIGH", concurrency: 10, rateLimitPerMinute: null },
-			{ code: "POOL-MEDIUM", concurrency: 10, rateLimitPerMinute: null },
-			{ code: "POOL-LOW", concurrency: 10, rateLimitPerMinute: null },
-		];
-
-		for (const config of poolConfigs) {
-			const pool = new ProcessPool(config, this.httpMediator, this.logger);
-			this.processPools.set(config.code, pool);
-		}
-
-		// Create consumers for each queue
-		for (const queueName of queueNames) {
-			const consumerConfig: ActiveMqConsumerConfig = {
-				host: env.ACTIVEMQ_HOST,
-				port: env.ACTIVEMQ_PORT,
-				username: env.ACTIVEMQ_USERNAME,
-				password: env.ACTIVEMQ_PASSWORD,
-				queueName,
-				connections: env.DEFAULT_CONNECTIONS,
-				receiveTimeoutMs: env.ACTIVEMQ_RECEIVE_TIMEOUT_MS,
-				metricsPollIntervalMs: env.SYNC_INTERVAL_MS,
-				prefetchCount: env.ACTIVEMQ_PREFETCH_COUNT,
-				redeliveryDelayMs: env.ACTIVEMQ_REDELIVERY_DELAY_MS,
-			};
-
-			const consumer = new ActiveMqConsumer(
-				consumerConfig,
-				async (batch, callbacks) => this.handleBatch(batch, callbacks),
-				this.logger,
-				env.INSTANCE_ID,
-			);
-
-			await consumer.start();
-			this.consumers.set(queueName, consumer);
-			this.queueStats.set(queueName, this.createEmptyQueueStats(queueName));
-		}
-
-		this.logger.info(
-			{
-				host: env.ACTIVEMQ_HOST,
-				port: env.ACTIVEMQ_PORT,
-				queues: queueNames,
-			},
-			"ActiveMQ mode initialized",
-		);
-	}
-
-	/**
-	 * Initialize NATS JetStream mode
-	 */
-	private async initializeNatsMode(): Promise<void> {
-		// Create default pools
-		const poolConfigs: PoolConfig[] = [
-			{ code: "POOL-HIGH", concurrency: 10, rateLimitPerMinute: null },
-			{ code: "POOL-MEDIUM", concurrency: 10, rateLimitPerMinute: null },
-			{ code: "POOL-LOW", concurrency: 10, rateLimitPerMinute: null },
-		];
-
-		for (const config of poolConfigs) {
-			const pool = new ProcessPool(config, this.httpMediator, this.logger);
-			this.processPools.set(config.code, pool);
-		}
-
-		// Create NATS consumer
-		const consumerConfig: NatsConsumerConfig = {
-			servers: env.NATS_SERVERS,
-			connectionName: env.NATS_CONNECTION_NAME,
-			username: env.NATS_USERNAME,
-			password: env.NATS_PASSWORD,
-			streamName: env.NATS_STREAM_NAME,
-			consumerName: env.NATS_CONSUMER_NAME,
-			subject: env.NATS_SUBJECT,
-			maxMessagesPerPoll: env.NATS_MAX_MESSAGES_PER_POLL,
-			pollTimeoutSeconds: env.NATS_POLL_TIMEOUT_SECONDS,
-			ackWaitSeconds: env.NATS_ACK_WAIT_SECONDS,
-			maxDeliver: env.NATS_MAX_DELIVER,
-			maxAckPending: env.NATS_MAX_ACK_PENDING,
-			storageType: env.NATS_STORAGE_TYPE,
-			replicas: env.NATS_REPLICAS,
-			maxAgeDays: env.NATS_MAX_AGE_DAYS,
-			metricsPollIntervalMs: env.SYNC_INTERVAL_MS,
-		};
-
-		const consumer = new NatsConsumer(
-			consumerConfig,
-			async (batch, callbacks) => this.handleBatch(batch, callbacks),
-			this.logger,
-			env.INSTANCE_ID,
-		);
-
-		await consumer.start();
-		const queueId = `${env.NATS_STREAM_NAME}:${env.NATS_CONSUMER_NAME}`;
-		this.consumers.set(queueId, consumer);
-		this.queueStats.set(queueId, this.createEmptyQueueStats(queueId));
-
-		this.logger.info(
-			{
-				servers: env.NATS_SERVERS,
-				stream: env.NATS_STREAM_NAME,
-				consumer: env.NATS_CONSUMER_NAME,
-			},
-			"NATS mode initialized",
-		);
+		return this.batchDispatcher.dispatch(batch, callbacks);
 	}
 
 	/**
@@ -1619,52 +667,20 @@ export class QueueManagerService {
 	 * Called when the dashboard user clicks Refresh.
 	 */
 	async refreshQueueMetrics(): Promise<void> {
-		const refreshPromises: Promise<void>[] = [];
-		for (const consumer of this.consumers.values()) {
-			refreshPromises.push(consumer.refreshMetrics());
-		}
-		if (this.embeddedQueue) {
-			refreshPromises.push(this.embeddedQueue.refreshConsumerMetrics());
-		}
-		await Promise.allSettled(refreshPromises);
+		await refreshAllConsumerMetrics(this.statsReportingDeps());
 	}
 
-	/**
-	 * Get queue statistics - matches Java response format
-	 */
+	/** Queue statistics — see {@link collectQueueStats}. */
 	getQueueStats(): Record<string, QueueStats> {
-		// Update consumer metrics from all consumers
-		for (const [queueId, consumer] of this.consumers) {
-			// Try extracted queue name first (SQS URLs), then the raw key
-			const queueName = this.extractQueueName(queueId);
-			const stats =
-				this.queueStats.get(queueName) ?? this.queueStats.get(queueId);
-			if (stats) {
-				const metrics = consumer.getQueueMetrics();
-				stats.pendingMessages = metrics.pendingMessages;
-				stats.messagesNotVisible = metrics.messagesNotVisible;
-				stats.currentSize = metrics.pendingMessages;
-			}
-		}
+		return collectQueueStats(this.statsReportingDeps());
+	}
 
-		// Update metrics from embedded queue
-		if (this.embeddedQueue) {
-			const embeddedMetrics = this.embeddedQueue.getConsumerMetrics();
-			const embeddedStats = this.embeddedQueue.getStats();
-			const queueName = "embedded-queue";
-			const stats = this.queueStats.get(queueName);
-			if (stats && embeddedMetrics) {
-				stats.pendingMessages = embeddedMetrics.pendingMessages;
-				stats.messagesNotVisible = embeddedMetrics.messagesNotVisible;
-				stats.currentSize = embeddedStats.visibleMessages;
-			}
-		}
-
-		const result: Record<string, QueueStats> = {};
-		for (const [name, stats] of this.queueStats) {
-			result[name] = { ...stats };
-		}
-		return result;
+	private statsReportingDeps(): StatsReportingDeps {
+		return {
+			consumers: this.consumers,
+			queueStats: this.queueStats,
+			embeddedQueue: () => this.embeddedQueue,
+		};
 	}
 
 	/**
@@ -1686,60 +702,15 @@ export class QueueManagerService {
 		messageId?: string,
 		poolCode?: string,
 	): InFlightMessage[] {
-		let messages = Array.from(this.inFlightMessages.values()).map((info) => ({
-			messageId: info.messageId,
-			brokerMessageId: info.brokerMessageId,
-			queueId: info.queueId,
-			addedToInPipelineAt: new Date(info.addedAt).toISOString(),
-			elapsedTimeMs: Date.now() - info.addedAt,
-			poolCode: info.poolCode,
-		}));
-
-		if (messageId) {
-			messages = messages.filter(
-				(m) =>
-					m.messageId.toLowerCase().includes(messageId.toLowerCase()) ||
-					m.brokerMessageId.toLowerCase().includes(messageId.toLowerCase()),
-			);
-		}
-
-		if (poolCode) {
-			messages = messages.filter(
-				(m) => m.poolCode.toLowerCase() === poolCode.toLowerCase(),
-			);
-		}
-
-		// Sort by elapsed time descending (longest first), matching Java behavior
-		messages.sort((a, b) => b.elapsedTimeMs - a.elapsedTimeMs);
-
-		return messages.slice(0, limit);
+		return this.inFlight.getMessages(limit, {
+			...(messageId ? { messageId } : {}),
+			...(poolCode ? { poolCode } : {}),
+		});
 	}
 
-	/**
-	 * Get consumer health - matches Java ConsumerHealthResponse
-	 */
+	/** Consumer health — see {@link collectConsumerHealth}. */
 	getConsumerHealth(): ConsumerHealthResponse {
-		const currentTimeMs = Date.now();
-		const consumers: Record<string, ConsumerHealth> = {};
-
-		// All queue consumers (SQS, ActiveMQ, NATS)
-		for (const [queueId, consumer] of this.consumers) {
-			consumers[queueId] = consumer.getHealth();
-		}
-
-		// Embedded queue health
-		if (this.embeddedQueue) {
-			const health = this.embeddedQueue.getConsumerHealth();
-			if (health) {
-				consumers["embedded-queue"] = health;
-			}
-		}
-
-		return {
-			currentTimeMs,
-			currentTime: new Date(currentTimeMs).toISOString(),
-			consumers,
-		};
+		return collectConsumerHealth(this.statsReportingDeps());
 	}
 
 	/**
@@ -1775,20 +746,17 @@ export class QueueManagerService {
 	 * Check if a message is in the pipeline
 	 */
 	isMessageInPipeline(pipelineKey: string): boolean {
-		return this.inFlightMessages.has(pipelineKey);
+		return this.inFlight.isPipelineKeyInFlight(pipelineKey);
 	}
 
 	/**
 	 * Cheap presence check by **application** message ID. O(1) — two
-	 * map lookups (appMessageIdToPipelineKey, then inFlightMessages),
-	 * no iteration. Designed for an external recovery system that wants
-	 * to know whether the router is already actively processing a
-	 * message before re-enqueueing it.
+	 * map lookups, no iteration. Designed for an external recovery system
+	 * that wants to know whether the router is already actively processing
+	 * a message before re-enqueueing it.
 	 */
 	isInFlightByAppId(appMessageId: string): boolean {
-		const pipelineKey = this.appMessageIdToPipelineKey.get(appMessageId);
-		if (!pipelineKey) return false;
-		return this.inFlightMessages.has(pipelineKey);
+		return this.inFlight.isInFlightByAppId(appMessageId);
 	}
 
 	/**
@@ -1798,11 +766,7 @@ export class QueueManagerService {
 	 * `false` means it does not (safe to resend). Each lookup is O(1).
 	 */
 	areInFlightByAppIds(appMessageIds: string[]): Record<string, boolean> {
-		const result: Record<string, boolean> = {};
-		for (const id of appMessageIds) {
-			result[id] = this.isInFlightByAppId(id);
-		}
-		return result;
+		return this.inFlight.areInFlightByAppIds(appMessageIds);
 	}
 
 	/**
@@ -1828,39 +792,5 @@ export class QueueManagerService {
 		return this.embeddedQueue !== null;
 	}
 
-	/**
-	 * Extract queue name from URL
-	 */
-	private extractQueueName(queueUri: string): string {
-		// Handle SQS URL format: https://sqs.region.amazonaws.com/account/queue-name
-		const parts = queueUri.split("/");
-		return parts[parts.length - 1] || queueUri;
-	}
-
-	/**
-	 * Create empty queue stats
-	 */
-	private createEmptyQueueStats(name: string): QueueStats {
-		return {
-			name,
-			totalMessages: 0,
-			totalConsumed: 0,
-			totalFailed: 0,
-			successRate: 1.0,
-			currentSize: 0,
-			throughput: 0,
-			pendingMessages: 0,
-			messagesNotVisible: 0,
-			totalMessages5min: 0,
-			totalConsumed5min: 0,
-			totalFailed5min: 0,
-			successRate5min: 1.0,
-			totalMessages30min: 0,
-			totalConsumed30min: 0,
-			totalFailed30min: 0,
-			successRate30min: 1.0,
-			totalDeferred: 0,
-		};
-	}
 }
 

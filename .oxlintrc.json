@@ -3,7 +3,22 @@
 	"rules": {
 		"no-throw-literal": "error",
 		"import/no-unused-imports": "error",
-		"typescript/no-explicit-any": "warn"
+		"typescript/no-explicit-any": "warn",
+		"max-lines": [
+			"error",
+			{ "max": 800, "skipBlankLines": true, "skipComments": true }
+		]
 	},
+	"overrides": [
+		{
+			"files": [
+				"packages/platform/src/api/admin/applications.ts",
+				"packages/platform/src/api/admin/principals.ts"
+			],
+			"rules": {
+				"max-lines": "off"
+			}
+		}
+	],
 	"ignorePatterns": ["**/dist/**", "**/node_modules/**", "**/*.gen.ts"]
 }
