@@ -19,6 +19,10 @@ type AnyDb = PostgresJsDatabase<any>;
 import {
 	applications,
 	applicationClientConfigs,
+	authRoles,
+	principalApplicationAccess,
+	principals,
+	serviceAccounts,
 	type ApplicationRecord,
 	type NewApplicationRecord,
 	type ApplicationClientConfigRecord,
@@ -43,6 +47,30 @@ export interface ApplicationRepository
 	): Promise<Application | undefined>;
 	findByIds(ids: string[], tx?: TransactionContext): Promise<Application[]>;
 	existsByCode(code: string, tx?: TransactionContext): Promise<boolean>;
+
+	/**
+	 * Reference-count queries used by the delete use case to refuse
+	 * deletion while code-enforced references still exist. None of these
+	 * columns carry DB-level FKs — integrity is enforced in the use case,
+	 * matching the Rust port.
+	 */
+	countAccessGrants(
+		applicationId: string,
+		tx?: TransactionContext,
+	): Promise<number>;
+	countClientConfigs(
+		applicationId: string,
+		tx?: TransactionContext,
+	): Promise<number>;
+	countServiceAccounts(
+		applicationId: string,
+		tx?: TransactionContext,
+	): Promise<number>;
+	countRoles(applicationId: string, tx?: TransactionContext): Promise<number>;
+	countPrincipalRefs(
+		applicationId: string,
+		tx?: TransactionContext,
+	): Promise<number>;
 }
 
 /**
@@ -192,6 +220,61 @@ export function createApplicationRepository(
 				.from(applications)
 				.where(eq(applications.code, code.toLowerCase()));
 			return Number(result?.count ?? 0) > 0;
+		},
+
+		async countAccessGrants(
+			applicationId: string,
+			tx?: TransactionContext,
+		): Promise<number> {
+			const [result] = await db(tx)
+				.select({ count: sql<number>`count(*)` })
+				.from(principalApplicationAccess)
+				.where(eq(principalApplicationAccess.applicationId, applicationId));
+			return Number(result?.count ?? 0);
+		},
+
+		async countClientConfigs(
+			applicationId: string,
+			tx?: TransactionContext,
+		): Promise<number> {
+			const [result] = await db(tx)
+				.select({ count: sql<number>`count(*)` })
+				.from(applicationClientConfigs)
+				.where(eq(applicationClientConfigs.applicationId, applicationId));
+			return Number(result?.count ?? 0);
+		},
+
+		async countServiceAccounts(
+			applicationId: string,
+			tx?: TransactionContext,
+		): Promise<number> {
+			const [result] = await db(tx)
+				.select({ count: sql<number>`count(*)` })
+				.from(serviceAccounts)
+				.where(eq(serviceAccounts.applicationId, applicationId));
+			return Number(result?.count ?? 0);
+		},
+
+		async countRoles(
+			applicationId: string,
+			tx?: TransactionContext,
+		): Promise<number> {
+			const [result] = await db(tx)
+				.select({ count: sql<number>`count(*)` })
+				.from(authRoles)
+				.where(eq(authRoles.applicationId, applicationId));
+			return Number(result?.count ?? 0);
+		},
+
+		async countPrincipalRefs(
+			applicationId: string,
+			tx?: TransactionContext,
+		): Promise<number> {
+			const [result] = await db(tx)
+				.select({ count: sql<number>`count(*)` })
+				.from(principals)
+				.where(eq(principals.applicationId, applicationId));
+			return Number(result?.count ?? 0);
 		},
 
 		async insert(

@@ -59,6 +59,35 @@ export function createDeleteApplicationUseCase(
 				);
 			}
 
+			// Reference-count blockers — refuse deletion while any code-enforced
+			// reference still points at this application. None of these columns
+			// have DB-level FKs; integrity is enforced here, not by the database.
+			// Mirrors Rust crates/fc-platform/src/application/operations/delete.rs:85-143.
+			const [grants, configs, sas, roles, principalRefs] = await Promise.all([
+				applicationRepository.countAccessGrants(application.id),
+				applicationRepository.countClientConfigs(application.id),
+				applicationRepository.countServiceAccounts(application.id),
+				applicationRepository.countRoles(application.id),
+				applicationRepository.countPrincipalRefs(application.id),
+			]);
+
+			const blockers: string[] = [];
+			if (grants > 0) blockers.push(`${grants} access grants`);
+			if (configs > 0) blockers.push(`${configs} client configs`);
+			if (sas > 0) blockers.push(`${sas} service accounts`);
+			if (roles > 0) blockers.push(`${roles} application roles`);
+			if (principalRefs > 0) blockers.push(`${principalRefs} principal refs`);
+
+			if (blockers.length > 0) {
+				return Result.failure(
+					UseCaseError.businessRule(
+						"APPLICATION_HAS_REFERENCES",
+						`Cannot delete application '${application.code}' — ${blockers.join(", ")} still reference it. Remove those before deleting.`,
+						{ applicationId: application.id, blockers },
+					),
+				);
+			}
+
 			const event = new ApplicationDeleted(context, {
 				applicationId: application.id,
 				code: application.code,
