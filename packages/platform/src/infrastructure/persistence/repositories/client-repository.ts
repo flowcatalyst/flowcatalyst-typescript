@@ -17,7 +17,10 @@ import {
 type AnyDb = PostgresJsDatabase<any>;
 
 import {
+	applicationClientConfigs,
+	clientAccessGrants,
 	clients,
+	principals,
 	type ClientRecord,
 	type NewClientRecord,
 	type ClientNoteJson,
@@ -62,6 +65,24 @@ export interface ClientRepository extends PaginatedRepository<Client> {
 		clientIds: string[] | null,
 		tx?: TransactionContext,
 	): Promise<Client[]>;
+
+	/**
+	 * Reference-count queries used by the delete use case. None of the
+	 * referencing columns carry DB-level FKs — integrity is enforced in
+	 * the use case, mirroring Rust ClientRepository.
+	 */
+	countHomePrincipals(
+		clientId: string,
+		tx?: TransactionContext,
+	): Promise<number>;
+	countAccessGrants(
+		clientId: string,
+		tx?: TransactionContext,
+	): Promise<number>;
+	countClientConfigs(
+		clientId: string,
+		tx?: TransactionContext,
+	): Promise<number>;
 }
 
 /**
@@ -224,6 +245,39 @@ export function createClientRepository(defaultDb: AnyDb): ClientRepository {
 				.from(clients)
 				.where(eq(clients.identifier, identifier.toLowerCase()));
 			return Number(result?.count ?? 0) > 0;
+		},
+
+		async countHomePrincipals(
+			clientId: string,
+			tx?: TransactionContext,
+		): Promise<number> {
+			const [result] = await db(tx)
+				.select({ count: sql<number>`count(*)` })
+				.from(principals)
+				.where(eq(principals.clientId, clientId));
+			return Number(result?.count ?? 0);
+		},
+
+		async countAccessGrants(
+			clientId: string,
+			tx?: TransactionContext,
+		): Promise<number> {
+			const [result] = await db(tx)
+				.select({ count: sql<number>`count(*)` })
+				.from(clientAccessGrants)
+				.where(eq(clientAccessGrants.clientId, clientId));
+			return Number(result?.count ?? 0);
+		},
+
+		async countClientConfigs(
+			clientId: string,
+			tx?: TransactionContext,
+		): Promise<number> {
+			const [result] = await db(tx)
+				.select({ count: sql<number>`count(*)` })
+				.from(applicationClientConfigs)
+				.where(eq(applicationClientConfigs.clientId, clientId));
+			return Number(result?.count ?? 0);
 		},
 
 		async insert(entity: NewClient, tx?: TransactionContext): Promise<Client> {

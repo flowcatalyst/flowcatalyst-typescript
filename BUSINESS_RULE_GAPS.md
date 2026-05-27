@@ -24,8 +24,8 @@ it. The references become orphans; downstream queries and UI break.
 |---|---|---|---|
 | 1 | ~~**`application/delete`**~~ FIXED | `crates/fc-platform/src/application/operations/delete.rs:85-143` | Refuses delete when access grants, client configs, service accounts, application roles, or principal refs still reference the application. Ported + tested. |
 | 2 | ~~**`role/delete`**~~ FIXED | `crates/fc-platform/src/role/operations/delete.rs:92-110` | Refuses delete when principals still hold this role. Ported + tested (rolled with MINOR #7). |
-| 3 | **`client/delete`** (a) | `crates/fc-platform/src/client/operations/delete.rs:81-99` | Refuses delete when principals still have this as their *home* client. (Silently re-scoping users by deleting is the worst symptom — it shows up later as "my dashboard is empty" with no audit trail.) |
-| 4 | **`client/delete`** (b) | `crates/fc-platform/src/client/operations/delete.rs:104-136` | Refuses delete when access grants or application configs still reference the client. |
+| 3 | ~~**`client/delete`** (a)~~ FIXED | `crates/fc-platform/src/client/operations/delete.rs:81-99` | Refuses delete when principals still have this as their *home* client. Ported + tested. |
+| 4 | ~~**`client/delete`** (b)~~ FIXED | `crates/fc-platform/src/client/operations/delete.rs:104-136` | Refuses delete when access grants or application configs still reference the client. Ported + tested (bundled with (a)). |
 
 **Current TS state for (1)-(4):**
 - `application/delete-application.ts` — collapsed in commit `90d3adfd`; has no reference checks.
