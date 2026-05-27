@@ -78,6 +78,30 @@ export function createUpdateServiceAccountUseCase(
 				);
 			}
 
+			// Field-length checks — match Rust
+			// crates/fc-platform/src/service_account/operations/update.rs:96-118.
+			if (command.name !== undefined) {
+				const trimmed = command.name.trim();
+				if (trimmed.length === 0 || trimmed.length > 100) {
+					return Result.failure(
+						UseCaseError.validation(
+							"INVALID_NAME",
+							"Name must be 1-100 characters",
+						),
+					);
+				}
+			}
+			if (command.description !== undefined && command.description !== null) {
+				if (command.description.length > 500) {
+					return Result.failure(
+						UseCaseError.validation(
+							"INVALID_DESCRIPTION",
+							"Description must be max 500 characters",
+						),
+					);
+				}
+			}
+
 			// Build updates inline to satisfy readonly constraints
 			const updatedPrincipal = updatePrincipal(principal, {
 				...(command.name !== undefined ? { name: command.name } : {}),

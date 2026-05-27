@@ -46,7 +46,7 @@ it. The references become orphans; downstream queries and UI break.
 | 7 | ~~**`role/delete`**~~ FIXED | TS blocks `RoleSource.CODE` only; Rust also blocks SDK-synced roles. Add the SDK-source check (`crates/fc-platform/src/role/operations/delete.rs:81-86`). Tightened to `!== DATABASE` while fixing BLOCKER #2. |
 | 8 | ~~**`subscription/create`**~~ FIXED | Code pattern tightened to `^[a-z][a-z0-9-]*[a-z0-9]$` (min 2 chars); now matches Rust. |
 | 9 | **`client/create`** | TS identifier pattern is looser than Rust. TS allows underscores and a 1-60 char range; Rust forces `^[a-z][a-z0-9-]*[a-z0-9]$` with min 2 chars and no underscores. **Caveat:** the client identifier is wire-adjacent (appears in tokens / URLs / outbox payloads). Tightening TS could break existing clients with underscore identifiers. Confirm before fixing whether any production identifiers contain `_`; if yes, don't tighten — relax Rust instead. |
-| 10 | **`service-account/update`** | Rust enforces `name` length 1-100 and `description` max 500 (`crates/fc-platform/src/service_account/operations/update.rs:96-118`); TS only does `validateRequired` on name. Drop-in addition. |
+| 10 | ~~**`service-account/update`**~~ FIXED | Name 1-100, description max 500. Ported + tested. |
 
 ## Clean — no gaps found
 
@@ -112,7 +112,7 @@ item 6 complete.
 2. ~~**BLOCKER #2** (`role/delete`)~~ — fixed (commit `78402bbe`, bundled MINOR #7).
 3. ~~**BLOCKER #3 (a)+(b)** (`client/delete`)~~ — fixed (commit `6fa96adb`).
 4. ~~**MINOR #8** (`subscription/create` regex)~~ — fixed (commit `15847b74`).
-5. **MINOR #10** (`service-account/update` lengths) — drop-in next; no compat risk.
+5. ~~**MINOR #10** (`service-account/update` lengths)~~ — fixed.
 6. **MINOR #9** (`client/create` identifier) — needs prod-data check first (wire-adjacent).
 7. **Audit pass 3** — cover the remaining aggregates in **Pending audit**.
 8. **MAJOR #5, #6** — decide architectural intent before coding.
