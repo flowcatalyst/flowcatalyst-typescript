@@ -19,6 +19,7 @@ type AnyDb = PostgresJsDatabase<any>;
 import {
 	authRoles,
 	authPermissions,
+	principalRoles,
 	rolePermissions,
 	type AuthRoleRecord,
 	type NewAuthRoleRecord,
@@ -74,6 +75,17 @@ export interface RoleRepository extends PaginatedRepository<AuthRole> {
 		pageSize: number,
 		tx?: TransactionContext,
 	): Promise<PagedResult<AuthRole>>;
+
+	/**
+	 * Count principals currently assigned this role (by name — the
+	 * iam_principal_roles junction is keyed on role_name, not role_id).
+	 * Used by the delete use case to refuse deletion while assignments
+	 * still exist; matches Rust's RoleRepository::count_assignments.
+	 */
+	countAssignments(
+		roleName: string,
+		tx?: TransactionContext,
+	): Promise<number>;
 }
 
 /**
@@ -338,6 +350,17 @@ export function createRoleRepository(defaultDb: AnyDb): RoleRepository {
 				.from(authRoles)
 				.where(eq(authRoles.name, name.toLowerCase()));
 			return Number(result?.count ?? 0) > 0;
+		},
+
+		async countAssignments(
+			roleName: string,
+			tx?: TransactionContext,
+		): Promise<number> {
+			const [result] = await db(tx)
+				.select({ count: sql<number>`count(*)` })
+				.from(principalRoles)
+				.where(eq(principalRoles.roleName, roleName));
+			return Number(result?.count ?? 0);
 		},
 
 		async insert(

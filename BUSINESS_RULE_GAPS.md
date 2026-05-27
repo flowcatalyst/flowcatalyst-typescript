@@ -23,7 +23,7 @@ it. The references become orphans; downstream queries and UI break.
 | # | Operation | Rust source | What the check enforces |
 |---|---|---|---|
 | 1 | ~~**`application/delete`**~~ FIXED | `crates/fc-platform/src/application/operations/delete.rs:85-143` | Refuses delete when access grants, client configs, service accounts, application roles, or principal refs still reference the application. Ported + tested. |
-| 2 | **`role/delete`** | `crates/fc-platform/src/role/operations/delete.rs:92-110` | Refuses delete when principals still hold this role. |
+| 2 | ~~**`role/delete`**~~ FIXED | `crates/fc-platform/src/role/operations/delete.rs:92-110` | Refuses delete when principals still hold this role. Ported + tested (rolled with MINOR #7). |
 | 3 | **`client/delete`** (a) | `crates/fc-platform/src/client/operations/delete.rs:81-99` | Refuses delete when principals still have this as their *home* client. (Silently re-scoping users by deleting is the worst symptom — it shows up later as "my dashboard is empty" with no audit trail.) |
 | 4 | **`client/delete`** (b) | `crates/fc-platform/src/client/operations/delete.rs:104-136` | Refuses delete when access grants or application configs still reference the client. |
 
@@ -43,7 +43,7 @@ it. The references become orphans; downstream queries and UI break.
 
 | # | Operation | Issue |
 |---|---|---|
-| 7 | **`role/delete`** | TS blocks `RoleSource.CODE` only; Rust also blocks SDK-synced roles. Add the SDK-source check (`crates/fc-platform/src/role/operations/delete.rs:81-86`). |
+| 7 | ~~**`role/delete`**~~ FIXED | TS blocks `RoleSource.CODE` only; Rust also blocks SDK-synced roles. Add the SDK-source check (`crates/fc-platform/src/role/operations/delete.rs:81-86`). Tightened to `!== DATABASE` while fixing BLOCKER #2. |
 | 8 | **`subscription/create`** | Code pattern in TS allows trailing hyphens (`^[a-z][a-z0-9-]*$`); Rust enforces ending alphanumeric (`^[a-z][a-z0-9-]*[a-z0-9]$`, min 2 chars). Tighten the TS regex to match (`crates/fc-platform/src/subscription/operations/create.rs:114-119`). |
 
 ## Clean — no gaps found in audit pass 1

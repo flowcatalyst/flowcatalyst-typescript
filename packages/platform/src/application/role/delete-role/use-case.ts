@@ -59,15 +59,41 @@ export function createDeleteRoleUseCase(
 				);
 			}
 
-			// Cannot delete CODE-defined roles
-			if (existingRole.source === RoleSource.CODE) {
+			// Only DATABASE-defined roles can be deleted. CODE roles are
+			// owned by the platform's own permission seed; SDK roles are
+			// owned by an external application and would re-sync after
+			// deletion. Matches Rust crates/fc-platform/src/role/operations/delete.rs:80-86.
+			if (existingRole.source !== RoleSource.DATABASE) {
 				return Result.failure(
 					UseCaseError.businessRule(
-						"CANNOT_DELETE_CODE_ROLE",
-						"Code-defined roles cannot be deleted",
+						"CANNOT_DELETE_ROLE",
+						"Cannot delete a code-defined or SDK-synced role",
 						{
 							roleId: command.roleId,
 							roleName: existingRole.name,
+							source: existingRole.source,
+						},
+					),
+				);
+			}
+
+			// Refuse deletion while principals still hold this role.
+			// iam_principal_roles has no DB-level FK on role_name (integrity
+			// is enforced in code), so dropping the role here would orphan
+			// the assignments. Force the admin to strip them first.
+			// Matches Rust delete.rs:88-110.
+			const assignments = await roleRepository.countAssignments(
+				existingRole.name,
+			);
+			if (assignments > 0) {
+				return Result.failure(
+					UseCaseError.businessRule(
+						"ROLE_HAS_ASSIGNMENTS",
+						`Cannot delete role '${existingRole.name}' — ${assignments} principal(s) still hold it. Strip the assignments before deleting.`,
+						{
+							roleId: command.roleId,
+							roleName: existingRole.name,
+							assignments,
 						},
 					),
 				);
