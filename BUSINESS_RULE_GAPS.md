@@ -11,9 +11,9 @@ business-rule check that the TypeScript port doesn't.
   port the spirit, not the line-by-line code.
 - DO NOT bundle fixes — the handoff is explicit: one gap, one PR.
 
-Audit scope: 16 aggregate-operation pairs covered in the first pass.
-Aggregates not yet audited are listed under **Pending audit** at the
-bottom — re-run the auditor to cover them.
+Audit scope: pass 1 covered 16 aggregate-operation pairs; pass 2
+covered another ~14. Aggregates still un-audited are listed under
+**Pending audit** at the bottom — re-run the auditor to cover them.
 
 ## BLOCKERs (data corruption risk)
 
@@ -45,12 +45,15 @@ it. The references become orphans; downstream queries and UI break.
 |---|---|---|
 | 7 | ~~**`role/delete`**~~ FIXED | TS blocks `RoleSource.CODE` only; Rust also blocks SDK-synced roles. Add the SDK-source check (`crates/fc-platform/src/role/operations/delete.rs:81-86`). Tightened to `!== DATABASE` while fixing BLOCKER #2. |
 | 8 | ~~**`subscription/create`**~~ FIXED | Code pattern tightened to `^[a-z][a-z0-9-]*[a-z0-9]$` (min 2 chars); now matches Rust. |
+| 9 | **`client/create`** | TS identifier pattern is looser than Rust. TS allows underscores and a 1-60 char range; Rust forces `^[a-z][a-z0-9-]*[a-z0-9]$` with min 2 chars and no underscores. **Caveat:** the client identifier is wire-adjacent (appears in tokens / URLs / outbox payloads). Tightening TS could break existing clients with underscore identifiers. Confirm before fixing whether any production identifiers contain `_`; if yes, don't tighten — relax Rust instead. |
+| 10 | **`service-account/update`** | Rust enforces `name` length 1-100 and `description` max 500 (`crates/fc-platform/src/service_account/operations/update.rs:96-118`); TS only does `validateRequired` on name. Drop-in addition. |
 
-## Clean — no gaps found in audit pass 1
+## Clean — no gaps found
 
 These pairs were read and the TS use case already enforces every
-business rule its Rust counterpart does:
+business rule its Rust counterpart does (or is stricter):
 
+**Pass 1:**
 - `principal/assign-roles` (USER-type check + role-existence check both present)
 - `event-type/archive` — TS is in fact *stricter* than Rust (TS requires all spec versions DEPRECATED before archive; Rust does not). No backwards gap.
 - `event-type/finalise-schema` (auto-deprecate of existing CURRENT versions present)
@@ -62,15 +65,28 @@ business rule its Rust counterpart does:
 - `connection/delete` (subscription blocker present in TS)
 - `subscription/create` apart from MINOR #8
 
+**Pass 2:**
+- `principal/create-user` (email uniqueness, password handling, email-domain resolution all present; TS adds PARTNER-scope merge logic on top)
+- `principal/update-user` (scope validation, client_id rules, no-changes check all present)
+- `principal/activate-user` ("already active" check present)
+- `app/update-application` (name validation matches)
+- `event-type/create-event-type` (4-segment code format check matches; TS decomposition differs but enforces the same rule)
+- `process/create-process` (3-segment code format + uniqueness present)
+- `subscription/update-subscription` (event-types ≥1, dispatch-pool + connection existence checks all present)
+- `subscription/delete-subscription` (Rust has no business rules; TS matches)
+- `role/update-role` (DATABASE-source-only check present)
+- `dispatch-pool/update-pool` (rate-limit/concurrency ≥1 + archived check both present)
+- `client/update-client` (name validation, no-changes return present)
+- `connection/create-connection` (TS is *stricter* — adds client-existence + scoped uniqueness checks the Rust version lacks)
+- `connection/update-connection` (status-enum check present)
+
 ## Pending audit
 
-Item 6 was capped at ~30 pairs to avoid blowing through context. The
-following aggregates have Rust operations files that haven't been
-diffed against TS yet. Re-run the audit on these before declaring
-item 6 complete:
+Still uncovered after two passes. Re-run the audit before declaring
+item 6 complete.
 
 - `auth/operations/*` — login, refresh, logout, password reset, etc.
-- `oauth/operations/*` — OAuth client lifecycle (create/activate/deactivate/etc.)
+- `oauth/operations/*` — OAuth client lifecycle (create / activate / deactivate / etc.)
 - `identity-provider/operations/*` — IDP CRUD + sync
 - `email-domain-mapping/operations/*`
 - `anchor/operations/*` — anchor-domain CRUD
@@ -79,25 +95,24 @@ item 6 complete:
 - `auth-config/operations/*`
 - `platform-config/operations/*`
 - `scheduled-job/operations/*` — pause / resume / archive / fire / sync etc.
-- `app/activate-application`, `app/deactivate-application`, `app/update-application`, `app/attach-service-account-to-application`, `app/enable-application-for-client`, `app/disable-application-for-client`
-- `event-type/add-schema`, `event-type/deprecate-schema`, `event-type/sync-event-types`, `event-type/update-event-type`, `event-type/create-event-type`
-- `role/update-role`, `role/sync-roles`
-- `dispatch-pool/create-pool`, `dispatch-pool/update-pool`, `dispatch-pool/sync-pools`
-- `subscription/update-subscription`, `subscription/delete-subscription`, `subscription/sync-subscriptions`
-- `principal/*` (everything except `assign-roles` and the missing `delete-user`)
-- `service-account/regenerate-auth-token`, `service-account/regenerate-signing-secret`, `service-account/update-service-account`, `service-account/assign-service-account-roles`
-- `client/update-client`, `client/create-client`, `client/change-client-status`, `client/add-client-note`, `client/update-client-applications`
-- `process/create-process`, `process/update-process`, `process/sync-processes`
-- `connection/create-connection`, `connection/update-connection`
+- `app/activate-application`, `app/deactivate-application`, `app/attach-service-account-to-application`, `app/enable-application-for-client`, `app/disable-application-for-client`
+- `event-type/add-schema`, `event-type/deprecate-schema`, `event-type/sync-event-types`, `event-type/update-event-type`
+- `role/sync-roles`
+- `dispatch-pool/create-pool`, `dispatch-pool/sync-pools`
+- `subscription/sync-subscriptions`
+- `principal/deactivate-user`, `principal/sync-principals`
+- `service-account/regenerate-auth-token`, `service-account/regenerate-signing-secret`, `service-account/assign-service-account-roles`
+- `client/change-client-status`, `client/add-client-note`, `client/update-client-applications`
+- `process/update-process`, `process/sync-processes`
+- All the `sync-*` operations across aggregates (consistent shape; should be a batched audit)
 
 ## Suggested fix order
 
-1. **BLOCKER #1** (`application/delete`) — handoff named this one explicitly. Smallest reference-count check to port; clean test case.
-2. **BLOCKER #2** (`role/delete`) — analogous shape to #1.
-3. **BLOCKER #3 (a)** (`client/delete` home-principal blocker) — highest user-visible impact.
-4. **BLOCKER #3 (b)** (`client/delete` reference blockers) — bundle with (a) only if it fits in one PR.
-5. **MINOR #7** (`role/delete` SDK-source check) — drop-in addition to the role-delete file; could ride with BLOCKER #2.
-6. **MINOR #8** (`subscription/create` regex) — one-line tightening; could be its own PR or bundle with the next subscription fix.
-7. **MAJOR #5, #6** — decide architectural intent before coding.
-
-Re-run audit on the **Pending audit** list before #7.
+1. ~~**BLOCKER #1** (`application/delete`)~~ — fixed (commit `8c0ac93b`).
+2. ~~**BLOCKER #2** (`role/delete`)~~ — fixed (commit `78402bbe`, bundled MINOR #7).
+3. ~~**BLOCKER #3 (a)+(b)** (`client/delete`)~~ — fixed (commit `6fa96adb`).
+4. ~~**MINOR #8** (`subscription/create` regex)~~ — fixed (commit `15847b74`).
+5. **MINOR #10** (`service-account/update` lengths) — drop-in next; no compat risk.
+6. **MINOR #9** (`client/create` identifier) — needs prod-data check first (wire-adjacent).
+7. **Audit pass 3** — cover the remaining aggregates in **Pending audit**.
+8. **MAJOR #5, #6** — decide architectural intent before coding.
