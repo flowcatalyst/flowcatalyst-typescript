@@ -11,10 +11,7 @@
 	},
 	"overrides": [
 		{
-			"files": [
-				"packages/platform/src/api/admin/applications.ts",
-				"packages/platform/src/api/admin/principals.ts"
-			],
+			"files": ["packages/platform/src/api/admin/principals.ts"],
 			"rules": {
 				"max-lines": "off"
 			}

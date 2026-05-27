@@ -21,7 +21,7 @@ import {
 import {
 	registerApplicationsRoutes,
 	type ApplicationsRoutesDeps,
-} from "./admin/applications.js";
+} from "./admin/applications/index.js";
 import { registerRolesRoutes, type RolesRoutesDeps } from "./admin/roles.js";
 import {
 	registerAuthConfigsRoutes,
@@ -355,7 +355,7 @@ export { type PublicConfigRoutesDeps } from "./public/config.js";
 export { type PrincipalsRoutesDeps } from "./admin/principals.js";
 export { type ClientsRoutesDeps } from "./admin/clients.js";
 export { type AnchorDomainsRoutesDeps } from "./admin/anchor-domains.js";
-export { type ApplicationsRoutesDeps } from "./admin/applications.js";
+export { type ApplicationsRoutesDeps } from "./admin/applications/index.js";
 export { type RolesRoutesDeps } from "./admin/roles.js";
 export { type AuthConfigsRoutesDeps } from "./admin/auth-configs.js";
 export { type OAuthClientsRoutesDeps } from "./admin/oauth-clients.js";
