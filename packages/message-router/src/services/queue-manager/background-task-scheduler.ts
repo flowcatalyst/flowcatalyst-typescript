@@ -1,7 +1,7 @@
 import type { Logger } from "@flowcatalyst/logging";
 
 /**
- * Tick callbacks the scheduler invokes on its five timers. Each
+ * Tick callbacks the scheduler invokes on its six timers. Each
  * fires synchronously from the timer; async work happens inside the
  * callback at the manager's discretion.
  */
@@ -12,6 +12,8 @@ export interface BackgroundTaskCallbacks {
 	onHealthCheck: () => void;
 	/** Every 30s — leak-detect the in-flight tracker. */
 	onLeakCheck: () => void;
+	/** Every 60s — reap stale in-flight entries (defence-in-depth). */
+	onStuckReap: () => void;
 	/** Every 5 minutes — reset 5-minute window stats. */
 	onWindowReset5min: () => void;
 	/** Every 30 minutes — reset 30-minute window stats. */
@@ -21,6 +23,7 @@ export interface BackgroundTaskCallbacks {
 const CLEANUP_INTERVAL_MS = 10_000;
 const HEALTH_CHECK_INTERVAL_MS = 60_000;
 const LEAK_CHECK_INTERVAL_MS = 30_000;
+const STUCK_REAP_INTERVAL_MS = 60_000;
 const WINDOW_RESET_5MIN_MS = 5 * 60 * 1000;
 const WINDOW_RESET_30MIN_MS = 30 * 60 * 1000;
 
@@ -34,6 +37,7 @@ export class BackgroundTaskScheduler {
 	private cleanup: ReturnType<typeof setInterval> | null = null;
 	private health: ReturnType<typeof setInterval> | null = null;
 	private leak: ReturnType<typeof setInterval> | null = null;
+	private stuckReap: ReturnType<typeof setInterval> | null = null;
 	private windowReset5min: ReturnType<typeof setInterval> | null = null;
 	private windowReset30min: ReturnType<typeof setInterval> | null = null;
 
@@ -56,6 +60,9 @@ export class BackgroundTaskScheduler {
 
 		this.leak = setInterval(callbacks.onLeakCheck, LEAK_CHECK_INTERVAL_MS);
 		this.logger.debug("Leak detection started (30s interval)");
+
+		this.stuckReap = setInterval(callbacks.onStuckReap, STUCK_REAP_INTERVAL_MS);
+		this.logger.debug("Stuck-message reaper started (60s interval)");
 
 		this.windowReset5min = setInterval(
 			callbacks.onWindowReset5min,
@@ -81,6 +88,10 @@ export class BackgroundTaskScheduler {
 		if (this.leak) {
 			clearInterval(this.leak);
 			this.leak = null;
+		}
+		if (this.stuckReap) {
+			clearInterval(this.stuckReap);
+			this.stuckReap = null;
 		}
 		if (this.windowReset5min) {
 			clearInterval(this.windowReset5min);

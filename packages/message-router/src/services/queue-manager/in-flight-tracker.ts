@@ -149,6 +149,52 @@ export class InFlightTracker {
 	}
 
 	/**
+	 * Defence-in-depth reaper. Removes any in-flight entry older than
+	 * `maxAgeMs` from all three maps. Production processing should never
+	 * take this long; legitimate long-running work has its visibility
+	 * timeout extended at the broker. Without this sweep, a callback
+	 * dropped without firing ack/nack (rare but possible on uncaught
+	 * exceptions / abandoned promise chains) would keep its broker
+	 * message ID in the tracker forever, causing every SQS redelivery
+	 * to be silently swallowed by the `physical_redelivery` branch in
+	 * `dedupeAndTrack` — observed in production as messages "stuck on
+	 * the queue".
+	 *
+	 * Returns the number of entries reaped so the caller can log it.
+	 * The receipt handle on the reaped entry is discarded; SQS has
+	 * already re-delivered the message multiple times by then (visibility
+	 * timeouts are minutes, not 15 min) and the next redelivery will
+	 * land as a fresh `tracked` insertion.
+	 *
+	 * Mirrors Rust's `QueueManager::spawn_in_pipeline_reaper`.
+	 */
+	reapStale(maxAgeMs: number): number {
+		const now = Date.now();
+		const stale: Array<{ pipelineKey: string; messageId: string }> = [];
+		for (const [pipelineKey, info] of this.messages) {
+			if (now - info.addedAt > maxAgeMs) {
+				stale.push({ pipelineKey, messageId: info.messageId });
+			}
+		}
+		for (const { pipelineKey, messageId } of stale) {
+			this.untrack(pipelineKey, messageId);
+		}
+		if (stale.length > 0) {
+			this.deps.logger.warn(
+				{ reaped: stale.length, maxAgeMs },
+				"Reaped stale in-flight entries — callbacks were dropped without firing ack/nack",
+			);
+			this.deps.warnings.add(
+				"PIPELINE_MAP_LEAK",
+				"WARNING",
+				`Reaped ${stale.length} stale in-flight entries older than ${Math.round(maxAgeMs / 1000)}s — callbacks were dropped without firing ack/nack`,
+				"QueueManager",
+			);
+		}
+		return stale.length;
+	}
+
+	/**
 	 * Leak detector — fires a warning if pipeline size exceeds total
 	 * pool capacity (>50 floor). Idempotent; safe to call on every tick.
 	 */

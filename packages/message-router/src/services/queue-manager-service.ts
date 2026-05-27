@@ -52,6 +52,14 @@ import {
 } from "./queue-manager/stats-reporting.js";
 
 /**
+ * Maximum age of an in-flight tracker entry before the stuck-message
+ * reaper removes it. Production processing should never approach this;
+ * legitimate long-running work extends its broker visibility timeout.
+ * Mirrors Rust's `QueueManager::IN_PIPELINE_TTL`.
+ */
+const IN_PIPELINE_TTL_MS = 15 * 60 * 1000;
+
+/**
  * Queue manager service - orchestrates consumers, pools, and mediation
  */
 export class QueueManagerService {
@@ -322,6 +330,10 @@ export class QueueManagerService {
 				void monitorAndRestartUnhealthyConsumers(this.consumerLifecycleDeps());
 			},
 			onLeakCheck: () => this.inFlight.checkForLeaks(),
+			onStuckReap: () => {
+				if (!this.running) return;
+				this.inFlight.reapStale(IN_PIPELINE_TTL_MS);
+			},
 			onWindowReset5min: () => {
 				for (const stat of this.queueStats.values()) {
 					stat.totalMessages5min = 0;
