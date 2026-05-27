@@ -59,13 +59,27 @@ export function createCreateClientUseCase(
 				return identifierResult;
 			}
 
-			// Validate identifier format (lowercase, alphanumeric, hyphens, underscores)
-			const identifierPattern = /^[a-z0-9][a-z0-9_-]{0,58}[a-z0-9]$|^[a-z0-9]$/;
-			if (!identifierPattern.test(command.identifier.toLowerCase())) {
+			// Validate identifier format. Mirrors Rust
+			// crates/fc-platform/src/client/operations/create.rs:13-17,72-86:
+			// must start with a letter, end with alphanumeric, only lowercase
+			// alphanumeric + hyphens in between, length 2-50.
+			// (Earlier TS regex allowed underscores, leading digits, and
+			// 1-60 chars — those forms are now rejected.)
+			const identifier = command.identifier.toLowerCase();
+			if (identifier.length < 2 || identifier.length > 50) {
 				return Result.failure(
 					UseCaseError.validation(
 						"INVALID_IDENTIFIER",
-						"Identifier must be lowercase alphanumeric with hyphens/underscores, 1-60 characters",
+						"Client identifier must be between 2 and 50 characters",
+					),
+				);
+			}
+			const identifierPattern = /^[a-z][a-z0-9-]*[a-z0-9]$/;
+			if (!identifierPattern.test(identifier)) {
+				return Result.failure(
+					UseCaseError.validation(
+						"INVALID_IDENTIFIER",
+						"Client identifier must be lowercase alphanumeric with hyphens, starting with a letter",
 					),
 				);
 			}
