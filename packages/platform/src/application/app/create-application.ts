@@ -1,38 +1,44 @@
 /**
- * Create Application Use Case
+ * Create Application — command + use case in one file.
  *
- * Creates a new application in the system.
+ * Mirrors the Go port's per-operation file pattern
+ * (flowcatalyst-go/internal/platform/application/operations/create.go).
  */
 
-import type { UseCase } from "@flowcatalyst/application";
+import type { Command, UseCase } from "@flowcatalyst/application";
 import {
-	validateRequired,
 	Result,
-	type ExecutionContext,
 	UseCaseError,
+	validateRequired,
+	type ExecutionContext,
 } from "@flowcatalyst/application";
 import type { UnitOfWork } from "@flowcatalyst/domain";
 
-import type { ApplicationRepository } from "../../../infrastructure/persistence/index.js";
 import {
-	createApplication,
 	ApplicationCreated,
 	ApplicationTypeEnum,
-} from "../../../domain/index.js";
+	createApplication,
+	type ApplicationType,
+} from "../../domain/index.js";
+import type { ApplicationRepository } from "../../infrastructure/persistence/index.js";
 
-import type { CreateApplicationCommand } from "./command.js";
+export interface CreateApplicationCommand extends Command {
+	readonly code: string;
+	readonly name: string;
+	readonly type?: ApplicationType;
+	readonly description?: string | null;
+	readonly iconUrl?: string | null;
+	readonly website?: string | null;
+	readonly logo?: string | null;
+	readonly logoMimeType?: string | null;
+	readonly defaultBaseUrl?: string | null;
+}
 
-/**
- * Dependencies for CreateApplicationUseCase.
- */
 export interface CreateApplicationUseCaseDeps {
 	readonly applicationRepository: ApplicationRepository;
 	readonly unitOfWork: UnitOfWork;
 }
 
-/**
- * Create the CreateApplicationUseCase.
- */
 export function createCreateApplicationUseCase(
 	deps: CreateApplicationUseCaseDeps,
 ): UseCase<CreateApplicationCommand, ApplicationCreated> {
@@ -43,7 +49,6 @@ export function createCreateApplicationUseCase(
 			command: CreateApplicationCommand,
 			context: ExecutionContext,
 		): Promise<Result<ApplicationCreated>> {
-			// Validate code
 			const codeResult = validateRequired(
 				command.code,
 				"code",
@@ -53,7 +58,8 @@ export function createCreateApplicationUseCase(
 				return codeResult;
 			}
 
-			// Validate code format (lowercase, alphanumeric, hyphens, underscores)
+			// Code format: lowercase alphanumeric with hyphens or underscores,
+			// 1-50 chars, must start and end with alphanumeric.
 			const codePattern = /^[a-z0-9][a-z0-9_-]{0,48}[a-z0-9]$|^[a-z0-9]$/;
 			if (!codePattern.test(command.code.toLowerCase())) {
 				return Result.failure(
@@ -64,7 +70,6 @@ export function createCreateApplicationUseCase(
 				);
 			}
 
-			// Validate name
 			const nameResult = validateRequired(
 				command.name,
 				"name",
@@ -74,21 +79,17 @@ export function createCreateApplicationUseCase(
 				return nameResult;
 			}
 
-			// Check if code already exists
 			const codeExists = await applicationRepository.existsByCode(command.code);
 			if (codeExists) {
 				return Result.failure(
 					UseCaseError.businessRule(
 						"CODE_EXISTS",
 						"Application code already exists",
-						{
-							code: command.code,
-						},
+						{ code: command.code },
 					),
 				);
 			}
 
-			// Create application
 			const application = createApplication({
 				code: command.code,
 				name: command.name,
@@ -101,7 +102,6 @@ export function createCreateApplicationUseCase(
 				defaultBaseUrl: command.defaultBaseUrl ?? null,
 			});
 
-			// Create domain event
 			const event = new ApplicationCreated(context, {
 				applicationId: application.id,
 				type: application.type,
@@ -109,7 +109,6 @@ export function createCreateApplicationUseCase(
 				name: application.name,
 			});
 
-			// Commit atomically
 			return unitOfWork.commit(application, event, command);
 		},
 	};

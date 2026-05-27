@@ -1,38 +1,48 @@
 /**
- * Create Role Use Case
+ * Create Role — command + use case in one file.
  *
- * Creates a new role in the system.
+ * Mirrors the Go port's per-operation file pattern
+ * (flowcatalyst-go/internal/platform/role/operations/create.go).
  */
 
-import type { UseCase } from "@flowcatalyst/application";
+import type { Command, UseCase } from "@flowcatalyst/application";
 import {
-	validateRequired,
 	Result,
-	type ExecutionContext,
 	UseCaseError,
+	validateRequired,
+	type ExecutionContext,
 } from "@flowcatalyst/application";
 import type { UnitOfWork } from "@flowcatalyst/domain";
 
-import type { RoleRepository } from "../../../infrastructure/persistence/index.js";
 import {
-	createAuthRole,
 	RoleCreated,
 	RoleSource,
-} from "../../../domain/index.js";
+	createAuthRole,
+} from "../../domain/index.js";
+import type { RoleRepository } from "../../infrastructure/persistence/index.js";
 
-import type { CreateRoleCommand } from "./command.js";
+export interface CreateRoleCommand extends Command {
+	/** The application this role belongs to (optional) */
+	readonly applicationId?: string | null;
+	/** The application code (optional) */
+	readonly applicationCode?: string | null;
+	/** Short role name (will be prefixed with applicationCode if provided) */
+	readonly shortName: string;
+	/** Human-readable display name */
+	readonly displayName: string;
+	readonly description?: string | null;
+	readonly permissions?: readonly string[];
+	/** Source of this role definition (defaults to DATABASE) */
+	readonly source?: RoleSource;
+	/** If true, this role syncs to IDPs configured for client-managed roles */
+	readonly clientManaged?: boolean;
+}
 
-/**
- * Dependencies for CreateRoleUseCase.
- */
 export interface CreateRoleUseCaseDeps {
 	readonly roleRepository: RoleRepository;
 	readonly unitOfWork: UnitOfWork;
 }
 
-/**
- * Create the CreateRoleUseCase.
- */
 export function createCreateRoleUseCase(
 	deps: CreateRoleUseCaseDeps,
 ): UseCase<CreateRoleCommand, RoleCreated> {
@@ -43,7 +53,6 @@ export function createCreateRoleUseCase(
 			command: CreateRoleCommand,
 			context: ExecutionContext,
 		): Promise<Result<RoleCreated>> {
-			// Validate shortName
 			const shortNameResult = validateRequired(
 				command.shortName,
 				"shortName",
@@ -53,7 +62,8 @@ export function createCreateRoleUseCase(
 				return shortNameResult;
 			}
 
-			// Validate shortName format (lowercase, alphanumeric, hyphens)
+			// shortName format: lowercase alphanumeric with hyphens, 1-100 chars,
+			// must start with a letter and end with alphanumeric.
 			const namePattern = /^[a-z][a-z0-9-]{0,98}[a-z0-9]$|^[a-z]$/;
 			if (!namePattern.test(command.shortName.toLowerCase())) {
 				return Result.failure(
@@ -64,7 +74,6 @@ export function createCreateRoleUseCase(
 				);
 			}
 
-			// Validate displayName
 			const displayNameResult = validateRequired(
 				command.displayName,
 				"displayName",
@@ -74,26 +83,23 @@ export function createCreateRoleUseCase(
 				return displayNameResult;
 			}
 
-			// Build full name with prefix if application code is provided
+			// Full name includes the application-code prefix iff the role is
+			// scoped to one — global roles use the bare shortName.
 			const fullName = command.applicationCode
 				? `${command.applicationCode}:${command.shortName.toLowerCase()}`
 				: command.shortName.toLowerCase();
 
-			// Check if name already exists
 			const nameExists = await roleRepository.existsByName(fullName);
 			if (nameExists) {
 				return Result.failure(
 					UseCaseError.businessRule(
 						"ROLE_NAME_EXISTS",
 						"Role name already exists",
-						{
-							name: fullName,
-						},
+						{ name: fullName },
 					),
 				);
 			}
 
-			// Create role
 			const role = createAuthRole({
 				applicationId: command.applicationId ?? null,
 				applicationCode: command.applicationCode ?? null,
@@ -105,7 +111,6 @@ export function createCreateRoleUseCase(
 				clientManaged: command.clientManaged ?? false,
 			});
 
-			// Create domain event
 			const event = new RoleCreated(context, {
 				roleId: role.id,
 				name: role.name,
@@ -116,7 +121,6 @@ export function createCreateRoleUseCase(
 				permissions: role.permissions,
 			});
 
-			// Commit atomically
 			return unitOfWork.commit(role, event, command);
 		},
 	};

@@ -1,34 +1,33 @@
 /**
- * Delete Application Use Case
+ * Delete Application — command + use case in one file.
  *
- * Deletes an application from the system.
+ * Mirrors the Go port's per-operation file pattern
+ * (flowcatalyst-go/internal/platform/application/operations/delete.go):
+ * one operation per file, command interface above, use-case factory
+ * below.
  */
 
-import type { UseCase } from "@flowcatalyst/application";
+import type { Command, UseCase } from "@flowcatalyst/application";
 import {
-	validateRequired,
 	Result,
-	type ExecutionContext,
 	UseCaseError,
+	validateRequired,
+	type ExecutionContext,
 } from "@flowcatalyst/application";
 import type { UnitOfWork } from "@flowcatalyst/domain";
 
-import type { ApplicationRepository } from "../../../infrastructure/persistence/index.js";
-import { ApplicationDeleted } from "../../../domain/index.js";
+import { ApplicationDeleted } from "../../domain/index.js";
+import type { ApplicationRepository } from "../../infrastructure/persistence/index.js";
 
-import type { DeleteApplicationCommand } from "./command.js";
+export interface DeleteApplicationCommand extends Command {
+	readonly applicationId: string;
+}
 
-/**
- * Dependencies for DeleteApplicationUseCase.
- */
 export interface DeleteApplicationUseCaseDeps {
 	readonly applicationRepository: ApplicationRepository;
 	readonly unitOfWork: UnitOfWork;
 }
 
-/**
- * Create the DeleteApplicationUseCase.
- */
 export function createDeleteApplicationUseCase(
 	deps: DeleteApplicationUseCaseDeps,
 ): UseCase<DeleteApplicationCommand, ApplicationDeleted> {
@@ -39,7 +38,6 @@ export function createDeleteApplicationUseCase(
 			command: DeleteApplicationCommand,
 			context: ExecutionContext,
 		): Promise<Result<ApplicationDeleted>> {
-			// Validate application ID
 			const idResult = validateRequired(
 				command.applicationId,
 				"applicationId",
@@ -49,7 +47,6 @@ export function createDeleteApplicationUseCase(
 				return idResult;
 			}
 
-			// Find application
 			const application = await applicationRepository.findById(
 				command.applicationId,
 			);
@@ -62,14 +59,12 @@ export function createDeleteApplicationUseCase(
 				);
 			}
 
-			// Create domain event
 			const event = new ApplicationDeleted(context, {
 				applicationId: application.id,
 				code: application.code,
 				name: application.name,
 			});
 
-			// Delete atomically
 			return unitOfWork.commitDelete(application, event, command);
 		},
 	};
