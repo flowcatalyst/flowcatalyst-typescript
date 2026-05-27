@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import { request, Agent, errors as undiciErrors } from "undici";
+import { request, Agent } from "undici";
 import type { Dispatcher } from "undici";
 import type { Logger } from "@flowcatalyst/logging";
 import type {
@@ -11,44 +11,12 @@ import {
 	CircuitBreakerOpenError,
 	type CircuitBreakerManager,
 } from "./circuit-breaker.js";
-
-/**
- * Node.js system-error codes that indicate the request never reached
- * (or never finished establishing) a working TCP/TLS connection. These
- * surface as plain `Error` with a `.code` field — Node doesn't model
- * them as subclasses, so a `.code` check is the typed equivalent.
- */
-const CONNECTION_ERROR_CODES = new Set([
-	"ECONNREFUSED",
-	"ECONNRESET",
-	"ENOTFOUND",
-	"ETIMEDOUT",
-	"EHOSTUNREACH",
-	"ENETUNREACH",
-	"EAI_AGAIN",
-]);
-
-function systemErrorCode(error: unknown): string | undefined {
-	if (error instanceof Error) {
-		const code = (error as Error & { code?: unknown }).code;
-		if (typeof code === "string") return code;
-	}
-	return undefined;
-}
-
-function isConnectionFailure(error: unknown): boolean {
-	if (error instanceof undiciErrors.ConnectTimeoutError) return true;
-	if (error instanceof undiciErrors.SocketError) return true;
-	const code = systemErrorCode(error);
-	return code !== undefined && CONNECTION_ERROR_CODES.has(code);
-}
-
-function isRequestTimeout(error: unknown): boolean {
-	return (
-		error instanceof undiciErrors.BodyTimeoutError ||
-		error instanceof undiciErrors.HeadersTimeoutError
-	);
-}
+import {
+	ConnectionFailureError,
+	ConnectionTimeoutError,
+	RequestTimeoutError,
+	toMediationError,
+} from "./mediation-error.js";
 
 /** Webhook signature header — matches Rust `SIGNATURE_HEADER`. */
 export const SIGNATURE_HEADER = "X-FLOWCATALYST-SIGNATURE";
@@ -237,11 +205,15 @@ export class HttpMediator {
 
 				lastError = new Error(result.error || "Server error");
 			} catch (error) {
-				lastError = error instanceof Error ? error : new Error(String(error));
+				const mediationError = toMediationError(error);
+				lastError = mediationError;
 
-				if (isConnectionFailure(lastError)) {
+				if (
+					mediationError instanceof ConnectionTimeoutError ||
+					mediationError instanceof ConnectionFailureError
+				) {
 					this.logger.warn(
-						{ err: lastError, attempt, messageId: message.messageId },
+						{ err: mediationError, attempt, messageId: message.messageId },
 						"Connection failure",
 					);
 				}
@@ -352,10 +324,9 @@ export class HttpMediator {
 			};
 		} catch (error) {
 			const durationMs = Date.now() - startTime;
-			const errorMessage =
-				error instanceof Error ? error.message : String(error);
+			const mediationError = toMediationError(error);
 
-			if (error instanceof undiciErrors.ConnectTimeoutError) {
+			if (mediationError instanceof ConnectionTimeoutError) {
 				return {
 					outcome: "ERROR_CONNECTION",
 					error: `Connection timeout after ${this.config.connectTimeoutMs}ms`,
@@ -363,7 +334,7 @@ export class HttpMediator {
 				};
 			}
 
-			if (isRequestTimeout(error)) {
+			if (mediationError instanceof RequestTimeoutError) {
 				return {
 					outcome: "ERROR_PROCESS",
 					error: `Request timeout after ${this.config.bodyTimeoutMs}ms`,
@@ -371,11 +342,13 @@ export class HttpMediator {
 				};
 			}
 
-			// All other errors (SocketError, ECONNREFUSED, ENOTFOUND, etc.)
-			// are connection failures from this caller's perspective.
+			// ConnectionFailureError + MediationUnknownError both surface as
+			// connection failures here — the worker can retry, and the
+			// mediation layer doesn't try to second-guess what undici's
+			// bug-of-the-day actually means.
 			return {
 				outcome: "ERROR_CONNECTION",
-				error: errorMessage,
+				error: mediationError.message,
 				durationMs,
 			};
 		}
