@@ -30,7 +30,11 @@ export interface CreateSubscriptionUseCaseDeps {
 	readonly unitOfWork: UnitOfWork;
 }
 
-const CODE_PATTERN = /^[a-z][a-z0-9-]*$/;
+// Must start with a lowercase letter, end with a letter or digit, and
+// only contain lowercase letters / digits / hyphens in between. Min 2
+// chars. Matches Rust crates/fc-platform/src/subscription/operations/create.rs:114-119.
+// (Earlier looser TS regex allowed trailing hyphens like "my-sub-".)
+const CODE_PATTERN = /^[a-z][a-z0-9-]*[a-z0-9]$/;
 
 export function createCreateSubscriptionUseCase(
 	deps: CreateSubscriptionUseCaseDeps,
@@ -69,7 +73,7 @@ export function createCreateSubscriptionUseCase(
 				return Result.failure(
 					UseCaseError.validation(
 						"INVALID_CODE_FORMAT",
-						"Code must start with a lowercase letter and contain only lowercase letters, numbers, and hyphens",
+						"Code must start with a lowercase letter, end with a letter or digit, and contain only lowercase letters, numbers, and hyphens (min 2 chars)",
 					),
 				);
 			}
