@@ -25,6 +25,7 @@ import type { PlatformResult } from "@flowcatalyst/platform";
 import { createStandbyManager, type StandbyManager } from "@flowcatalyst/standby";
 import { createSecretProviderFromEnv } from "./secret-providers.js";
 import { startEmbeddedPostgres } from "./embedded-postgres.js";
+import { appEnv } from "./env.js";
 
 const VERSION = "0.0.1";
 
@@ -164,7 +165,7 @@ function parseArgs(args: string[]): Record<string, string> {
 
 async function runRotateKeysCommand(): Promise<void> {
 	const args = parseArgs(process.argv.slice(3));
-	const keyDir = args["key-dir"] ?? process.env["JWT_KEY_DIR"] ?? ".jwt-keys";
+	const keyDir = args["key-dir"] ?? appEnv.JWT_KEY_DIR;
 	const keep = Number(args["keep"] ?? "2");
 
 	if (keep < 1) {
@@ -249,71 +250,35 @@ switch (command) {
 
 // --- Serve command: load config and start services ---
 
-// Configuration
-const NODE_ENV = process.env["NODE_ENV"] ?? "development";
-const isDev = NODE_ENV === "development";
-const LOG_LEVEL = (process.env["LOG_LEVEL"] ?? "info") as
-	| "trace"
-	| "debug"
-	| "info"
-	| "warn"
-	| "error"
-	| "fatal";
-const PLATFORM_PORT = Number(
-	process.env["PORT"] ?? process.env["PLATFORM_PORT"] ?? "3000",
-);
-const ROUTER_PORT = Number(process.env["ROUTER_PORT"] ?? "8080");
-const HOST = process.env["HOST"] ?? "0.0.0.0";
-// Feature flags (parsed early so DATABASE_URL check can depend on them)
-const PLATFORM_ENABLED = process.env["PLATFORM_ENABLED"] !== "false";
-const MESSAGE_ROUTER_ENABLED = process.env["MESSAGE_ROUTER_ENABLED"] === "true";
-const STREAM_PROCESSOR_ENABLED =
-	process.env["STREAM_PROCESSOR_ENABLED"] !== "false";
-const OUTBOX_PROCESSOR_ENABLED =
-	process.env["OUTBOX_PROCESSOR_ENABLED"] === "true";
-const DISPATCH_SCHEDULER_ENABLED =
-	process.env["DISPATCH_SCHEDULER_ENABLED"] === "true";
-const STANDBY_ENABLED = process.env["STANDBY_ENABLED"] === "true";
-const STANDBY_REDIS_URL = process.env["REDIS_URL"];
-const STANDBY_INSTANCE_ID =
-	process.env["STANDBY_INSTANCE_ID"] ??
-	process.env["HOSTNAME"] ??
-	`instance-${Date.now()}`;
-const STANDBY_LOCK_KEY =
-	process.env["STANDBY_LOCK_KEY"] ?? "flowcatalyst-primary-lock";
-const STANDBY_LOCK_TTL_SECONDS = Number(
-	process.env["STANDBY_LOCK_TTL_SECONDS"] ?? "30",
-);
-const AUTO_MIGRATE =
-	process.env["AUTO_MIGRATE"] !== undefined
-		? process.env["AUTO_MIGRATE"] === "true"
-		: isDev;
+// Configuration — validated + typed in ./env.ts (see appEnv).
+const {
+	NODE_ENV,
+	isDev,
+	LOG_LEVEL,
+	PLATFORM_PORT,
+	ROUTER_PORT,
+	HOST,
+	PLATFORM_ENABLED,
+	MESSAGE_ROUTER_ENABLED,
+	STREAM_PROCESSOR_ENABLED,
+	OUTBOX_PROCESSOR_ENABLED,
+	DISPATCH_SCHEDULER_ENABLED,
+	STANDBY_ENABLED,
+	STANDBY_REDIS_URL,
+	STANDBY_INSTANCE_ID,
+	STANDBY_LOCK_KEY,
+	STANDBY_LOCK_TTL_SECONDS,
+	AUTO_MIGRATE,
+	EMBEDDED_POSTGRES_ENABLED,
+	EMBEDDED_POSTGRES_PORT,
+	EMBEDDED_POSTGRES_HOST,
+	EMBEDDED_POSTGRES_DATA_DIR,
+	FRONTEND_DIR,
+} = appEnv;
 
 // DATABASE_URL is only required when a service that uses the database is enabled
 const needsDatabase =
 	PLATFORM_ENABLED || STREAM_PROCESSOR_ENABLED || OUTBOX_PROCESSOR_ENABLED || DISPATCH_SCHEDULER_ENABLED;
-
-// Embedded Postgres (PGlite) — zero-setup dev DB.
-// Defaults ON in dev when DATABASE_URL isn't set. Exposed over TCP so devs
-// can `psql` it. Set EMBEDDED_POSTGRES_ENABLED=false to disable explicitly.
-const EMBEDDED_POSTGRES_ENABLED = (() => {
-	const explicit = process.env["EMBEDDED_POSTGRES_ENABLED"];
-	if (explicit === "true") return true;
-	if (explicit === "false") return false;
-	return isDev && !process.env["DATABASE_URL"];
-})();
-// Default to 15432 (not 5432) so the embedded dev instance doesn't collide
-// with a system Postgres listening on the standard port.
-const EMBEDDED_POSTGRES_PORT = Number(
-	process.env["EMBEDDED_POSTGRES_PORT"] ?? "15432",
-);
-const EMBEDDED_POSTGRES_HOST =
-	process.env["EMBEDDED_POSTGRES_HOST"] ?? "127.0.0.1";
-const EMBEDDED_POSTGRES_DATA_DIR =
-	process.env["EMBEDDED_POSTGRES_DATA_DIR"] ?? ".fc-data/pg";
-
-// Frontend dir override
-const FRONTEND_DIR = process.env["FRONTEND_DIR"];
 
 // Set env defaults for message router when enabled
 if (MESSAGE_ROUTER_ENABLED) {
@@ -390,9 +355,7 @@ async function main() {
 	// DB_SECRET_PROVIDER controls how credentials are obtained (default: env).
 	// When a cloud provider is configured, credentials are fetched at startup and
 	// polled every DB_SECRET_REFRESH_INTERVAL_MS ms for rotation.
-	const DB_SECRET_REFRESH_INTERVAL_MS = Number(
-		process.env["DB_SECRET_REFRESH_INTERVAL_MS"] ?? "300000",
-	);
+	const DB_SECRET_REFRESH_INTERVAL_MS = appEnv.DB_SECRET_REFRESH_INTERVAL_MS;
 
 	let DATABASE_URL = "";
 	let refreshableDatabase: RefreshableDatabase | null = null;
@@ -619,18 +582,16 @@ async function main() {
 
 		const schedulerDb = createDatabase({ url: DATABASE_URL });
 		const schedulerPublisher = createSqsPublisher({
-			queueUrl: process.env["DISPATCH_QUEUE_URL"] ?? "",
-			region: process.env["DISPATCH_QUEUE_REGION"] ?? "eu-west-1",
-			endpoint: process.env["SQS_ENDPOINT"],
+			queueUrl: appEnv.DISPATCH_QUEUE_URL,
+			region: appEnv.DISPATCH_QUEUE_REGION,
+			endpoint: appEnv.SQS_ENDPOINT,
 		});
 		const schedulerHandle = startDispatchScheduler({
 			db: schedulerDb.db,
 			publisher: schedulerPublisher,
 			logger,
 			config: {
-				processingEndpoint:
-					process.env["DISPATCH_SCHEDULER_PROCESSING_ENDPOINT"] ??
-					"http://localhost:8080/api/dispatch/process",
+				processingEndpoint: appEnv.DISPATCH_SCHEDULER_PROCESSING_ENDPOINT,
 			},
 		});
 		stopFns.push(async () => {
