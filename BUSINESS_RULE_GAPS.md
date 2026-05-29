@@ -37,7 +37,7 @@ it. The references become orphans; downstream queries and UI break.
 | # | Operation | Issue |
 |---|---|---|
 | 5 | ~~**`dispatch-pool/delete`**~~ ACCEPTED DIVERGENCE | Rust hard-deletes; TS soft-deletes (`status = ARCHIVED`). **Decision (2026-05-29): keep TS soft-delete.** Both ports emit the same `DispatchPoolDeleted` wire event, so cross-port behaviour is identical; only the local DB outcome differs and no other port reads this DB. TS's ARCHIVED status is intentional and shared with `sync-pools` (archives pools dropped from config) and `update-pool` (refuses to mutate archived pools). Not a gap to fix — divergence documented in `delete-pool/use-case.ts`. If cross-port DB parity ever becomes a requirement, revisit by aligning Rust→TS (add soft-delete to Rust), not the reverse. |
-| 6 | **`principal/delete-user`** | Operation entirely missing in TS. Rust enforces "cannot delete your own account" (`crates/fc-platform/src/principal/operations/delete.rs:64-69`). Note: porting this is more than a rule — it's a whole use case + API route + delete-user authorization. |
+| 6 | ~~**`principal/delete-user`**~~ FIXED | **Audit pass 1 was wrong** — the TS use case is NOT missing; it exists at `application/principal/delete-user/` and is in fact *stricter* than Rust (adds a `NOT_A_USER` type guard). The real gap was a single missing rule: "cannot delete your own account". Ported (`CANNOT_DELETE_SELF`, checked before the repo lookup) + tested. |
 
 ## MINORs (edge-case strictness)
 
@@ -116,4 +116,8 @@ item 6 complete.
 6. ~~**MINOR #9** (`client/create` identifier)~~ — fixed.
 7. **Audit pass 3** — cover the remaining aggregates in **Pending audit**.
 8. ~~**MAJOR #5**~~ — resolved as accepted divergence (keep TS soft-delete).
-9. **MAJOR #6** (`principal/delete-user`) — whole operation; needs use case + API route + auth. Decide intent before coding.
+9. ~~**MAJOR #6**~~ — fixed. Turned out to be a one-line guard, not a missing operation (audit pass 1 mis-classified it).
+
+All catalogued gaps from passes 1 & 2 are now resolved. The only
+remaining item-6 work is **audit pass 3** over the still-pending
+aggregates listed above.

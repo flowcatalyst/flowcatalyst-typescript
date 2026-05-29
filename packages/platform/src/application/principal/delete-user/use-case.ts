@@ -49,6 +49,19 @@ export function createDeleteUserUseCase(
 				return userIdResult;
 			}
 
+			// Cannot delete your own account. Matches Rust
+			// crates/fc-platform/src/principal/operations/delete.rs:63-69.
+			// Guards against an admin locking themselves out and against
+			// the audit trail losing the actor mid-operation.
+			if (command.userId === context.principalId) {
+				return Result.failure(
+					UseCaseError.businessRule(
+						"CANNOT_DELETE_SELF",
+						"Cannot delete your own account",
+					),
+				);
+			}
+
 			// Find the user
 			const principal = await principalRepository.findById(command.userId);
 			if (!principal) {
