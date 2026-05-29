@@ -36,7 +36,7 @@ it. The references become orphans; downstream queries and UI break.
 
 | # | Operation | Issue |
 |---|---|---|
-| 5 | **`dispatch-pool/delete`** | Rust hard-deletes (`crates/fc-platform/src/dispatch_pool/operations/delete.rs`); TS soft-deletes (`status = ARCHIVED`). Decide which is canonical — and align Go/Laravel too if TS is right, since this is wire-adjacent behaviour. Out of scope for a single-gap PR; needs a cross-port alignment decision first. |
+| 5 | ~~**`dispatch-pool/delete`**~~ ACCEPTED DIVERGENCE | Rust hard-deletes; TS soft-deletes (`status = ARCHIVED`). **Decision (2026-05-29): keep TS soft-delete.** Both ports emit the same `DispatchPoolDeleted` wire event, so cross-port behaviour is identical; only the local DB outcome differs and no other port reads this DB. TS's ARCHIVED status is intentional and shared with `sync-pools` (archives pools dropped from config) and `update-pool` (refuses to mutate archived pools). Not a gap to fix — divergence documented in `delete-pool/use-case.ts`. If cross-port DB parity ever becomes a requirement, revisit by aligning Rust→TS (add soft-delete to Rust), not the reverse. |
 | 6 | **`principal/delete-user`** | Operation entirely missing in TS. Rust enforces "cannot delete your own account" (`crates/fc-platform/src/principal/operations/delete.rs:64-69`). Note: porting this is more than a rule — it's a whole use case + API route + delete-user authorization. |
 
 ## MINORs (edge-case strictness)
@@ -115,4 +115,5 @@ item 6 complete.
 5. ~~**MINOR #10** (`service-account/update` lengths)~~ — fixed.
 6. ~~**MINOR #9** (`client/create` identifier)~~ — fixed.
 7. **Audit pass 3** — cover the remaining aggregates in **Pending audit**.
-8. **MAJOR #5, #6** — decide architectural intent before coding.
+8. ~~**MAJOR #5**~~ — resolved as accepted divergence (keep TS soft-delete).
+9. **MAJOR #6** (`principal/delete-user`) — whole operation; needs use case + API route + auth. Decide intent before coding.

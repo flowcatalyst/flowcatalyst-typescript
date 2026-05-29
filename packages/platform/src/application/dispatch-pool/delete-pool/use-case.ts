@@ -2,6 +2,15 @@
  * Delete Dispatch Pool Use Case
  *
  * Archives a dispatch pool (soft delete via ARCHIVED status).
+ *
+ * Deliberate divergence from the Rust port, which hard-deletes the row
+ * (crates/fc-platform/src/dispatch_pool/operations/delete.rs). Both emit
+ * the same `DispatchPoolDeleted` wire event, so cross-port consumers see
+ * identical behaviour — only the local DB outcome differs, and no other
+ * port reads this DB. The soft-delete model is intentional in TS: the
+ * ARCHIVED status is shared with sync-pools (archives pools dropped from
+ * config) and update-pool (refuses to mutate archived pools). See
+ * BUSINESS_RULE_GAPS.md "MAJOR #5" for the decision record.
  */
 
 import type { UseCase } from "@flowcatalyst/application";
