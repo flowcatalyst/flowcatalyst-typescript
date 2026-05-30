@@ -6,6 +6,7 @@ import type { UseCase } from "@flowcatalyst/application";
 import {
 	Result,
 	UseCaseError,
+	validateRequired,
 	type ExecutionContext,
 } from "@flowcatalyst/application";
 import type { UnitOfWork } from "@flowcatalyst/domain";
@@ -30,6 +31,18 @@ export function createUpdateProcessUseCase(
 			command: UpdateProcessCommand,
 			context: ExecutionContext,
 		): Promise<Result<ProcessUpdated>> {
+			// Validate process id up front so an empty id returns
+			// PROCESS_ID_REQUIRED rather than falling through to
+			// PROCESS_NOT_FOUND. Matches Rust process/operations/update.rs:48-53.
+			const idResult = validateRequired(
+				command.processId,
+				"processId",
+				"PROCESS_ID_REQUIRED",
+			);
+			if (Result.isFailure(idResult)) {
+				return idResult;
+			}
+
 			if (
 				command.name === undefined &&
 				command.description === undefined &&
