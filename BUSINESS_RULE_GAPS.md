@@ -12,8 +12,13 @@ business-rule check that the TypeScript port doesn't.
 - DO NOT bundle fixes — the handoff is explicit: one gap, one PR.
 
 Audit scope: pass 1 covered 16 aggregate-operation pairs; pass 2
-covered another ~14. Aggregates still un-audited are listed under
-**Pending audit** at the bottom — re-run the auditor to cover them.
+covered another ~14; **pass 3 (2026-05-30) covered the remaining ~60
+pairs** across auth/oauth/idp/auth-config/webauthn, config-access, cors,
+platform-config, anchor, email-domain-mapping, scheduled-job, the
+remaining app/event-type/dispatch-pool/subscription/role/principal/
+service-account/client/process operations, and all `sync-*` ops. Pass-3
+findings are catalogued in their own section below. The audit is now
+**complete** — there are no un-diffed aggregate pairs left.
 
 ## BLOCKERs (data corruption risk)
 
@@ -80,31 +85,73 @@ business rule its Rust counterpart does (or is stricter):
 - `connection/create-connection` (TS is *stricter* — adds client-existence + scoped uniqueness checks the Rust version lacks)
 - `connection/update-connection` (status-enum check present)
 
+## Audit pass 3 (2026-05-30)
+
+~60 operation pairs diffed across 5 clusters. Headline: the identity/auth
+cluster (oauth, idp, auth-config, webauthn, login/password-reset) is
+**100% clean or TS-stricter — 0 gaps**. The real findings cluster in the
+`sync-*` reconcile operations. New numbered gaps below continue the
+pass-1/2 numbering.
+
+### BLOCKER
+
+| # | Operation | Rust source | What's missing |
+|---|---|---|---|
+| 11 | **`role/sync-roles`** | `crates/fc-platform/src/role/operations/sync.rs:194-215` | On `removeUnlisted`, the sync deletes unlisted SDK roles via `deleteById` with **no** assignment check, orphaning `iam_principal_roles` rows (the junction has no DB-level FK on `role_name`). `delete-role` already enforces this guard (BLOCKER #2); sync doesn't. Fix: a pre-flight `countAssignments` check that aborts the whole sync with `ROLE_HAS_ASSIGNMENTS` — mirrors Rust. |
+
+### MAJOR — sync/reconcile-semantics divergences (need a decision, like #5)
+
+These are all behavioural deviations in `sync-*` ops. Per the #5
+precedent, these are **maintainer decisions, not unilateral ports** — the
+question each time is "align TS→Rust, accept the TS divergence, or align
+Rust→TS." Listed with a recommendation; **none fixed yet.**
+
+| # | Operation | Divergence | Recommendation |
+|---|---|---|---|
+| 12 | `scheduled-job/sync-scheduled-jobs` | Rust supports `archive_unlisted` (archives ACTIVE jobs absent from payload) and force-reactivates re-listed non-ACTIVE jobs; TS has neither (purely additive, never archives, leaves re-listed PAUSED/ARCHIVED jobs as-is). `sync.rs:108-251`. | Likely port — sync should reconcile, not just add. Confirm `archiveUnlisted` is wanted. |
+| 13 | `app/attach-service-account-to-application` | Rust blocks attach if *any* SA already attached (`APPLICATION_HAS_SERVICE_ACCOUNT`); TS allows re-attaching the *same* SA (idempotent retry). `attach_service_account.rs:99-105`. | **Accept divergence** — TS relaxation is intentional and documented in the file header (idempotent retry path). Mark accepted. |
+| 14 | `event-type/sync-event-types` | (a) Rust syncs `Api` OR `Code`-sourced types; TS only `API`. (b) Rust syncs each item's inline `schema` as SpecVersion "1.0"; the TS `SyncEventTypeItem` has no `schema` field, so schemas aren't synced here at all. `event_type/operations/sync.rs:89-242`. | Decision needed: is CODE-source mutate-by-sync wanted? Is inline-schema-on-sync wanted (TS uses a separate schema-sync path with different versioning)? |
+| 15 | `dispatch-pool/sync-pools` | Rust matches/archives against ALL pools (`find_all`, any `client_id`); TS scopes strictly to anchor-level (`clientId: null`). So an anchor sync in Rust can mutate/archive client-scoped pools; TS creates a parallel anchor-level pool and never touches client-scoped ones. `dispatch_pool/operations/sync.rs:68-203`. | Likely **accept** — TS's anchor-scoping looks deliberate and safer (an anchor sync shouldn't clobber client pools). Confirm. |
+| 16 | `subscription/sync-subscriptions` | (a) Rust syncs `Api` OR `Code`; TS only `API`. (b) **Possible cross-app data loss:** Rust deletes unlisted subs scoped to the *synced application* (`find_by_application_code`); TS's `findAnchorLevel()` filters by `clientId: null` only, **not** by `applicationCode`, then deletes any unlisted anchor-level API sub. If subscription codes are app-scoped (not globally unique), a sync for app A could delete app B's anchor-level subs. **VERIFY uniqueness scope before deciding** — if confirmed, this is a BLOCKER, not a MAJOR. `subscription/operations/sync.rs:80-287`. |
+| 17 | `client/change-client-status` | TS collapses Rust's separate activate/suspend ops into one generic status setter guarded only by `STATUS_UNCHANGED`. Missing: `CANNOT_SUSPEND_INACTIVE` (Rust forbids INACTIVE→SUSPENDED) and suspend-reason required/≤500-char validation. `client/operations/suspend.rs:43-115`. | Port the two missing suspend guards (safe additive validation); keep the unified-op shape. |
+
+### MINOR — edge-case strictness (safe additive ports)
+
+| # | Operation | Gap | Rust source |
+|---|---|---|---|
+| 18 | `scheduled-job/create-scheduled-job` + `update-scheduled-job` | No bounds check on `deliveryMaxAttempts` (Rust enforces 1-20, `INVALID_DELIVERY_ATTEMPTS`); update also lacks Rust's `NO_CHANGES` no-op guard (TS bumps version on an empty patch). | `scheduled_job/operations/create.rs:85-90`, `update.rs:80-87,182-187` |
+| 19 | `event-type/update-event-type` | No `CANNOT_UPDATE_ARCHIVED` guard (TS will update an archived event type) and no `NO_CHANGES` short-circuit (emits `EventTypeUpdated` on a no-op). | `event_type/operations/update.rs:101-135` |
+| 20 | `process/update-process` | No up-front `PROCESS_ID_REQUIRED` check — empty id falls through to `PROCESS_NOT_FOUND`. Same net rejection, different code. Cosmetic. | `process/operations/update.rs:48-53` |
+| 21 | `platform-config/set` | No use-case-level empty-field validation for appCode/section/property. **Unreachable via HTTP** (they're URL path params), so cosmetic. | `platform_config/operations/set_property.rs:51-68` |
+
+### Cosmetic / accepted (no action)
+
+- **Whitespace trim:** Rust `trim()`s domain/origin inputs before
+  normalizing (cors, anchor, email-domain-mapping); TS lowercases but
+  doesn't trim. Edge-case only (whitespace-padded inputs).
+- **CORS origin case:** Rust preserves case; TS lowercases. Origins are
+  conventionally lowercase; affects only mixed-case dup-detection.
+- **`idp_role_mapping` `MAPPING_EXISTS` uniqueness** (Rust
+  `create_idp_role_mapping.rs:68-80`): no TS *admin* CRUD path exists —
+  TS only auto-syncs mappings via the OIDC sync service. Not a current
+  gap; reproduce the guard *if* an admin create/delete path is ever added.
+
+### Pass-3 clean / TS-stricter (no gaps)
+
+oauth (all 6 ops), identity-provider (all), auth-config (all), webauthn
+(all 3, enforced in the infra layer), config-access (grant/update/revoke),
+cors/delete, email-domain-mapping (create/update/delete), platform-config/
+delete, anchor (all 3), scheduled-job (archive/delete/pause/resume/fire),
+app (activate/deactivate/enable-for-client/disable-for-client),
+event-type (add-schema/deprecate-schema), dispatch-pool/create-pool,
+principal (deactivate-user/sync-principals), service-account
+(regenerate-token/regenerate-secret/assign-roles — all TS-stricter),
+client (add-note/update-applications), process/sync-processes.
+
 ## Pending audit
 
-Still uncovered after two passes. Re-run the audit before declaring
-item 6 complete.
-
-- `auth/operations/*` — login, refresh, logout, password reset, etc.
-- `oauth/operations/*` — OAuth client lifecycle (create / activate / deactivate / etc.)
-- `identity-provider/operations/*` — IDP CRUD + sync
-- `email-domain-mapping/operations/*`
-- `anchor/operations/*` — anchor-domain CRUD
-- `config-access/operations/*` — grant / revoke / update
-- `cors/operations/*` — add / delete CORS origins
-- `auth-config/operations/*`
-- `platform-config/operations/*`
-- `scheduled-job/operations/*` — pause / resume / archive / fire / sync etc.
-- `app/activate-application`, `app/deactivate-application`, `app/attach-service-account-to-application`, `app/enable-application-for-client`, `app/disable-application-for-client`
-- `event-type/add-schema`, `event-type/deprecate-schema`, `event-type/sync-event-types`, `event-type/update-event-type`
-- `role/sync-roles`
-- `dispatch-pool/create-pool`, `dispatch-pool/sync-pools`
-- `subscription/sync-subscriptions`
-- `principal/deactivate-user`, `principal/sync-principals`
-- `service-account/regenerate-auth-token`, `service-account/regenerate-signing-secret`, `service-account/assign-service-account-roles`
-- `client/change-client-status`, `client/add-client-note`, `client/update-client-applications`
-- `process/update-process`, `process/sync-processes`
-- All the `sync-*` operations across aggregates (consistent shape; should be a batched audit)
+**None.** All aggregate-operation pairs have been diffed across passes
+1-3. Re-open only if new operations are added to the Rust platform.
 
 ## Suggested fix order
 
@@ -114,10 +161,18 @@ item 6 complete.
 4. ~~**MINOR #8** (`subscription/create` regex)~~ — fixed (commit `15847b74`).
 5. ~~**MINOR #10** (`service-account/update` lengths)~~ — fixed.
 6. ~~**MINOR #9** (`client/create` identifier)~~ — fixed.
-7. **Audit pass 3** — cover the remaining aggregates in **Pending audit**.
+7. ~~**Audit pass 3**~~ — done (2026-05-30). Findings in the pass-3 section.
 8. ~~**MAJOR #5**~~ — resolved as accepted divergence (keep TS soft-delete).
 9. ~~**MAJOR #6**~~ — fixed. Turned out to be a one-line guard, not a missing operation (audit pass 1 mis-classified it).
+10. **BLOCKER #11** (`role/sync-roles`) — the assignment-orphan guard. Fix first; it's the only data-corruption gap in pass 3.
 
-All catalogued gaps from passes 1 & 2 are now resolved. The only
-remaining item-6 work is **audit pass 3** over the still-pending
-aggregates listed above.
+All catalogued gaps from passes 1 & 2 are resolved, and the audit is now
+complete (pass 3 closed every remaining aggregate pair). Outstanding
+item-6 work is the pass-3 ledger:
+- **BLOCKER #11** — fix first (clear data-corruption bug, clean port).
+- **MAJOR #16** needs a uniqueness-scope check first — it may be a BLOCKER
+  (cross-application subscription deletion). Verify before anything else.
+- **MAJORs #12, #14, #15, #17** are reconcile-semantics decisions (the #5
+  pattern): align TS→Rust, accept, or align Rust→TS. **#13 is recommended
+  ACCEPTED** (documented intentional relaxation).
+- **MINORs #18-#21** are safe additive validation ports, one commit each.
