@@ -100,30 +100,30 @@ pass-1/2 numbering.
 | 11 | ~~**`role/sync-roles`**~~ FIXED | `crates/fc-platform/src/role/operations/sync.rs:194-215` | On `removeUnlisted`, the sync deleted unlisted SDK roles via `deleteById` with **no** assignment check, orphaning `iam_principal_roles` rows (the junction has no DB-level FK on `role_name`). `delete-role` already enforces this guard (BLOCKER #2); sync didn't. Fixed with a pre-flight `countAssignments` check that aborts the whole sync with `ROLE_HAS_ASSIGNMENTS` — mirrors Rust. Ported + tested (`__tests__/sync-roles.test.ts`). |
 | 16b | ~~**`subscription/sync-subscriptions`** (cross-app delete)~~ FIXED | `crates/fc-platform/src/subscription/operations/sync.rs` | **Confirmed cross-application data loss.** The `removeUnlisted` sweep used `findAnchorLevel()` (filters only on `clientId: null`, **not** `applicationCode`) and deleted any unlisted API sub — so an app-A sync deleted app-B's anchor-level API subscriptions. Fixed by scoping the sweep to `sub.applicationCode === command.applicationCode`, matching Rust's `find_by_application_code`. Ported + tested (`__tests__/sync-subscriptions.test.ts`). The CODE-source half of this finding (#16a) remains open below. |
 
-### MAJOR — sync/reconcile-semantics divergences (need a decision, like #5)
+### MAJOR — sync/reconcile-semantics divergences
 
-These are all behavioural deviations in `sync-*` ops. Per the #5
-precedent, these are **maintainer decisions, not unilateral ports** — the
-question each time is "align TS→Rust, accept the TS divergence, or align
-Rust→TS." Listed with a recommendation; **none fixed yet.**
+These were behavioural deviations in `sync-*` ops. **Decision (2026-05-30):
+align TS→Rust** except the two recommended-accept divergences (#13, #15).
+Status below.
 
-| # | Operation | Divergence | Recommendation |
+| # | Operation | Divergence | Status |
 |---|---|---|---|
-| 12 | `scheduled-job/sync-scheduled-jobs` | Rust supports `archive_unlisted` (archives ACTIVE jobs absent from payload) and force-reactivates re-listed non-ACTIVE jobs; TS has neither (purely additive, never archives, leaves re-listed PAUSED/ARCHIVED jobs as-is). `sync.rs:108-251`. | Likely port — sync should reconcile, not just add. Confirm `archiveUnlisted` is wanted. |
-| 13 | `app/attach-service-account-to-application` | Rust blocks attach if *any* SA already attached (`APPLICATION_HAS_SERVICE_ACCOUNT`); TS allows re-attaching the *same* SA (idempotent retry). `attach_service_account.rs:99-105`. | **Accept divergence** — TS relaxation is intentional and documented in the file header (idempotent retry path). Mark accepted. |
-| 14 | `event-type/sync-event-types` | (a) Rust syncs `Api` OR `Code`-sourced types; TS only `API`. (b) Rust syncs each item's inline `schema` as SpecVersion "1.0"; the TS `SyncEventTypeItem` has no `schema` field, so schemas aren't synced here at all. `event_type/operations/sync.rs:89-242`. | Decision needed: is CODE-source mutate-by-sync wanted? Is inline-schema-on-sync wanted (TS uses a separate schema-sync path with different versioning)? |
-| 15 | `dispatch-pool/sync-pools` | Rust matches/archives against ALL pools (`find_all`, any `client_id`); TS scopes strictly to anchor-level (`clientId: null`). So an anchor sync in Rust can mutate/archive client-scoped pools; TS creates a parallel anchor-level pool and never touches client-scoped ones. `dispatch_pool/operations/sync.rs:68-203`. | Likely **accept** — TS's anchor-scoping looks deliberate and safer (an anchor sync shouldn't clobber client pools). Confirm. |
-| 16a | `subscription/sync-subscriptions` (source scope) | Rust syncs `Api` OR `Code`-sourced subs; TS only touches `API`, so CODE-sourced subs are never updated/removed by sync. (The cross-app delete half, #16b, was confirmed a BLOCKER and is fixed above.) `subscription/operations/sync.rs:80-287`. | Decision needed: should sync mutate CODE-sourced subs? (Same question as #14.) |
-| 17 | `client/change-client-status` | TS collapses Rust's separate activate/suspend ops into one generic status setter guarded only by `STATUS_UNCHANGED`. Missing: `CANNOT_SUSPEND_INACTIVE` (Rust forbids INACTIVE→SUSPENDED) and suspend-reason required/≤500-char validation. `client/operations/suspend.rs:43-115`. | Port the two missing suspend guards (safe additive validation); keep the unified-op shape. |
+| 12 | ~~`scheduled-job/sync-scheduled-jobs`~~ FIXED | Rust supports `archive_unlisted` (archives ACTIVE jobs absent from payload) and force-reactivates re-listed non-ACTIVE jobs; TS had neither. `sync.rs:108-251`. | **Ported** — re-activation + optional `archiveUnlisted` (default false), new `findByClientScope` repo method, `archived` event count. Tested (`__tests__/sync-scheduled-jobs.test.ts`). |
+| 13 | `app/attach-service-account-to-application` | Rust blocks attach if *any* SA already attached (`APPLICATION_HAS_SERVICE_ACCOUNT`); TS allows re-attaching the *same* SA (idempotent retry). `attach_service_account.rs:99-105`. | **ACCEPTED DIVERGENCE** — intentional, documented in the file header (idempotent retry path). |
+| 14a | ~~`event-type/sync-event-types` (source scope)~~ FIXED | Rust syncs `Api` OR `Code`-sourced types; TS only `API`. `event_type/operations/sync.rs:124,215`. | **Ported** — CODE included in update + delete sweep. Tested (`__tests__/sync-event-types.test.ts`). |
+| 14b | `event-type/sync-event-types` (inline schema) | Rust syncs each item's inline `schema` as SpecVersion "1.0"; the TS `SyncEventTypeItem` has no `schema` field. `event_type/operations/sync.rs:163-209`. | **KEPT DIVERGENCE** — not ported. TS uses a separate, richer schema-versioning path (minor-bump/deprecate via `sync-platform-schemas.ts`); forcing Rust's "mutate 1.0" model would regress it. Revisit only if the schema lifecycle is unified across ports. |
+| 15 | `dispatch-pool/sync-pools` | Rust matches/archives against ALL pools (`find_all`, any `client_id`); TS scopes strictly to anchor-level (`clientId: null`). `dispatch_pool/operations/sync.rs:68-203`. | **ACCEPTED DIVERGENCE** — TS's anchor-scoping is deliberate and safer (an anchor sync shouldn't clobber client pools). Opposite direction from #16b — TS is *more* conservative than Rust here. |
+| 16a | ~~`subscription/sync-subscriptions` (source scope)~~ FIXED | Rust syncs `Api` OR `Code`-sourced subs; TS only touched `API`. `subscription/operations/sync.rs:191-193,263`. | **Ported** — CODE included in update guard + delete sweep (still scoped per-app via #16b). Tested. |
+| 17 | ~~`client/change-client-status`~~ FIXED | TS collapses Rust's separate activate/suspend ops into one generic status setter guarded only by `STATUS_UNCHANGED`. Missing `CANNOT_SUSPEND_INACTIVE` + suspend-reason required/≤500. `client/operations/suspend.rs:43-115`. | **Ported** — both guards added, scoped to the SUSPENDED transition; unified-op shape kept. Tested (`__tests__/change-client-status.test.ts`). |
 
-### MINOR — edge-case strictness (safe additive ports)
+### MINOR — edge-case strictness — all FIXED
 
-| # | Operation | Gap | Rust source |
+| # | Operation | Gap | Status |
 |---|---|---|---|
-| 18 | `scheduled-job/create-scheduled-job` + `update-scheduled-job` | No bounds check on `deliveryMaxAttempts` (Rust enforces 1-20, `INVALID_DELIVERY_ATTEMPTS`); update also lacks Rust's `NO_CHANGES` no-op guard (TS bumps version on an empty patch). | `scheduled_job/operations/create.rs:85-90`, `update.rs:80-87,182-187` |
-| 19 | `event-type/update-event-type` | No `CANNOT_UPDATE_ARCHIVED` guard (TS will update an archived event type) and no `NO_CHANGES` short-circuit (emits `EventTypeUpdated` on a no-op). | `event_type/operations/update.rs:101-135` |
-| 20 | `process/update-process` | No up-front `PROCESS_ID_REQUIRED` check — empty id falls through to `PROCESS_NOT_FOUND`. Same net rejection, different code. Cosmetic. | `process/operations/update.rs:48-53` |
-| 21 | `platform-config/set` | No use-case-level empty-field validation for appCode/section/property. **Unreachable via HTTP** (they're URL path params), so cosmetic. | `platform_config/operations/set_property.rs:51-68` |
+| 18 | ~~`scheduled-job/create`+`update`~~ FIXED | No 1-20 bound on `deliveryMaxAttempts` (`INVALID_DELIVERY_ATTEMPTS`); update lacked `NO_CHANGES`. `create.rs:85-90`, `update.rs:80-87,120-187`. | Bound added to both; per-field `NO_CHANGES` diff on update. Tested. |
+| 19 | ~~`event-type/update-event-type`~~ FIXED | No `CANNOT_UPDATE_ARCHIVED` guard; no `NO_CHANGES` short-circuit. `update.rs:100-135`. | Both added; TS-stricter length checks kept. Tested. |
+| 20 | ~~`process/update-process`~~ FIXED | No up-front `PROCESS_ID_REQUIRED` check. `update.rs:48-53`. | `validateRequired` added before the lookup. Tested. |
+| 21 | ~~`platform-config/set`~~ FIXED | No use-case-level empty-field validation for appCode/section/property. `set_property.rs:51-68`. | `validateRequired` for all three (unreachable via HTTP but no longer transport-dependent). Tested. |
 
 ### Cosmetic / accepted (no action)
 
@@ -167,12 +167,13 @@ client (add-note/update-applications), process/sync-processes.
 9. ~~**MAJOR #6**~~ — fixed. Turned out to be a one-line guard, not a missing operation (audit pass 1 mis-classified it).
 10. ~~**BLOCKER #11** (`role/sync-roles`)~~ — fixed (assignment-orphan guard + test).
 11. ~~**BLOCKER #16b** (`subscription/sync-subscriptions`)~~ — fixed (per-application delete scoping + test).
+12. ~~**MAJORs #12, #14a, #16a, #17** + **MINORs #18-#21**~~ — fixed (2026-05-30, align TS→Rust). One commit + test each.
 
-All catalogued gaps from passes 1 & 2 are resolved, and the audit is now
-complete (pass 3 closed every remaining aggregate pair). **Both pass-3
-data-corruption BLOCKERs (#11, #16b) are fixed.** Outstanding item-6 work,
-none of it data-loss:
-- **MAJORs #12, #14, #15, #16a, #17** are reconcile-semantics decisions
-  (the #5 pattern): align TS→Rust, accept, or align Rust→TS. **#13 and #15
-  are recommended ACCEPTED** (intentional/safer TS behaviour).
-- **MINORs #18-#21** are safe additive validation ports, one commit each.
+**Item 6 is complete.** All three audit passes are closed and every
+catalogued gap is resolved or recorded as an accepted/kept divergence:
+- **Fixed (pass 3):** BLOCKER #11, #16b; MAJOR #12, #14a, #16a, #17; MINOR
+  #18, #19, #20, #21.
+- **Accepted/kept divergences:** #5 (pool soft-delete), #13 (idempotent SA
+  re-attach), #14b (TS's richer schema versioning), #15 (anchor-scoped pool
+  sync). Each documented above with rationale.
+- No outstanding data-loss or behavioural gaps remain.
