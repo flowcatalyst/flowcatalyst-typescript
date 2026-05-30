@@ -45,6 +45,20 @@ export function createCreateScheduledJobUseCase(
 				);
 			}
 
+			// delivery_max_attempts must be 1-20 when supplied (defaults to 3).
+			// Matches Rust scheduled_job/operations/create.rs:85-90.
+			if (
+				command.deliveryMaxAttempts !== undefined &&
+				(command.deliveryMaxAttempts < 1 || command.deliveryMaxAttempts > 20)
+			) {
+				return Result.failure(
+					UseCaseError.validation(
+						"INVALID_DELIVERY_ATTEMPTS",
+						"deliveryMaxAttempts must be between 1 and 20",
+					),
+				);
+			}
+
 			const tz = command.timezone ?? "UTC";
 			try {
 				validateCrons(command.crons, tz);
