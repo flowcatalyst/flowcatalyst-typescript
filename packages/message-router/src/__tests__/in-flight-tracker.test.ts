@@ -61,9 +61,10 @@ describe("InFlightTracker.reapStale", () => {
 		tracker.dedupeAndTrack(makeMessage("m2", "b2"), undefined, "queue-a");
 		expect(tracker.size()).toBe(2);
 
-		// Use a maxAgeMs of 0 so any entry counts as stale, then await a
-		// macrotask to ensure addedAt < Date.now().
-		await new Promise((r) => setTimeout(r, 2));
+		// Sleep well past maxAgeMs so every entry counts as stale. Date.now()
+		// has ms granularity and timers fire late under load, so we use a
+		// comfortable margin rather than 1-2ms to avoid flaking.
+		await new Promise((r) => setTimeout(r, 20));
 
 		expect(tracker.reapStale(1)).toBe(2);
 		expect(tracker.size()).toBe(0);
@@ -80,11 +81,12 @@ describe("InFlightTracker.reapStale", () => {
 	it("leaves fresh entries alone", async () => {
 		const { tracker } = makeTracker();
 		tracker.dedupeAndTrack(makeMessage("old", "b-old"), undefined, "q");
-		await new Promise((r) => setTimeout(r, 5));
+		await new Promise((r) => setTimeout(r, 30));
 		tracker.dedupeAndTrack(makeMessage("new", "b-new"), undefined, "q");
 
-		// Reap entries older than 3ms — only "old" qualifies.
-		const reaped = tracker.reapStale(3);
+		// Reap entries older than 15ms — only "old" qualifies. The 30ms/15ms
+		// margins leave room for late timers without reaping "new".
+		const reaped = tracker.reapStale(15);
 		expect(reaped).toBe(1);
 		expect(tracker.size()).toBe(1);
 		expect(tracker.isPipelineKeyInFlight("b-new")).toBe(true);
@@ -94,7 +96,7 @@ describe("InFlightTracker.reapStale", () => {
 	it("emits a warning when entries are reaped", async () => {
 		const { tracker, warnings } = makeTracker();
 		tracker.dedupeAndTrack(makeMessage("m1", "b1"), undefined, "q");
-		await new Promise((r) => setTimeout(r, 2));
+		await new Promise((r) => setTimeout(r, 20));
 		tracker.reapStale(1);
 
 		const all = warnings.getAll();
