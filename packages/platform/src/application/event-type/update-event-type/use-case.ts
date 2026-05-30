@@ -39,6 +39,17 @@ export function createUpdateEventTypeUseCase(
 				);
 			}
 
+			// Business rule: cannot update an archived event type. Matches
+			// Rust event_type/operations/update.rs:100-106.
+			if (eventType.status === "ARCHIVED") {
+				return Result.failure(
+					UseCaseError.businessRule(
+						"CANNOT_UPDATE_ARCHIVED",
+						"Cannot update an archived event type",
+					),
+				);
+			}
+
 			// Must have at least one field to update
 			if (command.name === undefined && command.description === undefined) {
 				return Result.failure(
@@ -68,6 +79,20 @@ export function createUpdateEventTypeUseCase(
 						"DESCRIPTION_TOO_LONG",
 						"Description must be 255 characters or less",
 					),
+				);
+			}
+
+			// No-op guard: reject when the provided fields match the current
+			// values rather than emitting an EventTypeUpdated event for nothing.
+			// Matches Rust update.rs:129-135.
+			const nameChanged =
+				command.name !== undefined && command.name !== eventType.name;
+			const descriptionChanged =
+				command.description !== undefined &&
+				command.description !== eventType.description;
+			if (!nameChanged && !descriptionChanged) {
+				return Result.failure(
+					UseCaseError.validation("NO_CHANGES", "No changes detected"),
 				);
 			}
 
