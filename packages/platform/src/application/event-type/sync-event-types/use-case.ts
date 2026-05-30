@@ -1,9 +1,9 @@
 /**
  * Sync EventTypes Use Case
  *
- * Syncs event types from an application SDK. Creates new ones, updates existing
- * API-sourced ones, and optionally removes unlisted API-sourced ones.
- * UI-sourced event types are never modified.
+ * Syncs event types from an application SDK. Creates new ones, updates
+ * existing API- and CODE-sourced ones, and optionally removes unlisted
+ * API/CODE-sourced ones. UI-sourced event types are never modified.
  */
 
 import type { UseCase } from "@flowcatalyst/application";
@@ -86,8 +86,12 @@ export function createSyncEventTypesUseCase(
 						});
 						await eventTypeRepository.insert(newEventType, txCtx);
 						created++;
-					} else if (existing.source === "API") {
-						// Update existing API-sourced
+					} else if (
+						existing.source === "API" ||
+						existing.source === "CODE"
+					) {
+						// Update existing API- and CODE-sourced (Rust syncs Api
+						// OR Code; sync.rs:124). UI-sourced left untouched.
 						const updatedEntity = updateEventType(existing, {
 							name: item.name,
 							description: item.description ?? null,
@@ -105,7 +109,10 @@ export function createSyncEventTypesUseCase(
 						txCtx,
 					);
 					for (const et of allForApp) {
-						if (et.source === "API" && !syncedCodes.includes(et.code)) {
+						if (
+							(et.source === "API" || et.source === "CODE") &&
+							!syncedCodes.includes(et.code)
+						) {
 							await eventTypeRepository.deleteById(et.id, txCtx);
 							deleted++;
 						}
