@@ -33,7 +33,7 @@ function anchorSub(
 	id: string,
 	code: string,
 	applicationCode: string,
-	source: "API" | "UI" = "API",
+	source: "API" | "UI" | "CODE" = "API",
 ): Subscription {
 	return { id, code, applicationCode, source } as unknown as Subscription;
 }
@@ -126,6 +126,33 @@ describe("sync-subscriptions removeUnlisted scoping", () => {
 		// ...but app-b's sub is never touched.
 		expect(deleteById).not.toHaveBeenCalledWith("sub_b", undefined);
 		expect(deleteById).toHaveBeenCalledTimes(1);
+	});
+
+	it("removes an unlisted CODE-sourced subscription for the same app", async () => {
+		// #16a — sync manages API- and CODE-sourced subs (Rust syncs Api OR
+		// Code); previously TS skipped CODE-sourced subs entirely.
+		const deleteById = vi.fn(async () => {});
+		const subRepo = makeSubRepo({
+			anchorSubs: [anchorSub("sub_code", "code-seed", "app-a", "CODE")],
+			deleteById,
+		});
+
+		const result = await createSyncSubscriptionsUseCase({
+			subscriptionRepository: subRepo,
+			dispatchPoolRepository: makeDispatchPoolRepo(),
+			connectionRepository: makeConnectionRepo(),
+			unitOfWork: makeUnitOfWork(),
+		}).execute(
+			{
+				applicationCode: "app-a",
+				subscriptions: [SYNCED_ITEM],
+				removeUnlisted: true,
+			},
+			makeContext(),
+		);
+
+		expect(Result.isSuccess(result)).toBe(true);
+		expect(deleteById).toHaveBeenCalledWith("sub_code", undefined);
 	});
 
 	it("leaves UI-sourced anchor subscriptions alone even for the same app", async () => {

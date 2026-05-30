@@ -175,8 +175,10 @@ export function createSyncSubscriptionsUseCase(
 					}
 
 					if (existing) {
-						// Only update API-sourced subscriptions
-						if (existing.source !== "API") {
+						// Update API- and CODE-sourced subscriptions; UI-sourced
+						// are never touched by sync. Matches Rust
+						// subscription/operations/sync.rs:191-193.
+						if (existing.source !== "API" && existing.source !== "CODE") {
 							syncedCodes.push(item.code);
 							continue;
 						}
@@ -249,7 +251,7 @@ export function createSyncSubscriptionsUseCase(
 					for (const sub of anchorSubs) {
 						if (
 							sub.applicationCode === command.applicationCode &&
-							sub.source === "API" &&
+							(sub.source === "API" || sub.source === "CODE") &&
 							!seenCodes.has(sub.code)
 						) {
 							await subscriptionRepository.deleteById(sub.id, txCtx);
