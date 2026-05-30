@@ -19,6 +19,7 @@
 import type { UseCase } from "@flowcatalyst/application";
 import {
 	Result,
+	validateRequired,
 	type ExecutionContext,
 } from "@flowcatalyst/application";
 import type { UnitOfWork } from "@flowcatalyst/domain";
@@ -50,6 +51,23 @@ export function createSetPlatformConfigUseCase(
 			// Pre-flight existence check. Lets us construct the event with
 			// the resolved id + wasCreated before the UoW. See module docstring
 			// on the race window — it's bounded by the DB unique key.
+			// Validate the natural-key parts. Over HTTP these arrive as URL
+			// path params so they can't be empty, but the use case shouldn't
+			// rely on that. Matches Rust platform_config/operations/
+			// set_property.rs:51-68.
+			for (const [value, field, code] of [
+				[
+					command.applicationCode,
+					"applicationCode",
+					"APPLICATION_CODE_REQUIRED",
+				],
+				[command.section, "section", "SECTION_REQUIRED"],
+				[command.property, "property", "PROPERTY_REQUIRED"],
+			] as const) {
+				const check = validateRequired(value, field, code);
+				if (Result.isFailure(check)) return check;
+			}
+
 			const existing = await platformConfigRepository.findByKey(
 				command.applicationCode,
 				command.section,
