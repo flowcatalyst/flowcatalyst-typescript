@@ -16,6 +16,7 @@ import type { UnitOfWork } from "@flowcatalyst/domain";
 import type { ClientRepository } from "../../../infrastructure/persistence/index.js";
 import {
 	changeClientStatus,
+	ClientStatus,
 	ClientStatusChanged,
 } from "../../../domain/index.js";
 
@@ -62,11 +63,49 @@ export function createChangeClientStatusUseCase(
 				return statusResult;
 			}
 
+			// Suspension-specific validation. The generic status op accepts an
+			// arbitrary target, but a suspend must carry a non-empty reason of
+			// at most 500 chars. Matches Rust client/operations/suspend.rs:51-63.
+			if (command.newStatus === ClientStatus.SUSPENDED) {
+				const reason = command.reason?.trim() ?? "";
+				if (reason === "") {
+					return Result.failure(
+						UseCaseError.validation(
+							"REASON_REQUIRED",
+							"Suspension reason is required",
+						),
+					);
+				}
+				if (reason.length > 500) {
+					return Result.failure(
+						UseCaseError.validation(
+							"REASON_TOO_LONG",
+							"Suspension reason must be at most 500 characters",
+						),
+					);
+				}
+			}
+
 			// Find client
 			const client = await clientRepository.findById(command.clientId);
 			if (!client) {
 				return Result.failure(
 					UseCaseError.notFound("CLIENT_NOT_FOUND", "Client not found"),
+				);
+			}
+
+			// Business rule: cannot suspend an inactive client. Matches Rust
+			// client/operations/suspend.rs:101-107.
+			if (
+				command.newStatus === ClientStatus.SUSPENDED &&
+				client.status === ClientStatus.INACTIVE
+			) {
+				return Result.failure(
+					UseCaseError.businessRule(
+						"CANNOT_SUSPEND_INACTIVE",
+						"Cannot suspend an inactive client",
+						{ currentStatus: client.status },
+					),
 				);
 			}
 
