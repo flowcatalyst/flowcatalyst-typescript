@@ -2,9 +2,11 @@
  * Sync ScheduledJobs Use Case
  *
  * Idempotent SDK-driven sync of scheduled job definitions for a given
- * client scope. Creates missing jobs and updates existing ones. Listed
- * codes only — never deletes jobs absent from the list (that's a separate
- * admin action).
+ * client scope. Creates missing jobs, updates existing ones, and
+ * re-activates listed jobs that had been paused/archived. When
+ * `archiveUnlisted` is set, ACTIVE jobs in the scope absent from the
+ * payload are archived (off by default — sync is otherwise additive).
+ * Mirrors Rust scheduled_job/operations/sync.rs.
  */
 
 import type { UseCase } from "@flowcatalyst/application";
@@ -16,6 +18,7 @@ import type { ScheduledJobRepository } from "../../../infrastructure/persistence
 import {
 	createScheduledJob,
 	updateScheduledJob,
+	archiveScheduledJob,
 	ScheduledJobsSynced,
 } from "../../../domain/index.js";
 import {
@@ -74,7 +77,14 @@ export function createSyncScheduledJobsUseCase(
 				synced: command.scheduledJobs.length,
 				created: 0,
 				updated: 0,
+				archived: 0,
 			};
+
+			// Codes present in this sync payload — used to detect unlisted jobs
+			// when archiveUnlisted is set.
+			const syncedCodes = new Set(
+				command.scheduledJobs.map((j) => j.code),
+			);
 			const event = new ScheduledJobsSynced(context, eventData);
 
 			const result = await unitOfWork.commitOperations(
@@ -122,8 +132,35 @@ export function createSyncScheduledJobsUseCase(
 								targetUrl: item.targetUrl ?? existing.targetUrl,
 								updatedBy: context.principalId ?? null,
 							});
-							await scheduledJobRepository.update(updatedEntity, txCtx);
+							// Sync re-activates archived/paused jobs that reappear
+							// in the payload — that's the contract. Matches Rust
+							// scheduled_job/operations/sync.rs:182-187.
+							const reactivated =
+								updatedEntity.status === "ACTIVE"
+									? updatedEntity
+									: { ...updatedEntity, status: "ACTIVE" as const };
+							await scheduledJobRepository.update(reactivated, txCtx);
 							eventData.updated++;
+						}
+					}
+
+					// Optionally archive jobs in this scope that are absent from
+					// the payload. Off by default (additive sync); when set, only
+					// ACTIVE unlisted jobs are archived. Matches Rust
+					// scheduled_job/operations/sync.rs:222-231.
+					if (command.archiveUnlisted) {
+						const scoped = await scheduledJobRepository.findByClientScope(
+							command.clientId,
+							txCtx,
+						);
+						for (const job of scoped) {
+							if (job.status === "ACTIVE" && !syncedCodes.has(job.code)) {
+								await scheduledJobRepository.update(
+									archiveScheduledJob(job),
+									txCtx,
+								);
+								eventData.archived++;
+							}
 						}
 					}
 				},

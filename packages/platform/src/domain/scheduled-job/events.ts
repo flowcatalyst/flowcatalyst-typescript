@@ -249,6 +249,7 @@ export interface ScheduledJobsSyncedData {
 	readonly synced: number;
 	readonly created: number;
 	readonly updated: number;
+	readonly archived: number;
 	readonly [key: string]: unknown;
 }
 

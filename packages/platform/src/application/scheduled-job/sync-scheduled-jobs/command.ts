@@ -20,4 +20,9 @@ export interface SyncScheduledJobsCommand extends Command {
 	 */
 	readonly clientId: string | null;
 	readonly scheduledJobs: readonly SyncScheduledJobItem[];
+	/**
+	 * When true, ACTIVE jobs in this scope whose code is absent from
+	 * `scheduledJobs` are archived. Defaults to false (additive sync).
+	 */
+	readonly archiveUnlisted?: boolean | undefined;
 }

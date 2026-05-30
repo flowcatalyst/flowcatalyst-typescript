@@ -53,6 +53,15 @@ export interface ScheduledJobRepository extends Repository<ScheduledJob> {
 		clientId: string,
 		tx?: TransactionContext,
 	): Promise<ScheduledJob[]>;
+	/**
+	 * List all jobs in a tenant scope. `null` = platform-scoped jobs
+	 * (client_id IS NULL); a string = that client's jobs. Used by sync's
+	 * archiveUnlisted sweep, which must see the whole scope.
+	 */
+	findByClientScope(
+		clientId: string | null,
+		tx?: TransactionContext,
+	): Promise<ScheduledJob[]>;
 	findWithFilters(
 		filters: ScheduledJobFilters,
 		tx?: TransactionContext,
@@ -195,6 +204,22 @@ export function createScheduledJobRepository(
 				.select()
 				.from(scheduledJobs)
 				.where(eq(scheduledJobs.clientId, clientId))
+				.orderBy(desc(scheduledJobs.createdAt));
+			return records.map(recordToEntity);
+		},
+
+		async findByClientScope(
+			clientId: string | null,
+			tx?: TransactionContext,
+		): Promise<ScheduledJob[]> {
+			const records = await db(tx)
+				.select()
+				.from(scheduledJobs)
+				.where(
+					clientId === null
+						? isNull(scheduledJobs.clientId)
+						: eq(scheduledJobs.clientId, clientId),
+				)
 				.orderBy(desc(scheduledJobs.createdAt));
 			return records.map(recordToEntity);
 		},

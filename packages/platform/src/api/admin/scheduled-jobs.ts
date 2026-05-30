@@ -142,6 +142,7 @@ const FireScheduledJobSchema = Type.Object({
 
 const SyncScheduledJobsSchema = Type.Object({
 	clientId: Type.Union([Type.String(), Type.Null()]),
+	archiveUnlisted: Type.Optional(Type.Boolean()),
 	scheduledJobs: Type.Array(
 		Type.Object({
 			code: Type.String({ minLength: 1, maxLength: 200 }),
