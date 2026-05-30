@@ -98,6 +98,7 @@ pass-1/2 numbering.
 | # | Operation | Rust source | What's missing |
 |---|---|---|---|
 | 11 | ~~**`role/sync-roles`**~~ FIXED | `crates/fc-platform/src/role/operations/sync.rs:194-215` | On `removeUnlisted`, the sync deleted unlisted SDK roles via `deleteById` with **no** assignment check, orphaning `iam_principal_roles` rows (the junction has no DB-level FK on `role_name`). `delete-role` already enforces this guard (BLOCKER #2); sync didn't. Fixed with a pre-flight `countAssignments` check that aborts the whole sync with `ROLE_HAS_ASSIGNMENTS` — mirrors Rust. Ported + tested (`__tests__/sync-roles.test.ts`). |
+| 16b | ~~**`subscription/sync-subscriptions`** (cross-app delete)~~ FIXED | `crates/fc-platform/src/subscription/operations/sync.rs` | **Confirmed cross-application data loss.** The `removeUnlisted` sweep used `findAnchorLevel()` (filters only on `clientId: null`, **not** `applicationCode`) and deleted any unlisted API sub — so an app-A sync deleted app-B's anchor-level API subscriptions. Fixed by scoping the sweep to `sub.applicationCode === command.applicationCode`, matching Rust's `find_by_application_code`. Ported + tested (`__tests__/sync-subscriptions.test.ts`). The CODE-source half of this finding (#16a) remains open below. |
 
 ### MAJOR — sync/reconcile-semantics divergences (need a decision, like #5)
 
@@ -112,7 +113,7 @@ Rust→TS." Listed with a recommendation; **none fixed yet.**
 | 13 | `app/attach-service-account-to-application` | Rust blocks attach if *any* SA already attached (`APPLICATION_HAS_SERVICE_ACCOUNT`); TS allows re-attaching the *same* SA (idempotent retry). `attach_service_account.rs:99-105`. | **Accept divergence** — TS relaxation is intentional and documented in the file header (idempotent retry path). Mark accepted. |
 | 14 | `event-type/sync-event-types` | (a) Rust syncs `Api` OR `Code`-sourced types; TS only `API`. (b) Rust syncs each item's inline `schema` as SpecVersion "1.0"; the TS `SyncEventTypeItem` has no `schema` field, so schemas aren't synced here at all. `event_type/operations/sync.rs:89-242`. | Decision needed: is CODE-source mutate-by-sync wanted? Is inline-schema-on-sync wanted (TS uses a separate schema-sync path with different versioning)? |
 | 15 | `dispatch-pool/sync-pools` | Rust matches/archives against ALL pools (`find_all`, any `client_id`); TS scopes strictly to anchor-level (`clientId: null`). So an anchor sync in Rust can mutate/archive client-scoped pools; TS creates a parallel anchor-level pool and never touches client-scoped ones. `dispatch_pool/operations/sync.rs:68-203`. | Likely **accept** — TS's anchor-scoping looks deliberate and safer (an anchor sync shouldn't clobber client pools). Confirm. |
-| 16 | `subscription/sync-subscriptions` | (a) Rust syncs `Api` OR `Code`; TS only `API`. (b) **Possible cross-app data loss:** Rust deletes unlisted subs scoped to the *synced application* (`find_by_application_code`); TS's `findAnchorLevel()` filters by `clientId: null` only, **not** by `applicationCode`, then deletes any unlisted anchor-level API sub. If subscription codes are app-scoped (not globally unique), a sync for app A could delete app B's anchor-level subs. **VERIFY uniqueness scope before deciding** — if confirmed, this is a BLOCKER, not a MAJOR. `subscription/operations/sync.rs:80-287`. |
+| 16a | `subscription/sync-subscriptions` (source scope) | Rust syncs `Api` OR `Code`-sourced subs; TS only touches `API`, so CODE-sourced subs are never updated/removed by sync. (The cross-app delete half, #16b, was confirmed a BLOCKER and is fixed above.) `subscription/operations/sync.rs:80-287`. | Decision needed: should sync mutate CODE-sourced subs? (Same question as #14.) |
 | 17 | `client/change-client-status` | TS collapses Rust's separate activate/suspend ops into one generic status setter guarded only by `STATUS_UNCHANGED`. Missing: `CANNOT_SUSPEND_INACTIVE` (Rust forbids INACTIVE→SUSPENDED) and suspend-reason required/≤500-char validation. `client/operations/suspend.rs:43-115`. | Port the two missing suspend guards (safe additive validation); keep the unified-op shape. |
 
 ### MINOR — edge-case strictness (safe additive ports)
@@ -164,15 +165,14 @@ client (add-note/update-applications), process/sync-processes.
 7. ~~**Audit pass 3**~~ — done (2026-05-30). Findings in the pass-3 section.
 8. ~~**MAJOR #5**~~ — resolved as accepted divergence (keep TS soft-delete).
 9. ~~**MAJOR #6**~~ — fixed. Turned out to be a one-line guard, not a missing operation (audit pass 1 mis-classified it).
-10. **BLOCKER #11** (`role/sync-roles`) — the assignment-orphan guard. Fix first; it's the only data-corruption gap in pass 3.
+10. ~~**BLOCKER #11** (`role/sync-roles`)~~ — fixed (assignment-orphan guard + test).
+11. ~~**BLOCKER #16b** (`subscription/sync-subscriptions`)~~ — fixed (per-application delete scoping + test).
 
 All catalogued gaps from passes 1 & 2 are resolved, and the audit is now
-complete (pass 3 closed every remaining aggregate pair). Outstanding
-item-6 work is the pass-3 ledger:
-- **BLOCKER #11** — fix first (clear data-corruption bug, clean port).
-- **MAJOR #16** needs a uniqueness-scope check first — it may be a BLOCKER
-  (cross-application subscription deletion). Verify before anything else.
-- **MAJORs #12, #14, #15, #17** are reconcile-semantics decisions (the #5
-  pattern): align TS→Rust, accept, or align Rust→TS. **#13 is recommended
-  ACCEPTED** (documented intentional relaxation).
+complete (pass 3 closed every remaining aggregate pair). **Both pass-3
+data-corruption BLOCKERs (#11, #16b) are fixed.** Outstanding item-6 work,
+none of it data-loss:
+- **MAJORs #12, #14, #15, #16a, #17** are reconcile-semantics decisions
+  (the #5 pattern): align TS→Rust, accept, or align Rust→TS. **#13 and #15
+  are recommended ACCEPTED** (intentional/safer TS behaviour).
 - **MINORs #18-#21** are safe additive validation ports, one commit each.

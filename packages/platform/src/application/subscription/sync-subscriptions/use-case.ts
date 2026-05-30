@@ -235,12 +235,23 @@ export function createSyncSubscriptionsUseCase(
 					syncedCodes.push(item.code);
 				}
 
-				// Remove unlisted API-sourced subscriptions if requested
+				// Remove unlisted API-sourced subscriptions for THIS application
+				// only. findAnchorLevel() returns every anchor-level (clientId
+				// null) subscription regardless of which application owns it, so
+				// the sweep must be scoped to command.applicationCode — otherwise
+				// one application's sync would delete other applications'
+				// anchor-level API subscriptions (cross-application data loss).
+				// Mirrors Rust's per-application find_by_application_code scoping
+				// (subscription/operations/sync.rs).
 				if (command.removeUnlisted) {
 					const anchorSubs =
 						await subscriptionRepository.findAnchorLevel(txCtx);
 					for (const sub of anchorSubs) {
-						if (sub.source === "API" && !seenCodes.has(sub.code)) {
+						if (
+							sub.applicationCode === command.applicationCode &&
+							sub.source === "API" &&
+							!seenCodes.has(sub.code)
+						) {
 							await subscriptionRepository.deleteById(sub.id, txCtx);
 							deleted++;
 						}
