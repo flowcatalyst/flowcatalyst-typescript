@@ -73,6 +73,48 @@ export function createSyncRolesUseCase(
 				);
 			}
 
+			// Refuse the sync if removing an unlisted SDK role would orphan
+			// principal assignments. iam_principal_roles has no DB-level FK on
+			// role_name (integrity is enforced in code), so deleting a role a
+			// principal still holds would leave orphaned assignment rows. This
+			// mirrors delete-role's guard (BLOCKER #2) and Rust
+			// role/operations/sync.rs:194-215, where the whole sync aborts
+			// rather than orphan assignments. Checked pre-flight so the
+			// specific ROLE_HAS_ASSIGNMENTS code survives (throwing inside the
+			// UoW callback would collapse to a generic COMMIT_FAILED).
+			if (command.removeUnlisted) {
+				const syncedNameSet = new Set(
+					command.roles.map(
+						(item) =>
+							`${command.applicationCode}:${item.name.toLowerCase()}`,
+					),
+				);
+				const appRoles = await roleRepository.findByApplicationId(
+					application.id,
+				);
+				for (const role of appRoles) {
+					if (
+						role.source === RoleSource.SDK &&
+						!syncedNameSet.has(role.name)
+					) {
+						const assignments =
+							await roleRepository.countAssignments(role.name);
+						if (assignments > 0) {
+							return Result.failure(
+								UseCaseError.businessRule(
+									"ROLE_HAS_ASSIGNMENTS",
+									`Cannot remove role '${role.name}' — ${assignments} principal(s) still hold it. Strip the assignments before syncing.`,
+									{
+										roleName: role.name,
+										assignments,
+									},
+								),
+							);
+						}
+					}
+				}
+			}
+
 			let created = 0;
 			let updated = 0;
 			let deleted = 0;

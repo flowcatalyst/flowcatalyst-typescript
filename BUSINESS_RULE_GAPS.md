@@ -97,7 +97,7 @@ pass-1/2 numbering.
 
 | # | Operation | Rust source | What's missing |
 |---|---|---|---|
-| 11 | **`role/sync-roles`** | `crates/fc-platform/src/role/operations/sync.rs:194-215` | On `removeUnlisted`, the sync deletes unlisted SDK roles via `deleteById` with **no** assignment check, orphaning `iam_principal_roles` rows (the junction has no DB-level FK on `role_name`). `delete-role` already enforces this guard (BLOCKER #2); sync doesn't. Fix: a pre-flight `countAssignments` check that aborts the whole sync with `ROLE_HAS_ASSIGNMENTS` — mirrors Rust. |
+| 11 | ~~**`role/sync-roles`**~~ FIXED | `crates/fc-platform/src/role/operations/sync.rs:194-215` | On `removeUnlisted`, the sync deleted unlisted SDK roles via `deleteById` with **no** assignment check, orphaning `iam_principal_roles` rows (the junction has no DB-level FK on `role_name`). `delete-role` already enforces this guard (BLOCKER #2); sync didn't. Fixed with a pre-flight `countAssignments` check that aborts the whole sync with `ROLE_HAS_ASSIGNMENTS` — mirrors Rust. Ported + tested (`__tests__/sync-roles.test.ts`). |
 
 ### MAJOR — sync/reconcile-semantics divergences (need a decision, like #5)
 
