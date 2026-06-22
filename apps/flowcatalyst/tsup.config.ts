@@ -6,6 +6,9 @@ export default defineConfig({
 	dts: false,
 	clean: true,
 	sourcemap: true,
+	// Minify the SEA bundle (index.cjs is embedded in the binary). The external
+	// sourcemap is kept for debugging the minified output.
+	minify: true,
 	target: "node24",
 	// Bundle every npm dep into the SEA blob EXCEPT packages whose runtime
 	// loading relies on sidecar files relative to themselves on disk (and so

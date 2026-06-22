@@ -20,7 +20,7 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createSyncSubscriptionsUseCase } from "../application/subscription/sync-subscriptions/use-case.js";
+import { createSyncSubscriptionsUseCase } from "../application/subscription/sync-subscriptions.js";
 import type {
 	SubscriptionRepository,
 	DispatchPoolRepository,

@@ -13,7 +13,7 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createDeleteUserUseCase } from "../application/principal/delete-user/use-case.js";
+import { createDeleteUserUseCase } from "../application/principal/delete-user.js";
 import type { PrincipalRepository } from "../infrastructure/persistence/repositories/principal-repository.js";
 import { PrincipalType, type Principal } from "../domain/index.js";
 

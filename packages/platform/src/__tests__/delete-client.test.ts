@@ -16,7 +16,7 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createDeleteClientUseCase } from "../application/client/delete-client/use-case.js";
+import { createDeleteClientUseCase } from "../application/client/delete-client.js";
 import type { ClientRepository } from "../infrastructure/persistence/repositories/client-repository.js";
 import type { Client } from "../domain/index.js";
 

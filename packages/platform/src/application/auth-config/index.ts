@@ -11,7 +11,7 @@ export {
 	createCreateInternalAuthConfigUseCase,
 	createCreateOidcAuthConfigUseCase,
 	type CreateAuthConfigUseCaseDeps,
-} from "./create-auth-config/index.js";
+} from "./create-auth-config.js";
 
 // Update Auth Config
 export {
@@ -24,11 +24,11 @@ export {
 	createUpdateAdditionalClientsUseCase,
 	createUpdateGrantedClientsUseCase,
 	type UpdateAuthConfigUseCaseDeps,
-} from "./update-auth-config/index.js";
+} from "./update-auth-config.js";
 
 // Delete Auth Config
 export {
 	type DeleteAuthConfigCommand,
 	createDeleteAuthConfigUseCase,
 	type DeleteAuthConfigUseCaseDeps,
-} from "./delete-auth-config/index.js";
+} from "./delete-auth-config.js";

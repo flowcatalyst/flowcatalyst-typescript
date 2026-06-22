@@ -17,7 +17,7 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createSyncRolesUseCase } from "../application/role/sync-roles/use-case.js";
+import { createSyncRolesUseCase } from "../application/role/sync-roles.js";
 import type {
 	RoleRepository,
 	ApplicationRepository,

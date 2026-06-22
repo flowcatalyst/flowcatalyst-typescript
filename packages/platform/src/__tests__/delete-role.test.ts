@@ -15,7 +15,7 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createDeleteRoleUseCase } from "../application/role/delete-role/use-case.js";
+import { createDeleteRoleUseCase } from "../application/role/delete-role.js";
 import type { RoleRepository } from "../infrastructure/persistence/repositories/role-repository.js";
 import { RoleSource, type AuthRole } from "../domain/index.js";
 

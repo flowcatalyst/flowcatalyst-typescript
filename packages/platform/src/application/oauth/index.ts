@@ -9,7 +9,7 @@ export {
 	type CreateOAuthClientCommand,
 	createCreateOAuthClientUseCase,
 	type CreateOAuthClientUseCaseDeps,
-} from "./create-oauth-client/index.js";
+} from "./create-oauth-client.js";
 
 // Update OAuth Client
 export {
@@ -18,25 +18,25 @@ export {
 	createUpdateOAuthClientUseCase,
 	createRegenerateOAuthClientSecretUseCase,
 	type UpdateOAuthClientUseCaseDeps,
-} from "./update-oauth-client/index.js";
+} from "./update-oauth-client.js";
 
 // Delete OAuth Client
 export {
 	type DeleteOAuthClientCommand,
 	createDeleteOAuthClientUseCase,
 	type DeleteOAuthClientUseCaseDeps,
-} from "./delete-oauth-client/index.js";
+} from "./delete-oauth-client.js";
 
 // Activate OAuth Client
 export {
 	type ActivateOAuthClientCommand,
 	createActivateOAuthClientUseCase,
 	type ActivateOAuthClientUseCaseDeps,
-} from "./activate-oauth-client/index.js";
+} from "./activate-oauth-client.js";
 
 // Deactivate OAuth Client
 export {
 	type DeactivateOAuthClientCommand,
 	createDeactivateOAuthClientUseCase,
 	type DeactivateOAuthClientUseCaseDeps,
-} from "./deactivate-oauth-client/index.js";
+} from "./deactivate-oauth-client.js";

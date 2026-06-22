@@ -9,39 +9,39 @@ export {
 	type CreateServiceAccountCommand,
 	createCreateServiceAccountUseCase,
 	type CreateServiceAccountUseCaseDeps,
-} from "./create-service-account/index.js";
+} from "./create-service-account.js";
 
 // Update Service Account
 export {
 	type UpdateServiceAccountCommand,
 	createUpdateServiceAccountUseCase,
 	type UpdateServiceAccountUseCaseDeps,
-} from "./update-service-account/index.js";
+} from "./update-service-account.js";
 
 // Delete Service Account
 export {
 	type DeleteServiceAccountCommand,
 	createDeleteServiceAccountUseCase,
 	type DeleteServiceAccountUseCaseDeps,
-} from "./delete-service-account/index.js";
+} from "./delete-service-account.js";
 
 // Regenerate Auth Token
 export {
 	type RegenerateAuthTokenCommand,
 	createRegenerateAuthTokenUseCase,
 	type RegenerateAuthTokenUseCaseDeps,
-} from "./regenerate-auth-token/index.js";
+} from "./regenerate-auth-token.js";
 
 // Regenerate Signing Secret
 export {
 	type RegenerateSigningSecretCommand,
 	createRegenerateSigningSecretUseCase,
 	type RegenerateSigningSecretUseCaseDeps,
-} from "./regenerate-signing-secret/index.js";
+} from "./regenerate-signing-secret.js";
 
 // Assign Service Account Roles
 export {
 	type AssignServiceAccountRolesCommand,
 	createAssignServiceAccountRolesUseCase,
 	type AssignServiceAccountRolesUseCaseDeps,
-} from "./assign-service-account-roles/index.js";
+} from "./assign-service-account-roles.js";

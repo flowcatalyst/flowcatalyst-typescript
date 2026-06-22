@@ -32,6 +32,7 @@ import {
 } from "node:fs";
 import { resolve, dirname, relative, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { zstdCompressSync, constants as zlibConstants } from "node:zlib";
 import { createRequire } from "node:module";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -144,10 +145,20 @@ for (const f of files) {
 
 mkdirSync(distDir, { recursive: true });
 const blob = Buffer.concat(chunks);
-writeFileSync(outputPath, blob);
+// zstd-compress the packed blob before it's embedded as the SEA asset.
+// PostgreSQL's binaries + dylibs compress ~3-4x — the single biggest reduction
+// in the SEA binary size. The runtime extractor (src/embedded-postgres.ts)
+// zstd-decompresses before parsing the header. Level 19 is a build-time cost
+// only; zstd decompression speed is independent of the compression level.
+const compressed = zstdCompressSync(blob, {
+	params: { [zlibConstants.ZSTD_c_compressionLevel]: 19 },
+});
+writeFileSync(outputPath, compressed);
 
-const mb = (blob.length / 1024 / 1024).toFixed(1);
+const rawMb = (blob.length / 1024 / 1024).toFixed(1);
+const mb = (compressed.length / 1024 / 1024).toFixed(1);
+const ratio = (blob.length / compressed.length).toFixed(1);
 const symlinkCount = entries.filter((e) => e.link !== undefined).length;
 console.log(
-	`Packed ${entries.length} postgres file(s) (${symlinkCount} symlinks, ${mb} MB) into ${relative(process.cwd(), outputPath)}`,
+	`Packed ${entries.length} postgres file(s) (${symlinkCount} symlinks) into ${relative(process.cwd(), outputPath)}: ${mb} MB zstd (from ${rawMb} MB raw, ${ratio}x)`,
 );

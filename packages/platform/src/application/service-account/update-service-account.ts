@@ -1,0 +1,145 @@
+/**
+ * Update Service Account
+ *
+ * Command + use case in one file.
+ */
+
+import type { UseCase, Command } from "@flowcatalyst/application";
+import {
+	validateRequired,
+	Result,
+	type ExecutionContext,
+	UseCaseError,
+} from "@flowcatalyst/application";
+import type { UnitOfWork } from "@flowcatalyst/domain";
+
+import type { PrincipalScope } from "../../domain/index.js";
+import type { PrincipalRepository } from "../../infrastructure/persistence/index.js";
+import {
+	updatePrincipal,
+	ServiceAccountUpdated,
+} from "../../domain/index.js";
+
+/**
+ * Command to update a service account's name, description, and scope.
+ */
+export interface UpdateServiceAccountCommand extends Command {
+	/** Principal ID of the service account */
+	readonly serviceAccountId: string;
+
+	/** New display name */
+	readonly name?: string | undefined;
+
+	/** New description */
+	readonly description?: string | null | undefined;
+
+	/** New access scope */
+	readonly scope?: PrincipalScope | undefined;
+}
+
+/**
+ * Dependencies for UpdateServiceAccountUseCase.
+ */
+export interface UpdateServiceAccountUseCaseDeps {
+	readonly principalRepository: PrincipalRepository;
+	readonly unitOfWork: UnitOfWork;
+}
+
+/**
+ * Create the UpdateServiceAccountUseCase.
+ */
+export function createUpdateServiceAccountUseCase(
+	deps: UpdateServiceAccountUseCaseDeps,
+): UseCase<UpdateServiceAccountCommand, ServiceAccountUpdated> {
+	const { principalRepository, unitOfWork } = deps;
+
+	return {
+		async execute(
+			command: UpdateServiceAccountCommand,
+			context: ExecutionContext,
+		): Promise<Result<ServiceAccountUpdated>> {
+			// Validate serviceAccountId
+			const idResult = validateRequired(
+				command.serviceAccountId,
+				"serviceAccountId",
+				"SERVICE_ACCOUNT_ID_REQUIRED",
+			);
+			if (Result.isFailure(idResult)) {
+				return idResult;
+			}
+
+			// Find the principal
+			const principal = await principalRepository.findById(
+				command.serviceAccountId,
+			);
+			if (!principal) {
+				return Result.failure(
+					UseCaseError.notFound(
+						"SERVICE_ACCOUNT_NOT_FOUND",
+						`Service account not found: ${command.serviceAccountId}`,
+					),
+				);
+			}
+
+			// Verify it's a SERVICE type
+			if (principal.type !== "SERVICE" || !principal.serviceAccount) {
+				return Result.failure(
+					UseCaseError.businessRule(
+						"NOT_A_SERVICE_ACCOUNT",
+						"Principal is not a service account",
+						{
+							type: principal.type,
+						},
+					),
+				);
+			}
+
+			// Field-length checks — match Rust
+			// crates/fc-platform/src/service_account/operations/update.rs:96-118.
+			if (command.name !== undefined) {
+				const trimmed = command.name.trim();
+				if (trimmed.length === 0 || trimmed.length > 100) {
+					return Result.failure(
+						UseCaseError.validation(
+							"INVALID_NAME",
+							"Name must be 1-100 characters",
+						),
+					);
+				}
+			}
+			if (command.description !== undefined && command.description !== null) {
+				if (command.description.length > 500) {
+					return Result.failure(
+						UseCaseError.validation(
+							"INVALID_DESCRIPTION",
+							"Description must be max 500 characters",
+						),
+					);
+				}
+			}
+
+			// Build updates inline to satisfy readonly constraints
+			const updatedPrincipal = updatePrincipal(principal, {
+				...(command.name !== undefined ? { name: command.name } : {}),
+				...(command.scope !== undefined ? { scope: command.scope } : {}),
+				...(command.description !== undefined
+					? {
+							serviceAccount: {
+								...principal.serviceAccount,
+								description: command.description,
+							},
+						}
+					: {}),
+			});
+
+			// Create domain event
+			const event = new ServiceAccountUpdated(context, {
+				serviceAccountId: principal.id,
+				code: principal.serviceAccount.code,
+			});
+
+			// Commit
+			return unitOfWork.commit(updatedPrincipal, event, command);
+		},
+	};
+}

@@ -16,8 +16,8 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import type { UnitOfWork } from "@flowcatalyst/domain";
 
-import { createCreateSubscriptionUseCase } from "../application/subscription/create-subscription/use-case.js";
-import type { CreateSubscriptionCommand } from "../application/subscription/create-subscription/command.js";
+import { createCreateSubscriptionUseCase } from "../application/subscription/create-subscription.js";
+import type { CreateSubscriptionCommand } from "../application/subscription/create-subscription.js";
 import type {
 	SubscriptionRepository,
 	DispatchPoolRepository,

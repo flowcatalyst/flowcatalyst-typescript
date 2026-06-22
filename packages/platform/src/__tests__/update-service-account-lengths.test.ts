@@ -11,7 +11,7 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createUpdateServiceAccountUseCase } from "../application/service-account/update-service-account/use-case.js";
+import { createUpdateServiceAccountUseCase } from "../application/service-account/update-service-account.js";
 import type { PrincipalRepository } from "../infrastructure/persistence/repositories/principal-repository.js";
 import type { Principal } from "../domain/index.js";
 

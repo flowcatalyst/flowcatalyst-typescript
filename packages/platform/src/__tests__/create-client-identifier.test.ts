@@ -18,7 +18,7 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import type { UnitOfWork } from "@flowcatalyst/domain";
 
-import { createCreateClientUseCase } from "../application/client/create-client/use-case.js";
+import { createCreateClientUseCase } from "../application/client/create-client.js";
 import type { ClientRepository } from "../infrastructure/persistence/repositories/client-repository.js";
 
 function makeRepo(): ClientRepository {

@@ -21,7 +21,9 @@ import {
 	rmSync,
 } from "node:fs";
 import { resolve, dirname, join } from "node:path";
-import { tmpdir } from "node:os";
+import { homedir } from "node:os";
+import { createHash } from "node:crypto";
+import { zstdDecompressSync } from "node:zlib";
 import type { Logger } from "@flowcatalyst/logging";
 
 export interface EmbeddedPostgresOptions {
@@ -153,12 +155,20 @@ async function resolvePostgresBinDir(logger: Logger): Promise<string> {
 	})();
 
 	if (sea?.isSea()) {
-		const extractDir = join(tmpdir(), "flowcatalyst-postgres");
+		const raw = sea.getAsset("postgres") as ArrayBuffer;
+		const rawBuf = Buffer.from(raw);
+		// Version the extraction by a hash of the (compressed) asset so a newer
+		// dev binary — which carries a different embedded Postgres — extracts to a
+		// fresh dir instead of reusing a stale runtime. Lives under the OS cache
+		// dir, NOT /tmp: it survives reboot and isn't subject to a noexec /tmp mount.
+		const version = createHash("sha256").update(rawBuf).digest("hex").slice(0, 12);
+		const extractDir = join(postgresCacheRoot(), `postgres-${version}`);
 		const sentinel = join(extractDir, ".extracted");
 		if (!existsSync(sentinel)) {
 			logger.info({ extractDir }, "Extracting embedded Postgres binary");
-			const raw = sea.getAsset("postgres") as ArrayBuffer;
-			extractPostgresBlob(Buffer.from(raw), extractDir);
+			// The asset is zstd-compressed by scripts/pack-postgres.js — decompress
+			// before parsing the [header][bytes] layout.
+			extractPostgresBlob(zstdDecompressSync(rawBuf), extractDir);
 			writeFileSync(sentinel, "");
 		}
 		return join(extractDir, "bin");
@@ -176,6 +186,30 @@ async function resolvePostgresBinDir(logger: Logger): Promise<string> {
 		);
 	}
 	return dirname(platformPkg.postgres);
+}
+
+/**
+ * OS-idiomatic cache root for the extracted Postgres runtime. The extracted
+ * binaries are a re-creatable cache, so they belong in the cache dir — which,
+ * unlike /tmp, persists across reboots and is not mounted noexec.
+ */
+function postgresCacheRoot(): string {
+	const home = homedir();
+	if (process.platform === "win32") {
+		return join(
+			process.env.LOCALAPPDATA || join(home, "AppData", "Local"),
+			"flowcatalyst",
+			"postgres",
+		);
+	}
+	if (process.platform === "darwin") {
+		return join(home, "Library", "Caches", "flowcatalyst", "postgres");
+	}
+	return join(
+		process.env.XDG_CACHE_HOME || join(home, ".cache"),
+		"flowcatalyst",
+		"postgres",
+	);
 }
 
 function getPlatformPackageName(): string {

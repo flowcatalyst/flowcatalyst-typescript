@@ -14,7 +14,7 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createUpdateEventTypeUseCase } from "../application/event-type/update-event-type/use-case.js";
+import { createUpdateEventTypeUseCase } from "../application/event-type/update-event-type.js";
 import type { EventTypeRepository } from "../infrastructure/persistence/index.js";
 import type { EventType } from "../domain/index.js";
 

@@ -17,8 +17,8 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createChangeClientStatusUseCase } from "../application/client/change-client-status/use-case.js";
-import type { ChangeClientStatusCommand } from "../application/client/change-client-status/command.js";
+import { createChangeClientStatusUseCase } from "../application/client/change-client-status.js";
+import type { ChangeClientStatusCommand } from "../application/client/change-client-status.js";
 import type { ClientRepository } from "../infrastructure/persistence/index.js";
 import { ClientStatus, type Client } from "../domain/index.js";
 

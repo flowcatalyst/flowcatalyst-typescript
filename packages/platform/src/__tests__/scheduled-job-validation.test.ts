@@ -13,8 +13,8 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createCreateScheduledJobUseCase } from "../application/scheduled-job/create-scheduled-job/use-case.js";
-import { createUpdateScheduledJobUseCase } from "../application/scheduled-job/update-scheduled-job/use-case.js";
+import { createCreateScheduledJobUseCase } from "../application/scheduled-job/create-scheduled-job.js";
+import { createUpdateScheduledJobUseCase } from "../application/scheduled-job/update-scheduled-job.js";
 import type { ScheduledJobRepository } from "../infrastructure/persistence/index.js";
 import type { ScheduledJob } from "../domain/index.js";
 

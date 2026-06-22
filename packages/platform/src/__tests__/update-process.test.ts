@@ -14,7 +14,7 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createUpdateProcessUseCase } from "../application/process/update-process/use-case.js";
+import { createUpdateProcessUseCase } from "../application/process/update-process.js";
 import type { ProcessRepository } from "../infrastructure/persistence/index.js";
 
 function makeRepo(): ProcessRepository {

@@ -14,7 +14,7 @@ import { Result, type ExecutionContext } from "@flowcatalyst/application";
 import type { Logger } from "@flowcatalyst/logging";
 import { RESULT_SUCCESS_TOKEN, type UnitOfWork } from "@flowcatalyst/domain";
 
-import { createSyncScheduledJobsUseCase } from "../application/scheduled-job/sync-scheduled-jobs/use-case.js";
+import { createSyncScheduledJobsUseCase } from "../application/scheduled-job/sync-scheduled-jobs.js";
 import type { ScheduledJobRepository } from "../infrastructure/persistence/index.js";
 import type { ScheduledJob } from "../domain/index.js";
 

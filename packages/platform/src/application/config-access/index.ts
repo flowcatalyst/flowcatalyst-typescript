@@ -2,6 +2,6 @@
  * Platform Config Access Use Cases
  */
 
-export * from "./grant/index.js";
-export * from "./update/index.js";
-export * from "./revoke/index.js";
+export * from "./grant.js";
+export * from "./update.js";
+export * from "./revoke.js";
